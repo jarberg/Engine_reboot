@@ -3,7 +3,7 @@
 #include "engine/core/modelLookup.h"
 #include <engine/core/resourceManager.h>
 #include "engine/core/types.h"
-#include <engine/core/World.h>
+#include <engine/core/world.h>
 
 World myWorld;
 ResourceManager* RMan;
@@ -29,8 +29,9 @@ void main_loop() {
 	lastTime = currentTime;
 
 	// Now render the triangle
+	render(myWorld.get_registry());
 	
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+
 
 	myWorld.update(deltaTime.count());
 }
@@ -127,11 +128,11 @@ void init() {
 
 	std::string currentPath = std::filesystem::current_path().string();
 	
-	std::string vsPath = currentPath + "/Resources/Shader/test.vs";
+	std::string vsPath = "Resources/Shader/test.vs";
 	// Create and compile the vertex shader
 	const char* vertexShaderSource = read_file<char*>(vsPath);
 
-	const char* fragmentShaderSource = read_file<char*>(currentPath+"/Resources/Shader/test.fs");
+	const char* fragmentShaderSource = read_file<char*>("Resources/Shader/test.fs");
 
 
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);

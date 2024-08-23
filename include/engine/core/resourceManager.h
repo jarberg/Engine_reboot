@@ -1,12 +1,12 @@
 #pragma once
-#include "engine/core/singleton.h"
-
-#include "engine/core/GL.h"
-
-#include "engine/core/types.h"
 
 #include <vector>
 #include <map>
+
+#include "engine/core/singleton.h"
+#include "engine/core/GL.h"
+#include "engine/core/types.h"
+
 
 struct glmodel {
     unsigned int ID;
@@ -14,6 +14,7 @@ struct glmodel {
     unsigned int VAO;
     size_t vertCount;
     std::vector<float> vertex_pos;
+    
     glmodel() {
         ID = 25;
         VBO = 25;
@@ -21,6 +22,7 @@ struct glmodel {
         vertCount = 0;
         vertex_pos = {};
     };
+    
     glmodel(unsigned int _ID, unsigned int _VBO, unsigned int _VAO, size_t _vertCount, const std::vector<float>& _vertex_pos = {})
         : ID(_ID), VBO(_VBO), VAO(_VAO), vertCount(_vertCount), vertex_pos(_vertex_pos) {}
 

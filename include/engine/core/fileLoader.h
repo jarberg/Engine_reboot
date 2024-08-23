@@ -1,52 +1,55 @@
 #pragma once
+
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
-#include <cstring>
 
+#include <cstring>  // Include for strcpy
+
+// General template function declaration
 template <typename T>
 T read_file(const std::string& filePath);
 
 // Specialization for std::string
 template <>
 std::string read_file<std::string>(const std::string& filePath) {
-	std::string ret = std::string();
-    std::cout << "filepath : " << filePath << std::endl;
-	std::ifstream file(filePath);
+    // Path should be relative to the root of the Emscripten virtual file system
+    std::ifstream file(filePath);
 
-	if (!file.is_open()) {
-		std::cerr << "Failed to open file" << std::endl;
-	}
+    if (!file.is_open()) {
+        std::cerr << "Failed to open shader file: " << filePath << std::endl;
+        return "";
+    }
 
-	std::string line;
-	while (std::getline(file, line)) {
-		ret += line;
-		std::cout << line << std::endl;
-	}
-	file.close();
-	std::cout << ret << std::endl;
-	return ret;
+    std::stringstream buffer;
+    buffer << file.rdbuf();  // Read the file's content into the stringstream
+    return buffer.str();      // Convert the stream into a string and return it
 }
 
+// Specialization for char*
 template <>
 char* read_file<char*>(const std::string& filePath) {
-    std::string ret;  // Use std::string to build the content
-    std::cout << "filepath : " << filePath << std::endl;
+    // Path should be relative to the root of the Emscripten virtual file system
     std::ifstream file(filePath);
+
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filePath << std::endl;
+        std::cerr << "Failed to open shader file: " << filePath << std::endl;
         return nullptr;
     }
 
-    std::string line;
-    while (std::getline(file, line)) {
-        ret += line + '\n';  // Add newline to preserve the file format
-    }
-    file.close();
+    std::stringstream buffer;
+    buffer << file.rdbuf();  // Read the file's content into the stringstream
+    std::string content = buffer.str();  // Convert the stream into a string
 
-    // Allocate memory for the char* and copy the string content
-    char* result = new char[ret.size() + 1];  // +1 for null terminator
-    strcpy_s(result, ret.size() + 1, ret.c_str());
+    // Allocate memory for the char* and copy the content
+    char* result = new char[content.size() + 1];  // +1 for the null terminator
+#ifdef _WIN32
+    strcpy_s(result, content.size() + 1, content.c_str());// Copy the string content to the char*
+
+#else
+    std::strcpy(result, content.c_str());
+#endif  
 
     return result;  // Caller is responsible for freeing this memory
 }

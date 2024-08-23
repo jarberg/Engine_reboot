@@ -43,14 +43,14 @@ if(EMSCRIPTEN)
 
     # Emscripten specific settings
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ")
     # Custom target for building WebAssembly
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
     add_custom_target(build_wasm ALL
         COMMAND emcc ${SOURCE_FILES}
         -I ${CMAKE_SOURCE_DIR}/include
 	-I ${ENTT_DIR}
-        ${CMAKE_CXX_FLAGS} -s USE_WEBGL2=1 -s FULL_ES3=1
+        ${CMAKE_CXX_FLAGS} -s USE_WEBGL2=1 -s FULL_ES3=1 --preload-file "Resources"
         -o ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/output.html
         DEPENDS ${SOURCE_FILES} ${HEADER_FILES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
