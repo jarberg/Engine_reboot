@@ -1,8 +1,9 @@
 #include "engine/Main.h"
 #include "engine/core/singleton.h"
-#include "engine/modelLookup.h"
-#include <engine/resourceManager.h>
+#include "engine/core/modelLookup.h"
+#include <engine/core/resourceManager.h>
 #include "engine/core/types.h"
+#include <engine/core/World.h>
 
 World myWorld;
 ResourceManager* RMan;
@@ -122,21 +123,16 @@ void render(entt::registry& registry) {
 
 
 void init() {
-	// Create and compile the vertex shader
-	const char* vertexShaderSource = "#version 300 es\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"void main()\n"
-		"{\n"
-		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-		"}\0";
 
-	const char* fragmentShaderSource = "#version 300 es\n"
-		"precision mediump float;\n"
-		"out vec4 FragColor;\n"
-		"void main()\n"
-		"{\n"
-		"   FragColor = vec4(1.0f, 1.0f, 0.2f, 1.0f);\n"
-		"}\0";
+
+	std::string currentPath = std::filesystem::current_path().string();
+	
+	std::string vsPath = currentPath + "/Resources/Shader/test.vs";
+	// Create and compile the vertex shader
+	const char* vertexShaderSource = read_file<char*>(vsPath);
+
+	const char* fragmentShaderSource = read_file<char*>(currentPath+"/Resources/Shader/test.fs");
+
 
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -183,6 +179,8 @@ void init() {
 	auto* dataTable = model_datatable::GetInstance();
 
 	RMan = ResourceManager::GetInstance();
+
+
 	dataTable->load_dataTable();
 	for (auto& [key, value] : dataTable->get_model_map()) {
 		RMan->create_model(key, value);

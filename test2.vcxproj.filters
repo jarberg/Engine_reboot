@@ -24,52 +24,43 @@
     <Filter Include="Source Files\Engine\core">
       <UniqueIdentifier>{27b46d64-7558-4174-86a8-574bde44b821}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Lib">
+      <UniqueIdentifier>{40fad62b-aa58-41ef-bf4b-9c3f1eb60902}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Components.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\glad\glad.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="include\KHR\khrplatform.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="include\engine\Components.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="include\engine\Entity.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="include\engine\FileLoader.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="include\engine\GL.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="include\engine\Main.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\modelLookup.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="include\engine\World.h">
-      <Filter>Header Files\Engine</Filter>
+    <ClInclude Include="lib\entt\entt.hpp">
+      <Filter>Header Files\Lib</Filter>
     </ClInclude>
     <ClInclude Include="lib\glad\include\glad\glad.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lib</Filter>
     </ClInclude>
     <ClInclude Include="lib\glad\include\KHR\khrplatform.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lib</Filter>
     </ClInclude>
-    <ClInclude Include="lib\entt\entt.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\engine\core\components.h">
+      <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\resourceManager.h">
-      <Filter>Header Files\Engine</Filter>
+    <ClInclude Include="include\engine\core\entity.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\engine\core\fileLoader.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\engine\core\GL.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\engine\core\modelLookup.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\engine\core\resourceManager.h">
+      <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="include\engine\core\singleton.h">
       <Filter>Header Files\Engine\Core</Filter>
@@ -77,30 +68,27 @@
     <ClInclude Include="include\engine\core\types.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="include\engine\core\world.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\engine\Entity.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\FileLoader.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="src\engine\Main.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\modelLookup.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\World.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="lib\glad\src\glad.c">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lib</Filter>
     </ClCompile>
-    <ClCompile Include="include\engine\resourceManager.cpp">
-      <Filter>Source Files\Engine</Filter>
+    <ClCompile Include="src\engine\core\modelLookup.cpp">
+      <Filter>Source Files\Engine\core</Filter>
     </ClCompile>
-    <ClCompile Include="include\engine\core\singleton.cpp">
+    <ClCompile Include="src\engine\core\resourceManager.cpp">
+      <Filter>Source Files\Engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\core\world.cpp">
+      <Filter>Source Files\Engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\core\entity.cpp">
       <Filter>Source Files\Engine\core</Filter>
     </ClCompile>
   </ItemGroup>

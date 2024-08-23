@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/core/singleton.h"
 
-#include "engine/GL.h"
+#include "engine/core/GL.h"
 
 #include "engine/core/types.h"
 

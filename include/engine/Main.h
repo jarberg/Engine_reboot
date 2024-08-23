@@ -1,10 +1,10 @@
 #include "entt.hpp"
-#include "engine/Entity.h"
-#include "engine/World.h"
-#include "engine/FileLoader.h"
+#include "engine/core/entity.h"
+#include "engine/core/world.h"
+#include "engine/core/fileLoader.h"
 
 #include <iostream>
 #include <chrono>
 
 
-#include "engine/GL.h"
+#include "engine/core/GL.h"

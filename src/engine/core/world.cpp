@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "engine/World.h"
-#include "engine/Entity.h"
+#include "engine/core/world.h"
+#include "engine/core/entity.h"
 
 
 World::World()

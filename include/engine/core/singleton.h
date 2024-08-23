@@ -2,9 +2,8 @@
 
 #include <mutex>
 #include <memory>
-#include <engine/modelLookup.h>
-#include <engine/resourceManager.h>
 
+// Template Singleton class
 template <typename T>
 class Singleton {
 private:
@@ -25,5 +24,18 @@ public:
     static T* GetInstance();
 };
 
-template class Singleton<model_datatable>;
-template class Singleton<ResourceManager>;
+// Static member initialization in the header to avoid multiple definition errors
+template <typename T>
+std::unique_ptr<T> Singleton<T>::pinstance_ = nullptr;
+
+template <typename T>
+std::once_flag Singleton<T>::initFlag;
+
+// GetInstance method implementation
+template <typename T>
+T* Singleton<T>::GetInstance() {
+    std::call_once(initFlag, []() {
+        pinstance_.reset(new T());
+        });
+    return pinstance_.get();
+}

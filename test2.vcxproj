@@ -136,32 +136,27 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Components.h" />
-    <ClInclude Include="include\engine\Components.h" />
+    <ClInclude Include="include\engine\core\components.h" />
+    <ClInclude Include="include\engine\core\entity.h" />
+    <ClInclude Include="include\engine\core\fileLoader.h" />
+    <ClInclude Include="include\engine\core\GL.h" />
+    <ClInclude Include="include\engine\core\modelLookup.h" />
+    <ClInclude Include="include\engine\core\resourceManager.h" />
     <ClInclude Include="include\engine\core\singleton.h" />
     <ClInclude Include="include\engine\core\types.h" />
-    <ClInclude Include="include\engine\Entity.h" />
-    <ClInclude Include="include\engine\FileLoader.h" />
-    <ClInclude Include="include\engine\GL.h" />
+    <ClInclude Include="include\engine\core\world.h" />
     <ClInclude Include="include\engine\Main.h" />
-    <ClInclude Include="include\engine\modelLookup.h" />
-    <ClInclude Include="include\engine\resourceManager.h" />
-    <ClInclude Include="include\engine\World.h" />
-    <ClInclude Include="include\glad\glad.h" />
-    <ClInclude Include="include\KHR\khrplatform.h" />
     <ClInclude Include="lib\entt\entt.hpp" />
     <ClInclude Include="lib\glad\include\glad\glad.h" />
     <ClInclude Include="lib\glad\include\KHR\khrplatform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\engine\core\singleton.cpp" />
-    <ClCompile Include="include\engine\resourceManager.cpp" />
     <ClCompile Include="lib\glad\src\glad.c" />
-    <ClCompile Include="src\engine\Entity.cpp" />
-    <ClCompile Include="src\engine\FileLoader.cpp" />
+    <ClCompile Include="src\engine\core\entity.cpp" />
+    <ClCompile Include="src\engine\core\modelLookup.cpp" />
+    <ClCompile Include="src\engine\core\resourceManager.cpp" />
+    <ClCompile Include="src\engine\core\world.cpp" />
     <ClCompile Include="src\engine\Main.cpp" />
-    <ClCompile Include="src\engine\modelLookup.cpp" />
-    <ClCompile Include="src\engine\World.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
