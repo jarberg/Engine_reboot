@@ -2,7 +2,7 @@
 
 #include "entt.hpp"
 
-#include "engine/core/world.h"
+#include "engine/public/core/world.h"
 
 class World;
 

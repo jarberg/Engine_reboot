@@ -1,9 +1,9 @@
-#include "engine/Main.h"
-#include "engine/core/singleton.h"
-#include "engine/core/modelLookup.h"
-#include <engine/core/resourceManager.h>
-#include "engine/core/types.h"
-#include <engine/core/world.h>
+#include "engine/public/core/Main.h"
+#include "engine/public/core/singleton.h"
+#include "engine/public/core/modelLookup.h"
+#include <engine/public/core/resourceManager.h>
+#include <engine/public/core/types.h>
+#include <engine/public/core/world.h>
 
 World myWorld;
 ResourceManager* RMan;

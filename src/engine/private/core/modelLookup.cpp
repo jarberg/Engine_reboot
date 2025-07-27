@@ -1,4 +1,4 @@
-#include "engine/core/modelLookup.h"
+#include <engine/public/core/modelLookup.h>
 
 model model_datatable::get_model(int id)
 {	

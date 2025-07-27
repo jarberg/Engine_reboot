@@ -3,11 +3,11 @@
 #include <vector>
 #include <map>
 
-#include "engine/core/singleton.h"
+#include "engine/public/core/singleton.h"
+
+#include "engine/public/core/types.h"
+
 #include "engine/core/GL.h"
-#include "engine/core/types.h"
-
-
 struct glmodel {
     unsigned int ID;
     unsigned int VBO;

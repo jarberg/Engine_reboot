@@ -1,4 +1,4 @@
-#include "engine/core/entity.h"
+#include "engine/public/core/entity.h"
 
 
 Entity::Entity(entt::entity s_entity_handle, World* s_scene)

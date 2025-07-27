@@ -15,26 +15,32 @@
     <Filter Include="Header Files\Engine">
       <UniqueIdentifier>{28933de7-2a44-41cb-8f08-d300ec13923c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine">
-      <UniqueIdentifier>{eb67de2b-26b7-4b6f-951b-552838cc9c23}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\Core">
       <UniqueIdentifier>{49a8ac88-e0dc-434d-a2e3-f82eb0030c72}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\core">
-      <UniqueIdentifier>{27b46d64-7558-4174-86a8-574bde44b821}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Lib">
       <UniqueIdentifier>{40fad62b-aa58-41ef-bf4b-9c3f1eb60902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\public">
+      <UniqueIdentifier>{ff86b2c9-86d1-4c08-85b2-eca1e82c5520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\public\engine">
+      <UniqueIdentifier>{eb67de2b-26b7-4b6f-951b-552838cc9c23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\public\engine\core">
+      <UniqueIdentifier>{27b46d64-7558-4174-86a8-574bde44b821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\private">
+      <UniqueIdentifier>{399afe2f-290b-4e65-a632-5cedfd39d322}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\private\engine">
+      <UniqueIdentifier>{a94f7175-d5be-4d98-a591-a2042f6c0acc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\engine\Main.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="lib\entt\entt.hpp">
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
@@ -44,52 +50,55 @@
     <ClInclude Include="lib\glad\include\KHR\khrplatform.h">
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\core\components.h">
-      <Filter>Header Files\Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\engine\core\entity.h">
-      <Filter>Header Files\Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\engine\core\fileLoader.h">
-      <Filter>Header Files\Engine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="include\engine\core\GL.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\core\modelLookup.h">
-      <Filter>Header Files\Engine\Core</Filter>
+    <ClInclude Include="src\engine\public\core\components.h">
+      <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\core\resourceManager.h">
-      <Filter>Header Files\Engine\Core</Filter>
+    <ClInclude Include="src\engine\public\core\entity.h">
+      <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\core\singleton.h">
-      <Filter>Header Files\Engine\Core</Filter>
+    <ClInclude Include="src\engine\public\core\fileLoader.h">
+      <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\core\types.h">
-      <Filter>Header Files\Engine\Core</Filter>
+    <ClInclude Include="src\engine\public\core\Main.h">
+      <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
-    <ClInclude Include="include\engine\core\world.h">
-      <Filter>Header Files\Engine\Core</Filter>
+    <ClInclude Include="src\engine\public\core\modelLookup.h">
+      <Filter>Source Files\public\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\public\core\resourceManager.h">
+      <Filter>Source Files\public\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\public\core\singleton.h">
+      <Filter>Source Files\public\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\public\core\types.h">
+      <Filter>Source Files\public\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\public\core\world.h">
+      <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\engine\Main.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="lib\glad\src\glad.c">
       <Filter>Header Files\Lib</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\core\modelLookup.cpp">
-      <Filter>Source Files\Engine\core</Filter>
+    <ClCompile Include="src\engine\private\core\Main.cpp">
+      <Filter>Source Files\private\engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\core\resourceManager.cpp">
-      <Filter>Source Files\Engine\core</Filter>
+    <ClCompile Include="src\engine\private\core\modelLookup.cpp">
+      <Filter>Source Files\private\engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\core\world.cpp">
-      <Filter>Source Files\Engine\core</Filter>
+    <ClCompile Include="src\engine\private\core\resourceManager.cpp">
+      <Filter>Source Files\private\engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\core\entity.cpp">
-      <Filter>Source Files\Engine\core</Filter>
+    <ClCompile Include="src\engine\private\core\world.cpp">
+      <Filter>Source Files\private\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\private\core\entity.cpp">
+      <Filter>Source Files\private\engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

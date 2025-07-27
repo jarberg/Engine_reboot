@@ -13,11 +13,15 @@ set(GLAD_DIR "${CMAKE_SOURCE_DIR}/lib/glad")
 set(ENTT_DIR "${CMAKE_SOURCE_DIR}/lib/entt")
 
 # Define source and header files
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE SOURCE_FILES 
+    "${CMAKE_SOURCE_DIR}/src/public*.cpp"
+)
+
 file(GLOB_RECURSE HEADER_FILES 
      "${CMAKE_SOURCE_DIR}/include/*.h"
      "${CMAKE_SOURCE_DIR}/include/*.hpp" 
      "${ENTT_DIR}/*.hpp"
+     "${CMAKE_SOURCE_DIR}/src/engine/*.h"
 
 )
 
