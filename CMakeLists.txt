@@ -14,14 +14,14 @@ set(ENTT_DIR "${CMAKE_SOURCE_DIR}/lib/entt")
 
 # Define source and header files
 file(GLOB_RECURSE SOURCE_FILES 
-    "${CMAKE_SOURCE_DIR}/src/public*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/*.cpp"
 )
 
 file(GLOB_RECURSE HEADER_FILES 
      "${CMAKE_SOURCE_DIR}/include/*.h"
      "${CMAKE_SOURCE_DIR}/include/*.hpp" 
      "${ENTT_DIR}/*.hpp"
-     "${CMAKE_SOURCE_DIR}/src/engine/*.h"
+     "${CMAKE_SOURCE_DIR}/src/*.h"
 
 )
 
@@ -36,8 +36,9 @@ add_executable(Main ${SOURCE_FILES} ${HEADER_FILES})
 
 # Include directories# Include directories
 target_include_directories(Main PUBLIC
-    ${CMAKE_SOURCE_DIR}/include   # Your project headers
+    ${CMAKE_SOURCE_DIR}/include   # Your public headers
     ${GLAD_DIR}/include           # GLAD headers
+    ${CMAKE_SOURCE_DIR}/src               # project headers
     ${ENTT_DIR}
 )
 
@@ -53,6 +54,7 @@ if(EMSCRIPTEN)
     add_custom_target(build_wasm ALL
         COMMAND emcc ${SOURCE_FILES}
         -I ${CMAKE_SOURCE_DIR}/include
+ 	-I ${CMAKE_SOURCE_DIR}/src  
 	-I ${ENTT_DIR}
         ${CMAKE_CXX_FLAGS} -s USE_WEBGL2=1 -s FULL_ES3=1 --preload-file "Resources"
         -o ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/output.html
