@@ -36,9 +36,27 @@
     <Filter Include="Source Files\private\engine">
       <UniqueIdentifier>{a94f7175-d5be-4d98-a591-a2042f6c0acc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\private\platform">
+      <UniqueIdentifier>{9e0c3d19-e2de-4654-86c4-557c359c062b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\private\platform\win">
+      <UniqueIdentifier>{9eb57e48-e131-4bf2-b701-02facc7cfee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\private\platform\emscripten">
+      <UniqueIdentifier>{223f5500-89a1-4322-8ca7-9183ec763da8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Resources\models.dat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shader\test.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Shader\test.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\entt\entt.hpp">
@@ -62,9 +80,6 @@
     <ClInclude Include="src\engine\public\core\fileLoader.h">
       <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\public\core\Main.h">
-      <Filter>Source Files\public\engine\core</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\public\core\modelLookup.h">
       <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
@@ -80,13 +95,16 @@
     <ClInclude Include="src\engine\public\core\world.h">
       <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\public\core\extensions.h">
+      <Filter>Source Files\public\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\public\core\Main.h">
+      <Filter>Source Files\public\engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib\glad\src\glad.c">
       <Filter>Header Files\Lib</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\private\core\Main.cpp">
-      <Filter>Source Files\private\engine</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\private\core\modelLookup.cpp">
       <Filter>Source Files\private\engine</Filter>
@@ -99,6 +117,9 @@
     </ClCompile>
     <ClCompile Include="src\engine\private\core\entity.cpp">
       <Filter>Source Files\private\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\win\Main.cpp">
+      <Filter>Source Files\private\platform\win</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

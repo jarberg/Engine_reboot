@@ -39,7 +39,7 @@ if (ENVIRONMENT_IS_NODE) {
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: C:\Users\mjarb\AppData\Local\Temp\tmpy5my8nt9.js
+// include: C:\Users\mjarb\AppData\Local\Temp\tmpwqt45y5k.js
 
   if (!Module.expectedDataFileDownloads) {
     Module.expectedDataFileDownloads = 0;
@@ -217,25 +217,25 @@ Module['FS_createPath']("/Resources", "Shader", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/Resources/Shader/test.fs", "start": 0, "end": 252}, {"filename": "/Resources/Shader/test.vs", "start": 252, "end": 627}, {"filename": "/Resources/models.dat", "start": 627, "end": 718}], "remote_package_size": 718});
+    loadPackage({"files": [{"filename": "/Resources/Shader/test.frag", "start": 0, "end": 257}, {"filename": "/Resources/Shader/test.vert", "start": 257, "end": 632}, {"filename": "/Resources/models.dat", "start": 632, "end": 723}], "remote_package_size": 723});
 
   })();
 
-// end include: C:\Users\mjarb\AppData\Local\Temp\tmpy5my8nt9.js
-// include: C:\Users\mjarb\AppData\Local\Temp\tmpvvinood8.js
+// end include: C:\Users\mjarb\AppData\Local\Temp\tmpwqt45y5k.js
+// include: C:\Users\mjarb\AppData\Local\Temp\tmpnncu3xbr.js
 
     // All the pre-js content up to here must remain later on, we need to run
     // it.
     if (Module['$ww'] || (typeof ENVIRONMENT_IS_PTHREAD != 'undefined' && ENVIRONMENT_IS_PTHREAD)) Module['preRun'] = [];
     var necessaryPreJSTasks = Module['preRun'].slice();
-  // end include: C:\Users\mjarb\AppData\Local\Temp\tmpvvinood8.js
-// include: C:\Users\mjarb\AppData\Local\Temp\tmpjc4qh_ej.js
+  // end include: C:\Users\mjarb\AppData\Local\Temp\tmpnncu3xbr.js
+// include: C:\Users\mjarb\AppData\Local\Temp\tmp31i4ap41.js
 
     if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
     necessaryPreJSTasks.forEach(function(task) {
       if (Module['preRun'].indexOf(task) < 0) throw 'All preRun tasks that exist before user pre-js code should remain after; did you replace Module or modify Module.preRun?';
     });
-  // end include: C:\Users\mjarb\AppData\Local\Temp\tmpjc4qh_ej.js
+  // end include: C:\Users\mjarb\AppData\Local\Temp\tmp31i4ap41.js
 
 
 // Sometimes an existing Module object exists with properties
@@ -4204,26 +4204,6 @@ function dbg(...args) {
   }
 
   
-  var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
-      assert(typeof maxBytesToWrite == 'number', 'stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!');
-      return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
-    };
-  function ___syscall_getcwd(buf, size) {
-  try {
-  
-      if (size === 0) return -28;
-      var cwd = FS.cwd();
-      var cwdLengthInBytes = lengthBytesUTF8(cwd) + 1;
-      if (size < cwdLengthInBytes) return -68;
-      stringToUTF8(cwd, buf, size);
-      return cwdLengthInBytes;
-    } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
-    return -e.errno;
-  }
-  }
-
-  
   function ___syscall_ioctl(fd, op, varargs) {
   SYSCALLS.varargs = varargs;
   try {
@@ -6218,6 +6198,10 @@ function dbg(...args) {
       }
     };
 
+  var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
+      assert(typeof maxBytesToWrite == 'number', 'stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!');
+      return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
+    };
   
   var _glGetShaderInfoLog = (shader, maxLength, length, infoLog) => {
       var log = GLctx.getShaderInfoLog(GL.shaders[shader]);
@@ -6630,8 +6614,6 @@ var wasmImports = {
   __cxa_throw: ___cxa_throw,
   /** @export */
   __syscall_fcntl64: ___syscall_fcntl64,
-  /** @export */
-  __syscall_getcwd: ___syscall_getcwd,
   /** @export */
   __syscall_ioctl: ___syscall_ioctl,
   /** @export */

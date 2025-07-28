@@ -14,21 +14,31 @@ set(ENTT_DIR "${CMAKE_SOURCE_DIR}/lib/entt")
 
 # Define source and header files
 file(GLOB_RECURSE SOURCE_FILES 
-    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/private*.cpp"
 )
 
 file(GLOB_RECURSE HEADER_FILES 
      "${CMAKE_SOURCE_DIR}/include/*.h"
      "${CMAKE_SOURCE_DIR}/include/*.hpp" 
      "${ENTT_DIR}/*.hpp"
-     "${CMAKE_SOURCE_DIR}/src/*.h"
+     "${CMAKE_SOURCE_DIR}/src/engine/public/*.h"
 
 )
 
 # Add the GLAD source file only for non-Emscripten builds
 if(NOT EMSCRIPTEN)
+    file(GLOB_RECURSE SOURCE_FILES 
+        "${CMAKE_SOURCE_DIR}/src/engine/private/*.cpp"
+        "${CMAKE_SOURCE_DIR}/src/platform/win/*.cpp"
+    )
+
     file(GLOB GLAD_SOURCE "${GLAD_DIR}/include/glad/src/glad.c")
     list(APPEND SOURCE_FILES ${GLAD_SOURCE})
+else()
+    file(GLOB_RECURSE SOURCE_FILES 
+        "${CMAKE_SOURCE_DIR}/src/engine/private/*.cpp"
+        "${CMAKE_SOURCE_DIR}/src/platform/emscripten/*.cpp"
+    )
 endif()
 
 # Add the executable
@@ -36,9 +46,9 @@ add_executable(Main ${SOURCE_FILES} ${HEADER_FILES})
 
 # Include directories# Include directories
 target_include_directories(Main PUBLIC
-    ${CMAKE_SOURCE_DIR}/include   # Your public headers
-    ${GLAD_DIR}/include           # GLAD headers
-    ${CMAKE_SOURCE_DIR}/src               # project headers
+    ${CMAKE_SOURCE_DIR}/include                 # Public headers
+    ${GLAD_DIR}/include                         # GLAD headers
+    ${CMAKE_SOURCE_DIR}/src/engine/public       # project headers
     ${ENTT_DIR}
 )
 
@@ -54,8 +64,8 @@ if(EMSCRIPTEN)
     add_custom_target(build_wasm ALL
         COMMAND emcc ${SOURCE_FILES}
         -I ${CMAKE_SOURCE_DIR}/include
- 	-I ${CMAKE_SOURCE_DIR}/src  
-	-I ${ENTT_DIR}
+ 	    -I ${CMAKE_SOURCE_DIR}/src/engine/public  
+	    -I ${ENTT_DIR}
         ${CMAKE_CXX_FLAGS} -s USE_WEBGL2=1 -s FULL_ES3=1 --preload-file "Resources"
         -o ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/output.html
         DEPENDS ${SOURCE_FILES} ${HEADER_FILES}

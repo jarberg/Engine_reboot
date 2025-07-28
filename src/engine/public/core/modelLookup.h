@@ -8,8 +8,8 @@
 #include <filesystem>
 
 
-#include "engine/public/core/singleton.h"
-#include "engine/public/core/types.h"
+#include "core/singleton.h"
+#include "core/types.h"
 
 
 

@@ -6,5 +6,5 @@ out vec4 FragColor;  // Output color
 
 void main()
 {
-    FragColor = vertexColor; // Set the fragment color
+    FragColor = abs(vertexColor); // Set the fragment color
 }

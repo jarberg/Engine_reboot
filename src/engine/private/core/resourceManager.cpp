@@ -1,4 +1,4 @@
-#include "engine/public/core/resourceManager.h"
+#include "core/resourceManager.h"
 
 ResourceManager::ResourceManager() {}
 
@@ -21,7 +21,7 @@ glmodel* ResourceManager::get_model(unsigned int _id)
     auto ret_iterator = m.find(_id);
 
     if (ret_iterator != m.end()) {
-        std::cout << " : found : Value : " << ret_iterator->second.ID << std::endl;
+        //std::cout << " : found : Value : " << ret_iterator->second.ID << std::endl;
         return &(ret_iterator->second);
     }
     return nullptr;

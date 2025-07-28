@@ -1,22 +1,21 @@
 #pragma once
 
-#include "entt.hpp"
-#include "core/entity.h"
-#include "core/world.h"
-#include "core/fileLoader.h"
-#include <core/extensions.h>
-
-#include "core/singleton.h"
-#include "core/modelLookup.h"
-#include <core/resourceManager.h>
-#include <core/types.h>
-
+#include "engine/public/core/entity.h"
+#include "engine/public/core/world.h"
+#include "engine/public/core/fileLoader.h"
+#include <engine/public/core/resourceManager.h>
+#include "engine/public/core/singleton.h"
+#include "engine/public/core/modelLookup.h"
+#include <engine/public/core/types.h>
+#include <engine/public/core/extensions.h>
 
 #include <iostream>
 #include <chrono>
-
+#include <string>
 
 #include "engine/core/GL.h"
+#include "entt.hpp"
+
 
 World myWorld;
 ResourceManager* RMan;
@@ -25,9 +24,9 @@ auto lastTime = std::chrono::high_resolution_clock::now();
 auto currentTime = std::chrono::high_resolution_clock::now();
 std::chrono::duration<float> deltaTime;
 
-int main();
 
-void render(entt::registry& registry) {
+
+inline void render(entt::registry& registry) {
 	auto view = registry.view<engine::StaticMeshComponent>();
 	glUseProgram(shaderProgram);
 	for (auto entity : view) {
@@ -44,15 +43,14 @@ void render(entt::registry& registry) {
 	}
 }
 
-void init() {
-
+inline void init() {
 
 	std::string vsPath = "Resources/Shader/test" + std::string(vertexShader_ext);
-	std::string fsPath = "Resources/Shader/test" + std::string(fragmentShader_ext);
-
 	// Create and compile the vertex shader
 	const char* vertexShaderSource = read_file<char*>(vsPath);
-	const char* fragmentShaderSource = read_file<char*>(fsPath);
+
+	const char* fragmentShaderSource = read_file<char*>("Resources/Shader/test" + std::string(fragmentShader_ext));
+
 
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -91,11 +89,6 @@ void init() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-
-
-	auto resourceManager = Singleton<ResourceManager>::GetInstance();
-
-
 	auto* dataTable = model_datatable::GetInstance();
 
 	RMan = ResourceManager::GetInstance();
@@ -115,5 +108,83 @@ void init() {
 	std::cout << "Hello, world!" << std::endl;
 }
 
+inline int mainMethod() {
+	const int width = 800;
+	const int height = 600;
+
+	GLFWwindow* window = initWindow(width, height, "GLFW Window Example");
+	if (!window) return -1;
+
+	init();
+	mainLoop(window);
+
+	// Clean up and exit
+	glfwDestroyWindow(window);
+	glfwTerminate();
+	return 0;
+}
+
+inline int mainLoop(GLFWwindow* window) {
+	while (!glfwWindowShouldClose(window)) {
+		currentTime = std::chrono::high_resolution_clock::now();
+
+		deltaTime = currentTime - lastTime;
+		lastTime = currentTime;
+
+		// Clear the screen to black
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 
+		render(myWorld.get_registry());
+
+		// Swap buffers and poll IO events
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+		myWorld.update(deltaTime.count());
+	}
+}
+
+// Function to initialize GLFW and create a window
+inline GLFWwindow* initWindow(const int width, const int height, const char* title) {
+	if (!glfwInit()) {
+		std::cerr << "Failed to initialize GLFW" << std::endl;
+		return nullptr;
+	}
+
+	// Set GLFW window creation hints (optional)
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE); // Ensure the window is visible
+
+	// Create a windowed mode window and its OpenGL context
+	GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
+	if (!window) {
+		std::cerr << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return nullptr;
+	}
+
+	// Make the window's context current
+	glfwMakeContextCurrent(window);
+
+	// Load OpenGL functions using GLAD
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cerr << "Failed to initialize GLAD" << std::endl;
+		glfwDestroyWindow(window);
+		glfwTerminate();
+		return nullptr;
+	}
+
+	// Enable VSync
+	glfwSwapInterval(1);
+
+	// Optional: GLFW callbacks for key handling, mouse movement, etc.
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+		});
+
+	return window;
+}
