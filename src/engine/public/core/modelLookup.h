@@ -7,7 +7,6 @@
 #include <fstream>
 #include <filesystem>
 
-
 #include "core/singleton.h"
 #include "core/types.h"
 

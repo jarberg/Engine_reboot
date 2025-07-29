@@ -1,5 +1,6 @@
 
 #include <core/Main.h>
+#include <core/input.h>
 
 
 
@@ -57,6 +58,7 @@ int mainLoop(GLFWwindow* window) {
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		pollInput();
 
 		render(myWorld.get_registry());
 
@@ -68,7 +70,6 @@ int mainLoop(GLFWwindow* window) {
 	return 0;
 }
 
-
 int main() {
 
 
@@ -79,6 +80,7 @@ int main() {
 	if (!window) return -1;
 
 	init();
+	initInputHandlers();
 	mainLoop(window);
 
 	// Clean up and exit

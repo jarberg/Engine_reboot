@@ -145,8 +145,10 @@
     <ClInclude Include="lib\glad\include\KHR\khrplatform.h" />
     <ClInclude Include="src\engine\public\core\components.h" />
     <ClInclude Include="src\engine\public\core\entity.h" />
+    <ClInclude Include="src\engine\public\core\Events.h" />
     <ClInclude Include="src\engine\public\core\extensions.h" />
     <ClInclude Include="src\engine\public\core\fileLoader.h" />
+    <ClInclude Include="src\engine\public\core\input.h" />
     <ClInclude Include="src\engine\public\core\Main.h" />
     <ClInclude Include="src\engine\public\core\modelLookup.h" />
     <ClInclude Include="src\engine\public\core\resourceManager.h" />
@@ -160,6 +162,7 @@
     <ClCompile Include="src\engine\private\core\modelLookup.cpp" />
     <ClCompile Include="src\engine\private\core\resourceManager.cpp" />
     <ClCompile Include="src\engine\private\core\world.cpp" />
+    <ClCompile Include="src\platform\win\input.cpp" />
     <ClCompile Include="src\platform\win\Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

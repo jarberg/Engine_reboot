@@ -1,5 +1,6 @@
 #ifdef __EMSCRIPTEN__
 #include <core/Main.h>
+#include <core/input.h>
 
 #include "core/entity.h"
 #include "core/world.h"
@@ -45,6 +46,7 @@ int main(){
 	attrs.minorVersion = 0;
 
 	context = emscripten_webgl_create_context("#canvas", &attrs);
+	
 	if (!context) {
 		std::cerr << "Failed to initialize WebGL context!" << std::endl;
 		return -1;
@@ -52,6 +54,9 @@ int main(){
 	emscripten_webgl_make_context_current(context);
 
 	init();
+
+	emscripten_run_script("document.getElementById('canvas').setAttribute('tabindex', '0');");
+	initInputHandlers();
 	emscripten_set_main_loop(mainLoop, 0, 1);
 	return 0;
 }
