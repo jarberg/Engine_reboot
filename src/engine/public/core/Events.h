@@ -12,6 +12,18 @@ public:
     virtual ~Event() = default;
 };  
 
+enum class KeyCode {
+    Left, Right, Down, Up, Escape,
+    // Add other keys as needed
+};
+
+class KeyPressedEvent : public Event {
+public:
+    KeyCode key;
+
+    explicit KeyPressedEvent(KeyCode key) : key(key) {}
+};
+
 // Type alias for Event Callbacks
 using EventCallback = std::function<void(std::shared_ptr<Event>)>;
 

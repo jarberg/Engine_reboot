@@ -18,7 +18,10 @@
 
 #include "engine/core/GL.h"
 
-World myWorld;
+
+extern World* myWorld;
+
+
 ResourceManager* RMan;
 unsigned int shaderProgram;
 auto lastTime = std::chrono::high_resolution_clock::now();
@@ -28,15 +31,28 @@ std::chrono::duration<float> deltaTime;
 int main();
 
 void render(entt::registry& registry) {
-	auto view = registry.view<engine::StaticMeshComponent>();
+	auto view = registry.view<engine::StaticMeshComponent, engine::PositionComponent>();
 	glUseProgram(shaderProgram);
 	for (auto entity : view) {
 		auto& buffer = view.get<engine::StaticMeshComponent>(entity);
+		auto& position = view.get<engine::PositionComponent>(entity);
 
 		glmodel* m = RMan->get_model(buffer.meshID);
 
 		if (m) {
 			m->bind();
+
+			float transform[16] = {
+			1.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			position.x, position.y, position.z, 1.0f  // <- translation in last row (column-major)
+			};
+
+			GLint transformLoc = glGetUniformLocation(shaderProgram, "uTransform");
+
+			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform);
+
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, m->vertCount);
 			m->unbind();
 		}
@@ -46,6 +62,7 @@ void render(entt::registry& registry) {
 
 void init() {
 
+	myWorld = new World();
 
 	std::string vsPath = "Resources/Shader/test" + std::string(vertexShader_ext);
 	std::string fsPath = "Resources/Shader/test" + std::string(fragmentShader_ext);
@@ -106,7 +123,7 @@ void init() {
 		RMan->create_model(key, value);
 	}
 
-	Entity myEntity = myWorld.create_entity("test");
+	Entity myEntity = myWorld->create_entity("test");
 
 	//myEntity.add_component<VelocityComponent>();
 	//myEntity.add_component<PositionComponent>(0.0f, 10.0f, 0.0f);

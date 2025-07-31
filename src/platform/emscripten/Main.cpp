@@ -20,7 +20,7 @@ void mainLoop() {
 	glClearColor(0.5, 0.5, 0.5, 1); // Clear the canvas with a grey color
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	currentTime = std::chrono::high_resolution_clock::now();
+	currentTime = std::chrono::high_resolution_clock::now(); 
 
 	deltaTime = currentTime - lastTime;
 	lastTime = currentTime;
@@ -58,6 +58,7 @@ int main(){
 	emscripten_run_script("document.getElementById('canvas').setAttribute('tabindex', '0');");
 	initInputHandlers();
 	emscripten_set_main_loop(mainLoop, 0, 1);
+
 	return 0;
 }
 #endif

@@ -2,6 +2,10 @@
 #include <core/Main.h>
 #include <core/input.h>
 
+#include <vector>
+
+std::vector<int> myVector = { 0, 0, 0};
+World* myWorld = nullptr;
 
 
 GLFWwindow* initWindow(const int width, const int height, const char* title) {
@@ -48,6 +52,7 @@ GLFWwindow* initWindow(const int width, const int height, const char* title) {
 }
 
 int mainLoop(GLFWwindow* window) {
+	auto player = myWorld->get_entity_by_id(50);
 	while (!glfwWindowShouldClose(window)) {
 		currentTime = std::chrono::high_resolution_clock::now();
 
@@ -59,13 +64,15 @@ int mainLoop(GLFWwindow* window) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		pollInput();
+		
 
-		render(myWorld.get_registry());
+
+		render(myWorld->get_registry());
 
 		// Swap buffers and poll IO events
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		myWorld.update(deltaTime.count());
+		myWorld->update(deltaTime.count());
 	}
 	return 0;
 }

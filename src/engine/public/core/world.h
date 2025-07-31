@@ -22,6 +22,7 @@ public:
 
 	entt::registry& get_registry();
 
+	Entity get_entity_by_id(uint32_t id);
 	void update(float dt);
 
 	friend class Entity;

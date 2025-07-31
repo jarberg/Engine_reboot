@@ -13,6 +13,12 @@ namespace engine {
 	{
 	};
 
+	struct UuidComponent
+	{
+		std::uint32_t uuid;
+		UuidComponent(const std::uint32_t& _uuid) : uuid(_uuid) {}
+	};
+
 	struct PositionComponent
 	{
 		double x, y, z;

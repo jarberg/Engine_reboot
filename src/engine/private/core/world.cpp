@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "core/world.h"
+#include "core/components.h"
 #include "core/entity.h"
 
 
@@ -16,11 +17,23 @@ Entity World::create_entity(std::string tag)
 {
     Entity entity(registry_.create(), this);
     entity.add_tag<engine::Tag>(tag);
+	entity.add_component<engine::PositionComponent>(0.0f, 0.0f, 0.0f);
+    entity.add_component<engine::UuidComponent>(50);
     return entity;
 }
 entt::registry& World::get_registry()
 {
     return registry_;
+}
+
+Entity World::get_entity_by_id(uint32_t uuid){
+    auto view = registry_.view<engine::UuidComponent>();
+    for (auto e : view) {
+        if (view.get<engine::UuidComponent>(e).uuid == uuid) {
+            return Entity(e, this);
+        }
+    }
+    return Entity(); // Null entity if not found
 }
 /*
 void World::print_system() {

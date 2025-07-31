@@ -47,4 +47,6 @@ public:
 	{
 		return world->registry_.all_of<T>(entity_handle);
 	}
+
+
 };
