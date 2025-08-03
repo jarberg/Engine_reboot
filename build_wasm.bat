@@ -1,42 +1,54 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Quiet the EMSDK environment setup
+:: Setup Emscripten
 set EMSDK_QUIET=1
 call "C:/Users/mjarb/Projects/emsdk/emsdk_env.bat"
 
-:: Verify EMSDK environment variables
+:: Check EMSDK
 echo EMSDK Path: %EMSDK%
 echo Emscripten Path: %EMSCRIPTEN%
 
-:: Create build directory if it doesn't exist
-if not exist build mkdir build
+:: Clean previous build
+echo Cleaning previous build...
+if exist build rmdir /s /q build
+if exist output rmdir /s /q output
+
+:: Create build directory
+mkdir build
 cd build
 
-:: Configure CMake for Emscripten and build using Ninja
+:: Configure with CMake + Ninja
 cmake -G "Ninja" ^
       -DCMAKE_TOOLCHAIN_FILE="C:/Users/mjarb/Projects/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" ^
       -DCMAKE_BUILD_TYPE=Release ..
 
-:: Check if CMake configuration was successful
 if errorlevel 1 (
-    echo CMake configuration failed.
+    echo [ERROR] CMake configuration failed.
     cd ..
     pause
     exit /b 1
 )
 
-:: Build the project
+:: Build
 cmake --build .
 
-:: Check if the build was successful
 if errorlevel 1 (
-    echo Build failed.
+    echo [ERROR] Build failed.
     cd ..
     pause
     exit /b 1
 )
 
 cd ..
+
+:: Check output.data
+if exist output\output.data (
+    echo output.data exists. Size:
+    for %%I in (output\output.data) do echo %%~zI bytes
+) else (
+    echo [WARNING] output.data not generated.
+)
+
 echo Build completed successfully.
 pause
