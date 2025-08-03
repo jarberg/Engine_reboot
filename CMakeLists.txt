@@ -48,10 +48,10 @@ target_include_directories(Main PUBLIC
     ${ENTT_DIR}
 )
 
-# Emscripten settings
+# Emscripten-specific configuration
 if(EMSCRIPTEN)
     message(STATUS "Building for Emscripten (WebAssembly)")
-    
+
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output)
 
@@ -60,18 +60,18 @@ if(EMSCRIPTEN)
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output
     )
 
-    # Preload Resources folder if it exists
+    # Default linker flags
+    set(LINK_FLAGS "-s USE_WEBGL2=1 -s FULL_ES3=1 --emrun --relative-paths")
+
+    # Add Resources if present
     if(EXISTS "${CMAKE_SOURCE_DIR}/Resources")
         message(STATUS "Adding Resources folder to virtual filesystem")
-        set_target_properties(Main PROPERTIES
-            LINK_FLAGS "-s USE_WEBGL2=1 -s FULL_ES3=1 --preload-file ${CMAKE_SOURCE_DIR}/Resources@Resources"
-        )
+        set(LINK_FLAGS "${LINK_FLAGS} --preload-file ${CMAKE_SOURCE_DIR}/Resources@Resources")
     else()
         message(WARNING "Resources folder not found — skipping preload.")
-        set_target_properties(Main PROPERTIES
-            LINK_FLAGS "-s USE_WEBGL2=1 -s FULL_ES3=1"
-        )
     endif()
+
+    set_target_properties(Main PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
 else()
-    message(STATUS "Building native executable")
+    message(STATUS "Building native Windows/OpenGL executable")
 endif()
