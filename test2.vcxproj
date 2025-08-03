@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib\glad\src\glad.c" />
+    <ClCompile Include="src\engine\private\core\components.cpp" />
     <ClCompile Include="src\engine\private\core\entity.cpp" />
     <ClCompile Include="src\engine\private\core\modelLookup.cpp" />
     <ClCompile Include="src\engine\private\core\resourceManager.cpp" />

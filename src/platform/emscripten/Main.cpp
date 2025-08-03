@@ -1,4 +1,3 @@
-#ifdef __EMSCRIPTEN__
 #include <core/Main.h>
 #include <core/input.h>
 
@@ -11,11 +10,15 @@
 #include <core/types.h>
 #include <core/extensions.h>
 
+#ifdef __EMSCRIPTEN__
+
+
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
 
+World* myWorld = nullptr;
 
 void mainLoop() {
-	extern World myWorld; // Use extern to reference a globally defined object
+	
 	emscripten_webgl_make_context_current(context);
 	glClearColor(0.5, 0.5, 0.5, 1); // Clear the canvas with a grey color
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -26,9 +29,9 @@ void mainLoop() {
 	lastTime = currentTime;
 
 	// Now render the triangle
-	render(myWorld.get_registry());
+	render(myWorld->get_registry());
 
-	myWorld.update(deltaTime.count());
+	myWorld->update(deltaTime.count());
 }
 
 int main(){

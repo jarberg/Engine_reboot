@@ -26,4 +26,31 @@ public:
 	void update(float dt);
 
 	friend class Entity;
+
+
+    template<typename T, typename... Args>
+    T& add_component(Entity entity, Args&&... args) {
+        return registry_.emplace<T>(entity.get_handle(), std::forward<Args>(args)...);
+    }
+
+    template<typename T>
+    T& get_component(Entity entity) {
+        return registry_.get<T>(entity.get_handle());
+    }
+
+    template<typename T>
+    bool has_component(Entity entity) {
+        return registry_.all_of<T>(entity.get_handle());
+    }
+
+    template<typename T>
+    void remove_component(Entity entity) {
+        registry_.remove<T>(entity.get_handle());
+    }
+
+    template<typename T, typename... Args>
+    T& add_tag(Entity entity, Args&&... args)
+    {
+        return registry_.emplace<T>(entity.get_handle(), std::forward<Args>(args)...);
+    }
 };

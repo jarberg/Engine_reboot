@@ -54,7 +54,6 @@ void model_datatable::load_dataTable() {
     std::ifstream file("Resources/models.dat");
 
     if (file.is_open() && file.peek() != std::ifstream::traits_type::eof()) {
-
         std::string line;
         std::getline(file, line, '{');  // Skip the opening brace
         std::getline(file, line, '{');  // Skip to the models object
@@ -69,7 +68,6 @@ void model_datatable::load_dataTable() {
             if (line.find("}") != std::string::npos) {
                 break;
             }
-
         }
         file.close();
     }

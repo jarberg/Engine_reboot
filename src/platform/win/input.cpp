@@ -14,38 +14,6 @@ EventDispatcher* InputHandler::inputDispatcher = new EventDispatcher();
 void initInputHandlers() {
     std::cout << "Windows input initialized. Press ESC to quit.\n";
 	
-    InputHandler::GetInstance()->inputDispatcher->Subscribe<KeyPressedEvent>([](std::shared_ptr<KeyPressedEvent> e)
-        {
-
-			extern World* myWorld;
-            Entity player = myWorld->get_entity_by_id(50);
-
-
-            switch (e->key) 
-
-            {
-                case KeyCode::Left:
-                    if (player.has_component<engine::PositionComponent>()) {
-                        player.get_component<engine::PositionComponent>().x -= 0.01f;
-                    }
-				    break;
-                case KeyCode::Right:
-                    if (player.has_component<engine::PositionComponent>()) {
-                        player.get_component<engine::PositionComponent>().x += 0.01f;
-                    }
-                    break;
-				case KeyCode::Up:
-                    if (player.has_component<engine::PositionComponent>()) {
-                        player.get_component<engine::PositionComponent>().y+= 0.01f;
-                    }
-					break;
-				case KeyCode::Down:
-                    if (player.has_component<engine::PositionComponent>()) {
-                        player.get_component<engine::PositionComponent>().y -= 0.01f;
-                    }
-					break;
-            }
-        });
 }
 
 bool isKeyPressed(int vkey) {

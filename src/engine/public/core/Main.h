@@ -1,6 +1,9 @@
 #pragma once
 
 #include "entt.hpp"
+
+#include <core/input.h>
+
 #include "core/entity.h"
 #include "core/world.h"
 #include "core/fileLoader.h"
@@ -28,14 +31,16 @@ auto lastTime = std::chrono::high_resolution_clock::now();
 auto currentTime = std::chrono::high_resolution_clock::now();
 std::chrono::duration<float> deltaTime;
 
+Entity PlayerEntity;
+
 int main();
 
 void render(entt::registry& registry) {
-	auto view = registry.view<engine::StaticMeshComponent, engine::PositionComponent>();
+	auto view = registry.view<StaticMeshComponent, PositionComponent>();
 	glUseProgram(shaderProgram);
 	for (auto entity : view) {
-		auto& buffer = view.get<engine::StaticMeshComponent>(entity);
-		auto& position = view.get<engine::PositionComponent>(entity);
+		auto& buffer = view.get<StaticMeshComponent>(entity);
+		auto& position = view.get<PositionComponent>(entity);
 
 		glmodel* m = RMan->get_model(buffer.meshID);
 
@@ -46,7 +51,10 @@ void render(entt::registry& registry) {
 			1.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f, 0.0f,
 			0.0f, 0.0f, 1.0f, 0.0f,
-			position.x, position.y, position.z, 1.0f  // <- translation in last row (column-major)
+			static_cast<float>(position.x),
+			static_cast<float>(position.y),
+			static_cast<float>(position.z), 
+			1.0f  // <- translation in last row (column-major)
 			};
 
 			GLint transformLoc = glGetUniformLocation(shaderProgram, "uTransform");
@@ -56,7 +64,6 @@ void render(entt::registry& registry) {
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, m->vertCount);
 			m->unbind();
 		}
-
 	}
 }
 
@@ -108,27 +115,23 @@ void init() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-
-
 	auto resourceManager = Singleton<ResourceManager>::GetInstance();
-
 
 	auto* dataTable = model_datatable::GetInstance();
 
 	RMan = ResourceManager::GetInstance();
-
 
 	dataTable->load_dataTable();
 	for (auto& [key, value] : dataTable->get_model_map()) {
 		RMan->create_model(key, value);
 	}
 
-	Entity myEntity = myWorld->create_entity("test");
+	PlayerEntity = myWorld->create_entity("test");
+	myWorld->add_component<StaticMeshComponent>(PlayerEntity,1);
+	myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
 
-	//myEntity.add_component<VelocityComponent>();
-	//myEntity.add_component<PositionComponent>(0.0f, 10.0f, 0.0f);
-	//myEntity.add_component<AccelerationComponent>();
-	myEntity.add_component<engine::StaticMeshComponent>(1);
+
+
 	std::cout << "Hello, world!" << std::endl;
 }
 

@@ -52,7 +52,7 @@ GLFWwindow* initWindow(const int width, const int height, const char* title) {
 }
 
 int mainLoop(GLFWwindow* window) {
-	auto player = myWorld->get_entity_by_id(50);
+	
 	while (!glfwWindowShouldClose(window)) {
 		currentTime = std::chrono::high_resolution_clock::now();
 
@@ -65,7 +65,6 @@ int mainLoop(GLFWwindow* window) {
 
 		pollInput();
 		
-
 
 		render(myWorld->get_registry());
 
@@ -88,6 +87,8 @@ int main() {
 
 	init();
 	initInputHandlers();
+
+
 	mainLoop(window);
 
 	// Clean up and exit

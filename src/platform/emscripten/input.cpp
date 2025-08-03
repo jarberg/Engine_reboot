@@ -5,26 +5,28 @@
 
 #include <iostream>
 
+EventDispatcher* InputHandler::inputDispatcher = new EventDispatcher();
+
+
 EM_BOOL on_key_down(int eventType, const EmscriptenKeyboardEvent* e, void* userData) {
-    std::string code(e->code);  // physical key code
 
-    if (code == "ArrowUp") {
-        std::cout << "Up arrow pressed\n";
-    }
-    else if (code == "ArrowDown") {
-        std::cout << "Down arrow pressed\n";
-    }
-    else if (code == "ArrowLeft") {
-        std::cout << "Left arrow pressed\n";
-    }
-    else if (code == "ArrowRight") {
-        std::cout << "Right arrow pressed\n";
-    }
-    else {
-        std::cout << "Other key: " << code << "\n";
-    }
+    auto* dispatcher = InputHandler::GetInstance()->inputDispatcher;
 
-    return EM_TRUE; // prevent default browser behavior (like scrolling)
+    switch (e->keyCode) {
+	    case 38: dispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Up));
+            std::cout << "Up arrow pressed\n";
+		    break;
+        case 40: dispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Down));
+		    std::cout << "Down arrow pressed\n";
+            break;
+	    case 37: dispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Left));
+		    std::cout << "Left arrow pressed\n";
+		    break;
+	    case 39: dispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Right));
+		    std::cout << "Right arrow pressed\n";
+		    break;
+        }
+    return EM_TRUE;
 }
 
 bool canvasFocused = false;
@@ -55,3 +57,4 @@ void initInputHandlers() {
 void shutdownInputHandlers() {
     // Optional: deregister callbacks if needed
 }
+
