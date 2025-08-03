@@ -5,28 +5,25 @@
 #include <string>
 #include <cstring>
 
-// General template declaration
+// General template function declaration
 template <typename T>
 T read_file(const std::string& filePath);
 
 // Specialization for std::string
 template <>
 std::string read_file<std::string>(const std::string& filePath) {
-    std::ifstream file(filePath, std::ios::binary | std::ios::ate);  // open at end to get size
+    std::ifstream file(filePath, std::ios::binary | std::ios::ate);  // Open at end
+
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filePath << std::endl;
+        std::cerr << "Failed to open shader file: " << filePath << std::endl;
         return "";
     }
 
-    std::streamsize size = file.tellg();     // get size
-    file.seekg(0, std::ios::beg);            // rewind
+    std::streamsize size = file.tellg();           // Get file size
+    file.seekg(0, std::ios::beg);                  // Seek to beginning
 
-    std::string buffer(size, '\0');          // allocate exact size
-    if (!file.read(&buffer[0], size)) {
-        std::cerr << "Failed to read file: " << filePath << std::endl;
-        return "";
-    }
-
+    std::string buffer(size, '\0');
+    file.read(&buffer[0], size);                   // Read exactly 'size' bytes
     return buffer;
 }
 
@@ -34,8 +31,9 @@ std::string read_file<std::string>(const std::string& filePath) {
 template <>
 char* read_file<char*>(const std::string& filePath) {
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filePath << std::endl;
+        std::cerr << "Failed to open shader file: " << filePath << std::endl;
         return nullptr;
     }
 
@@ -43,10 +41,7 @@ char* read_file<char*>(const std::string& filePath) {
     file.seekg(0, std::ios::beg);
 
     std::string content(size, '\0');
-    if (!file.read(&content[0], size)) {
-        std::cerr << "Failed to read file: " << filePath << std::endl;
-        return nullptr;
-    }
+    file.read(&content[0], size);
 
     char* result = new char[content.size() + 1];
 #ifdef _WIN32
@@ -54,5 +49,6 @@ char* read_file<char*>(const std::string& filePath) {
 #else
     std::strcpy(result, content.c_str());
 #endif
+
     return result;
 }
