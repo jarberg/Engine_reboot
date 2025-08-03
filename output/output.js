@@ -39,7 +39,7 @@ if (ENVIRONMENT_IS_NODE) {
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: C:\Users\mjarb\AppData\Local\Temp\tmpi_5hsykf.js
+// include: C:\Users\mjarb\AppData\Local\Temp\tmpe8ven8lj.js
 
   if (!Module.expectedDataFileDownloads) {
     Module.expectedDataFileDownloads = 0;
@@ -217,25 +217,25 @@ Module['FS_createPath']("/Resources", "Shader", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/Resources/Shader/test.frag", "start": 0, "end": 257}, {"filename": "/Resources/Shader/test.vert", "start": 257, "end": 694}, {"filename": "/Resources/models.dat", "start": 694, "end": 785}], "remote_package_size": 785});
+    loadPackage({"files": [{"filename": "/Resources/Shader/test.frag", "start": 0, "end": 259}, {"filename": "/Resources/Shader/test.vert", "start": 259, "end": 696}, {"filename": "/Resources/models.dat", "start": 696, "end": 787}], "remote_package_size": 787});
 
   })();
 
-// end include: C:\Users\mjarb\AppData\Local\Temp\tmpi_5hsykf.js
-// include: C:\Users\mjarb\AppData\Local\Temp\tmp0c2tfvli.js
+// end include: C:\Users\mjarb\AppData\Local\Temp\tmpe8ven8lj.js
+// include: C:\Users\mjarb\AppData\Local\Temp\tmpasaye10y.js
 
     // All the pre-js content up to here must remain later on, we need to run
     // it.
     if (Module['$ww'] || (typeof ENVIRONMENT_IS_PTHREAD != 'undefined' && ENVIRONMENT_IS_PTHREAD)) Module['preRun'] = [];
     var necessaryPreJSTasks = Module['preRun'].slice();
-  // end include: C:\Users\mjarb\AppData\Local\Temp\tmp0c2tfvli.js
-// include: C:\Users\mjarb\AppData\Local\Temp\tmpw549x33u.js
+  // end include: C:\Users\mjarb\AppData\Local\Temp\tmpasaye10y.js
+// include: C:\Users\mjarb\AppData\Local\Temp\tmpr7tbj46o.js
 
     if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
     necessaryPreJSTasks.forEach(function(task) {
       if (Module['preRun'].indexOf(task) < 0) throw 'All preRun tasks that exist before user pre-js code should remain after; did you replace Module or modify Module.preRun?';
     });
-  // end include: C:\Users\mjarb\AppData\Local\Temp\tmpw549x33u.js
+  // end include: C:\Users\mjarb\AppData\Local\Temp\tmpr7tbj46o.js
 
 
 // Sometimes an existing Module object exists with properties
@@ -976,10 +976,6 @@ function createWasm() {
     assert(wasmMemory, 'memory not found in wasm exports');
     updateMemoryViews();
 
-    wasmTable = wasmExports['__indirect_function_table'];
-    
-    assert(wasmTable, 'table not found in wasm exports');
-
     addOnInit(wasmExports['__wasm_call_ctors']);
 
     removeRunDependency('wasm-instantiate');
@@ -1285,102 +1281,727 @@ function dbg(...args) {
       abort(`Assertion failed: ${UTF8ToString(condition)}, at: ` + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
     };
 
-  class ExceptionInfo {
-      // excPtr - Thrown object pointer to wrap. Metadata pointer is calculated from it.
-      constructor(excPtr) {
-        this.excPtr = excPtr;
-        this.ptr = excPtr - 24;
-      }
-  
-      set_type(type) {
-        HEAPU32[(((this.ptr)+(4))>>2)] = type;
-      }
-  
-      get_type() {
-        return HEAPU32[(((this.ptr)+(4))>>2)];
-      }
-  
-      set_destructor(destructor) {
-        HEAPU32[(((this.ptr)+(8))>>2)] = destructor;
-      }
-  
-      get_destructor() {
-        return HEAPU32[(((this.ptr)+(8))>>2)];
-      }
-  
-      set_caught(caught) {
-        caught = caught ? 1 : 0;
-        HEAP8[(this.ptr)+(12)] = caught;
-      }
-  
-      get_caught() {
-        return HEAP8[(this.ptr)+(12)] != 0;
-      }
-  
-      set_rethrown(rethrown) {
-        rethrown = rethrown ? 1 : 0;
-        HEAP8[(this.ptr)+(13)] = rethrown;
-      }
-  
-      get_rethrown() {
-        return HEAP8[(this.ptr)+(13)] != 0;
-      }
-  
-      // Initialize native structure fields. Should be called once after allocated.
-      init(type, destructor) {
-        this.set_adjusted_ptr(0);
-        this.set_type(type);
-        this.set_destructor(destructor);
-      }
-  
-      set_adjusted_ptr(adjustedPtr) {
-        HEAPU32[(((this.ptr)+(16))>>2)] = adjustedPtr;
-      }
-  
-      get_adjusted_ptr() {
-        return HEAPU32[(((this.ptr)+(16))>>2)];
-      }
-  
-      // Get pointer which is expected to be received by catch clause in C++ code. It may be adjusted
-      // when the pointer is casted to some of the exception object base classes (e.g. when virtual
-      // inheritance is used). When a pointer is thrown this method should return the thrown pointer
-      // itself.
-      get_exception_ptr() {
-        // Work around a fastcomp bug, this code is still included for some reason in a build without
-        // exceptions support.
-        var isPointer = ___cxa_is_pointer_type(this.get_type());
-        if (isPointer) {
-          return HEAPU32[((this.excPtr)>>2)];
-        }
-        var adjusted = this.get_adjusted_ptr();
-        if (adjusted !== 0) return adjusted;
-        return this.excPtr;
-      }
-    }
-  
-  var exceptionLast = 0;
-  
-  var uncaughtExceptionCount = 0;
-  var ___cxa_throw = (ptr, type, destructor) => {
-      var info = new ExceptionInfo(ptr);
-      // Initialize ExceptionInfo content after it was allocated in __cxa_allocate_exception.
-      info.init(type, destructor);
-      exceptionLast = ptr;
-      uncaughtExceptionCount++;
-      assert(false, 'Exception thrown, but exception catching is not enabled. Compile with -sNO_DISABLE_EXCEPTION_CATCHING or -sEXCEPTION_CATCHING_ALLOWED=[..] to catch.');
+  var __abort_js = () => {
+      abort('native code called abort()');
     };
 
+  var nowIsMonotonic = 1;
+  var __emscripten_get_now_is_monotonic = () => nowIsMonotonic;
+
+  var __emscripten_memcpy_js = (dest, src, num) => HEAPU8.copyWithin(dest, src, src + num);
+
+  var _emscripten_date_now = () => Date.now();
+
+  var _emscripten_get_now;
+      // Modern environment where performance.now() is supported:
+      // N.B. a shorter form "_emscripten_get_now = performance.now;" is
+      // unfortunately not allowed even in current browsers (e.g. FF Nightly 75).
+      _emscripten_get_now = () => performance.now();
+  ;
+
+  var getHeapMax = () =>
+      HEAPU8.length;
+  
+  var abortOnCannotGrowMemory = (requestedSize) => {
+      abort(`Cannot enlarge memory arrays to size ${requestedSize} bytes (OOM). Either (1) compile with -sINITIAL_MEMORY=X with X higher than the current value ${HEAP8.length}, (2) compile with -sALLOW_MEMORY_GROWTH which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with -sABORTING_MALLOC=0`);
+    };
+  var _emscripten_resize_heap = (requestedSize) => {
+      var oldSize = HEAPU8.length;
+      // With CAN_ADDRESS_2GB or MEMORY64, pointers are already unsigned.
+      requestedSize >>>= 0;
+      abortOnCannotGrowMemory(requestedSize);
+    };
+
+  var webgl_enable_ANGLE_instanced_arrays = (ctx) => {
+      // Extension available in WebGL 1 from Firefox 26 and Google Chrome 30 onwards. Core feature in WebGL 2.
+      var ext = ctx.getExtension('ANGLE_instanced_arrays');
+      if (ext) {
+        ctx['vertexAttribDivisor'] = (index, divisor) => ext['vertexAttribDivisorANGLE'](index, divisor);
+        ctx['drawArraysInstanced'] = (mode, first, count, primcount) => ext['drawArraysInstancedANGLE'](mode, first, count, primcount);
+        ctx['drawElementsInstanced'] = (mode, count, type, indices, primcount) => ext['drawElementsInstancedANGLE'](mode, count, type, indices, primcount);
+        return 1;
+      }
+    };
+  
+  var webgl_enable_OES_vertex_array_object = (ctx) => {
+      // Extension available in WebGL 1 from Firefox 25 and WebKit 536.28/desktop Safari 6.0.3 onwards. Core feature in WebGL 2.
+      var ext = ctx.getExtension('OES_vertex_array_object');
+      if (ext) {
+        ctx['createVertexArray'] = () => ext['createVertexArrayOES']();
+        ctx['deleteVertexArray'] = (vao) => ext['deleteVertexArrayOES'](vao);
+        ctx['bindVertexArray'] = (vao) => ext['bindVertexArrayOES'](vao);
+        ctx['isVertexArray'] = (vao) => ext['isVertexArrayOES'](vao);
+        return 1;
+      }
+    };
+  
+  var webgl_enable_WEBGL_draw_buffers = (ctx) => {
+      // Extension available in WebGL 1 from Firefox 28 onwards. Core feature in WebGL 2.
+      var ext = ctx.getExtension('WEBGL_draw_buffers');
+      if (ext) {
+        ctx['drawBuffers'] = (n, bufs) => ext['drawBuffersWEBGL'](n, bufs);
+        return 1;
+      }
+    };
+  
+  var webgl_enable_WEBGL_draw_instanced_base_vertex_base_instance = (ctx) =>
+      // Closure is expected to be allowed to minify the '.dibvbi' property, so not accessing it quoted.
+      !!(ctx.dibvbi = ctx.getExtension('WEBGL_draw_instanced_base_vertex_base_instance'));
+  
+  var webgl_enable_WEBGL_multi_draw_instanced_base_vertex_base_instance = (ctx) => {
+      // Closure is expected to be allowed to minify the '.mdibvbi' property, so not accessing it quoted.
+      return !!(ctx.mdibvbi = ctx.getExtension('WEBGL_multi_draw_instanced_base_vertex_base_instance'));
+    };
+  
+  var webgl_enable_WEBGL_multi_draw = (ctx) => {
+      // Closure is expected to be allowed to minify the '.multiDrawWebgl' property, so not accessing it quoted.
+      return !!(ctx.multiDrawWebgl = ctx.getExtension('WEBGL_multi_draw'));
+    };
+  
+  var getEmscriptenSupportedExtensions = (ctx) => {
+      // Restrict the list of advertised extensions to those that we actually
+      // support.
+      var supportedExtensions = [
+        // WebGL 1 extensions
+        'ANGLE_instanced_arrays',
+        'EXT_blend_minmax',
+        'EXT_disjoint_timer_query',
+        'EXT_frag_depth',
+        'EXT_shader_texture_lod',
+        'EXT_sRGB',
+        'OES_element_index_uint',
+        'OES_fbo_render_mipmap',
+        'OES_standard_derivatives',
+        'OES_texture_float',
+        'OES_texture_half_float',
+        'OES_texture_half_float_linear',
+        'OES_vertex_array_object',
+        'WEBGL_color_buffer_float',
+        'WEBGL_depth_texture',
+        'WEBGL_draw_buffers',
+        // WebGL 2 extensions
+        'EXT_color_buffer_float',
+        'EXT_conservative_depth',
+        'EXT_disjoint_timer_query_webgl2',
+        'EXT_texture_norm16',
+        'NV_shader_noperspective_interpolation',
+        'WEBGL_clip_cull_distance',
+        // WebGL 1 and WebGL 2 extensions
+        'EXT_color_buffer_half_float',
+        'EXT_depth_clamp',
+        'EXT_float_blend',
+        'EXT_texture_compression_bptc',
+        'EXT_texture_compression_rgtc',
+        'EXT_texture_filter_anisotropic',
+        'KHR_parallel_shader_compile',
+        'OES_texture_float_linear',
+        'WEBGL_blend_func_extended',
+        'WEBGL_compressed_texture_astc',
+        'WEBGL_compressed_texture_etc',
+        'WEBGL_compressed_texture_etc1',
+        'WEBGL_compressed_texture_s3tc',
+        'WEBGL_compressed_texture_s3tc_srgb',
+        'WEBGL_debug_renderer_info',
+        'WEBGL_debug_shaders',
+        'WEBGL_lose_context',
+        'WEBGL_multi_draw',
+      ];
+      // .getSupportedExtensions() can return null if context is lost, so coerce to empty array.
+      return (ctx.getSupportedExtensions() || []).filter(ext => supportedExtensions.includes(ext));
+    };
+  
+  
+  var GL = {
+  counter:1,
+  buffers:[],
+  mappedBuffers:{
+  },
+  programs:[],
+  framebuffers:[],
+  renderbuffers:[],
+  textures:[],
+  shaders:[],
+  vaos:[],
+  contexts:[],
+  offscreenCanvases:{
+  },
+  queries:[],
+  samplers:[],
+  transformFeedbacks:[],
+  syncs:[],
+  byteSizeByTypeRoot:5120,
+  byteSizeByType:[1,1,2,2,4,4,4,2,3,4,8],
+  stringCache:{
+  },
+  stringiCache:{
+  },
+  unpackAlignment:4,
+  recordError:(errorCode) => {
+        if (!GL.lastError) {
+          GL.lastError = errorCode;
+        }
+      },
+  getNewId:(table) => {
+        var ret = GL.counter++;
+        for (var i = table.length; i < ret; i++) {
+          table[i] = null;
+        }
+        return ret;
+      },
+  genObject:(n, buffers, createFunction, objectTable
+        ) => {
+        for (var i = 0; i < n; i++) {
+          var buffer = GLctx[createFunction]();
+          var id = buffer && GL.getNewId(objectTable);
+          if (buffer) {
+            buffer.name = id;
+            objectTable[id] = buffer;
+          } else {
+            GL.recordError(0x502 /* GL_INVALID_OPERATION */);
+          }
+          HEAP32[(((buffers)+(i*4))>>2)] = id;
+        }
+      },
+  MAX_TEMP_BUFFER_SIZE:2097152,
+  numTempVertexBuffersPerSize:64,
+  log2ceilLookup:(i) => 32 - Math.clz32(i === 0 ? 0 : i - 1),
+  generateTempBuffers:(quads, context) => {
+        var largestIndex = GL.log2ceilLookup(GL.MAX_TEMP_BUFFER_SIZE);
+        context.tempVertexBufferCounters1 = [];
+        context.tempVertexBufferCounters2 = [];
+        context.tempVertexBufferCounters1.length = context.tempVertexBufferCounters2.length = largestIndex+1;
+        context.tempVertexBuffers1 = [];
+        context.tempVertexBuffers2 = [];
+        context.tempVertexBuffers1.length = context.tempVertexBuffers2.length = largestIndex+1;
+        context.tempIndexBuffers = [];
+        context.tempIndexBuffers.length = largestIndex+1;
+        for (var i = 0; i <= largestIndex; ++i) {
+          context.tempIndexBuffers[i] = null; // Created on-demand
+          context.tempVertexBufferCounters1[i] = context.tempVertexBufferCounters2[i] = 0;
+          var ringbufferLength = GL.numTempVertexBuffersPerSize;
+          context.tempVertexBuffers1[i] = [];
+          context.tempVertexBuffers2[i] = [];
+          var ringbuffer1 = context.tempVertexBuffers1[i];
+          var ringbuffer2 = context.tempVertexBuffers2[i];
+          ringbuffer1.length = ringbuffer2.length = ringbufferLength;
+          for (var j = 0; j < ringbufferLength; ++j) {
+            ringbuffer1[j] = ringbuffer2[j] = null; // Created on-demand
+          }
+        }
+  
+        if (quads) {
+          // GL_QUAD indexes can be precalculated
+          context.tempQuadIndexBuffer = GLctx.createBuffer();
+          context.GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, context.tempQuadIndexBuffer);
+          var numIndexes = GL.MAX_TEMP_BUFFER_SIZE >> 1;
+          var quadIndexes = new Uint16Array(numIndexes);
+          var i = 0, v = 0;
+          while (1) {
+            quadIndexes[i++] = v;
+            if (i >= numIndexes) break;
+            quadIndexes[i++] = v+1;
+            if (i >= numIndexes) break;
+            quadIndexes[i++] = v+2;
+            if (i >= numIndexes) break;
+            quadIndexes[i++] = v;
+            if (i >= numIndexes) break;
+            quadIndexes[i++] = v+2;
+            if (i >= numIndexes) break;
+            quadIndexes[i++] = v+3;
+            if (i >= numIndexes) break;
+            v += 4;
+          }
+          context.GLctx.bufferData(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, quadIndexes, 0x88E4 /*GL_STATIC_DRAW*/);
+          context.GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, null);
+        }
+      },
+  getTempVertexBuffer:(sizeBytes) => {
+        var idx = GL.log2ceilLookup(sizeBytes);
+        var ringbuffer = GL.currentContext.tempVertexBuffers1[idx];
+        var nextFreeBufferIndex = GL.currentContext.tempVertexBufferCounters1[idx];
+        GL.currentContext.tempVertexBufferCounters1[idx] = (GL.currentContext.tempVertexBufferCounters1[idx]+1) & (GL.numTempVertexBuffersPerSize-1);
+        var vbo = ringbuffer[nextFreeBufferIndex];
+        if (vbo) {
+          return vbo;
+        }
+        var prevVBO = GLctx.getParameter(0x8894 /*GL_ARRAY_BUFFER_BINDING*/);
+        ringbuffer[nextFreeBufferIndex] = GLctx.createBuffer();
+        GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, ringbuffer[nextFreeBufferIndex]);
+        GLctx.bufferData(0x8892 /*GL_ARRAY_BUFFER*/, 1 << idx, 0x88E8 /*GL_DYNAMIC_DRAW*/);
+        GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, prevVBO);
+        return ringbuffer[nextFreeBufferIndex];
+      },
+  getTempIndexBuffer:(sizeBytes) => {
+        var idx = GL.log2ceilLookup(sizeBytes);
+        var ibo = GL.currentContext.tempIndexBuffers[idx];
+        if (ibo) {
+          return ibo;
+        }
+        var prevIBO = GLctx.getParameter(0x8895 /*ELEMENT_ARRAY_BUFFER_BINDING*/);
+        GL.currentContext.tempIndexBuffers[idx] = GLctx.createBuffer();
+        GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, GL.currentContext.tempIndexBuffers[idx]);
+        GLctx.bufferData(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, 1 << idx, 0x88E8 /*GL_DYNAMIC_DRAW*/);
+        GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, prevIBO);
+        return GL.currentContext.tempIndexBuffers[idx];
+      },
+  newRenderingFrameStarted:() => {
+        if (!GL.currentContext) {
+          return;
+        }
+        var vb = GL.currentContext.tempVertexBuffers1;
+        GL.currentContext.tempVertexBuffers1 = GL.currentContext.tempVertexBuffers2;
+        GL.currentContext.tempVertexBuffers2 = vb;
+        vb = GL.currentContext.tempVertexBufferCounters1;
+        GL.currentContext.tempVertexBufferCounters1 = GL.currentContext.tempVertexBufferCounters2;
+        GL.currentContext.tempVertexBufferCounters2 = vb;
+        var largestIndex = GL.log2ceilLookup(GL.MAX_TEMP_BUFFER_SIZE);
+        for (var i = 0; i <= largestIndex; ++i) {
+          GL.currentContext.tempVertexBufferCounters1[i] = 0;
+        }
+      },
+  getSource:(shader, count, string, length) => {
+        var source = '';
+        for (var i = 0; i < count; ++i) {
+          var len = length ? HEAPU32[(((length)+(i*4))>>2)] : undefined;
+          source += UTF8ToString(HEAPU32[(((string)+(i*4))>>2)], len);
+        }
+        return source;
+      },
+  calcBufLength:(size, type, stride, count) => {
+        if (stride > 0) {
+          return count * stride;  // XXXvlad this is not exactly correct I don't think
+        }
+        var typeSize = GL.byteSizeByType[type - GL.byteSizeByTypeRoot];
+        return size * typeSize * count;
+      },
+  usedTempBuffers:[],
+  preDrawHandleClientVertexAttribBindings:(count) => {
+        GL.resetBufferBinding = false;
+  
+        // TODO: initial pass to detect ranges we need to upload, might not need
+        // an upload per attrib
+        for (var i = 0; i < GL.currentContext.maxVertexAttribs; ++i) {
+          var cb = GL.currentContext.clientBuffers[i];
+          if (!cb.clientside || !cb.enabled) continue;
+  
+          GL.resetBufferBinding = true;
+  
+          var size = GL.calcBufLength(cb.size, cb.type, cb.stride, count);
+          var buf = GL.getTempVertexBuffer(size);
+          GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, buf);
+          GLctx.bufferSubData(0x8892 /*GL_ARRAY_BUFFER*/,
+                                   0,
+                                   HEAPU8.subarray(cb.ptr, cb.ptr + size));
+          cb.vertexAttribPointerAdaptor.call(GLctx, i, cb.size, cb.type, cb.normalized, cb.stride, 0);
+        }
+      },
+  postDrawHandleClientVertexAttribBindings:() => {
+        if (GL.resetBufferBinding) {
+          GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, GL.buffers[GLctx.currentArrayBufferBinding]);
+        }
+      },
+  createContext:(/** @type {HTMLCanvasElement} */ canvas, webGLContextAttributes) => {
+  
+        // BUG: Workaround Safari WebGL issue: After successfully acquiring WebGL
+        // context on a canvas, calling .getContext() will always return that
+        // context independent of which 'webgl' or 'webgl2'
+        // context version was passed. See:
+        //   https://bugs.webkit.org/show_bug.cgi?id=222758
+        // and:
+        //   https://github.com/emscripten-core/emscripten/issues/13295.
+        // TODO: Once the bug is fixed and shipped in Safari, adjust the Safari
+        // version field in above check.
+        if (!canvas.getContextSafariWebGL2Fixed) {
+          canvas.getContextSafariWebGL2Fixed = canvas.getContext;
+          /** @type {function(this:HTMLCanvasElement, string, (Object|null)=): (Object|null)} */
+          function fixedGetContext(ver, attrs) {
+            var gl = canvas.getContextSafariWebGL2Fixed(ver, attrs);
+            return ((ver == 'webgl') == (gl instanceof WebGLRenderingContext)) ? gl : null;
+          }
+          canvas.getContext = fixedGetContext;
+        }
+  
+        var ctx =
+          (webGLContextAttributes.majorVersion > 1)
+          ?
+            canvas.getContext("webgl2", webGLContextAttributes)
+          :
+          (canvas.getContext("webgl", webGLContextAttributes)
+            // https://caniuse.com/#feat=webgl
+            );
+  
+        if (!ctx) return 0;
+  
+        var handle = GL.registerContext(ctx, webGLContextAttributes);
+  
+        return handle;
+      },
+  registerContext:(ctx, webGLContextAttributes) => {
+        // without pthreads a context is just an integer ID
+        var handle = GL.getNewId(GL.contexts);
+  
+        var context = {
+          handle,
+          attributes: webGLContextAttributes,
+          version: webGLContextAttributes.majorVersion,
+          GLctx: ctx
+        };
+  
+        // Store the created context object so that we can access the context
+        // given a canvas without having to pass the parameters again.
+        if (ctx.canvas) ctx.canvas.GLctxObject = context;
+        GL.contexts[handle] = context;
+        if (typeof webGLContextAttributes.enableExtensionsByDefault == 'undefined' || webGLContextAttributes.enableExtensionsByDefault) {
+          GL.initExtensions(context);
+        }
+  
+        context.maxVertexAttribs = context.GLctx.getParameter(0x8869 /*GL_MAX_VERTEX_ATTRIBS*/);
+        context.clientBuffers = [];
+        for (var i = 0; i < context.maxVertexAttribs; i++) {
+          context.clientBuffers[i] = {
+            enabled: false,
+            clientside: false,
+            size: 0,
+            type: 0,
+            normalized: 0,
+            stride: 0,
+            ptr: 0,
+            vertexAttribPointerAdaptor: null,
+          };
+        }
+  
+        GL.generateTempBuffers(false, context);
+  
+        return handle;
+      },
+  makeContextCurrent:(contextHandle) => {
+  
+        // Active Emscripten GL layer context object.
+        GL.currentContext = GL.contexts[contextHandle];
+        // Active WebGL context object.
+        Module.ctx = GLctx = GL.currentContext?.GLctx;
+        return !(contextHandle && !GLctx);
+      },
+  getContext:(contextHandle) => {
+        return GL.contexts[contextHandle];
+      },
+  deleteContext:(contextHandle) => {
+        if (GL.currentContext === GL.contexts[contextHandle]) {
+          GL.currentContext = null;
+        }
+        if (typeof JSEvents == 'object') {
+          // Release all JS event handlers on the DOM element that the GL context is
+          // associated with since the context is now deleted.
+          JSEvents.removeAllHandlersOnTarget(GL.contexts[contextHandle].GLctx.canvas);
+        }
+        // Make sure the canvas object no longer refers to the context object so
+        // there are no GC surprises.
+        if (GL.contexts[contextHandle] && GL.contexts[contextHandle].GLctx.canvas) {
+          GL.contexts[contextHandle].GLctx.canvas.GLctxObject = undefined;
+        }
+        GL.contexts[contextHandle] = null;
+      },
+  initExtensions:(context) => {
+        // If this function is called without a specific context object, init the
+        // extensions of the currently active context.
+        context ||= GL.currentContext;
+  
+        if (context.initExtensionsDone) return;
+        context.initExtensionsDone = true;
+  
+        var GLctx = context.GLctx;
+  
+        // Detect the presence of a few extensions manually, ction GL interop
+        // layer itself will need to know if they exist.
+  
+        // Extensions that are only available in WebGL 1 (the calls will be no-ops
+        // if called on a WebGL 2 context active)
+        webgl_enable_ANGLE_instanced_arrays(GLctx);
+        webgl_enable_OES_vertex_array_object(GLctx);
+        webgl_enable_WEBGL_draw_buffers(GLctx);
+        // Extensions that are available from WebGL >= 2 (no-op if called on a WebGL 1 context active)
+        webgl_enable_WEBGL_draw_instanced_base_vertex_base_instance(GLctx);
+        webgl_enable_WEBGL_multi_draw_instanced_base_vertex_base_instance(GLctx);
+  
+        // On WebGL 2, EXT_disjoint_timer_query is replaced with an alternative
+        // that's based on core APIs, and exposes only the queryCounterEXT()
+        // entrypoint.
+        if (context.version >= 2) {
+          GLctx.disjointTimerQueryExt = GLctx.getExtension("EXT_disjoint_timer_query_webgl2");
+        }
+  
+        // However, Firefox exposes the WebGL 1 version on WebGL 2 as well and
+        // thus we look for the WebGL 1 version again if the WebGL 2 version
+        // isn't present. https://bugzilla.mozilla.org/show_bug.cgi?id=1328882
+        if (context.version < 2 || !GLctx.disjointTimerQueryExt)
+        {
+          GLctx.disjointTimerQueryExt = GLctx.getExtension("EXT_disjoint_timer_query");
+        }
+  
+        webgl_enable_WEBGL_multi_draw(GLctx);
+  
+        getEmscriptenSupportedExtensions(GLctx).forEach((ext) => {
+          // WEBGL_lose_context, WEBGL_debug_renderer_info and WEBGL_debug_shaders
+          // are not enabled by default.
+          if (!ext.includes('lose_context') && !ext.includes('debug')) {
+            // Call .getExtension() to enable that extension permanently.
+            GLctx.getExtension(ext);
+          }
+        });
+      },
+  };
+  
+  var JSEvents = {
+  removeAllEventListeners() {
+        while (JSEvents.eventHandlers.length) {
+          JSEvents._removeHandler(JSEvents.eventHandlers.length - 1);
+        }
+        JSEvents.deferredCalls = [];
+      },
+  inEventHandler:0,
+  deferredCalls:[],
+  deferCall(targetFunction, precedence, argsList) {
+        function arraysHaveEqualContent(arrA, arrB) {
+          if (arrA.length != arrB.length) return false;
+  
+          for (var i in arrA) {
+            if (arrA[i] != arrB[i]) return false;
+          }
+          return true;
+        }
+        // Test if the given call was already queued, and if so, don't add it again.
+        for (var i in JSEvents.deferredCalls) {
+          var call = JSEvents.deferredCalls[i];
+          if (call.targetFunction == targetFunction && arraysHaveEqualContent(call.argsList, argsList)) {
+            return;
+          }
+        }
+        JSEvents.deferredCalls.push({
+          targetFunction,
+          precedence,
+          argsList
+        });
+  
+        JSEvents.deferredCalls.sort((x,y) => x.precedence < y.precedence);
+      },
+  removeDeferredCalls(targetFunction) {
+        for (var i = 0; i < JSEvents.deferredCalls.length; ++i) {
+          if (JSEvents.deferredCalls[i].targetFunction == targetFunction) {
+            JSEvents.deferredCalls.splice(i, 1);
+            --i;
+          }
+        }
+      },
+  canPerformEventHandlerRequests() {
+        if (navigator.userActivation) {
+          // Verify against transient activation status from UserActivation API
+          // whether it is possible to perform a request here without needing to defer. See
+          // https://developer.mozilla.org/en-US/docs/Web/Security/User_activation#transient_activation
+          // and https://caniuse.com/mdn-api_useractivation
+          // At the time of writing, Firefox does not support this API: https://bugzilla.mozilla.org/show_bug.cgi?id=1791079
+          return navigator.userActivation.isActive;
+        }
+  
+        return JSEvents.inEventHandler && JSEvents.currentEventHandler.allowsDeferredCalls;
+      },
+  runDeferredCalls() {
+        if (!JSEvents.canPerformEventHandlerRequests()) {
+          return;
+        }
+        for (var i = 0; i < JSEvents.deferredCalls.length; ++i) {
+          var call = JSEvents.deferredCalls[i];
+          JSEvents.deferredCalls.splice(i, 1);
+          --i;
+          call.targetFunction(...call.argsList);
+        }
+      },
+  eventHandlers:[],
+  removeAllHandlersOnTarget:(target, eventTypeString) => {
+        for (var i = 0; i < JSEvents.eventHandlers.length; ++i) {
+          if (JSEvents.eventHandlers[i].target == target &&
+            (!eventTypeString || eventTypeString == JSEvents.eventHandlers[i].eventTypeString)) {
+             JSEvents._removeHandler(i--);
+           }
+        }
+      },
+  _removeHandler(i) {
+        var h = JSEvents.eventHandlers[i];
+        h.target.removeEventListener(h.eventTypeString, h.eventListenerFunc, h.useCapture);
+        JSEvents.eventHandlers.splice(i, 1);
+      },
+  registerOrRemoveHandler(eventHandler) {
+        if (!eventHandler.target) {
+          err('registerOrRemoveHandler: the target element for event handler registration does not exist, when processing the following event handler registration:');
+          console.dir(eventHandler);
+          return -4;
+        }
+        if (eventHandler.callbackfunc) {
+          eventHandler.eventListenerFunc = function(event) {
+            // Increment nesting count for the event handler.
+            ++JSEvents.inEventHandler;
+            JSEvents.currentEventHandler = eventHandler;
+            // Process any old deferred calls the user has placed.
+            JSEvents.runDeferredCalls();
+            // Process the actual event, calls back to user C code handler.
+            eventHandler.handlerFunc(event);
+            // Process any new deferred calls that were placed right now from this event handler.
+            JSEvents.runDeferredCalls();
+            // Out of event handler - restore nesting count.
+            --JSEvents.inEventHandler;
+          };
+  
+          eventHandler.target.addEventListener(eventHandler.eventTypeString,
+                                               eventHandler.eventListenerFunc,
+                                               eventHandler.useCapture);
+          JSEvents.eventHandlers.push(eventHandler);
+        } else {
+          for (var i = 0; i < JSEvents.eventHandlers.length; ++i) {
+            if (JSEvents.eventHandlers[i].target == eventHandler.target
+             && JSEvents.eventHandlers[i].eventTypeString == eventHandler.eventTypeString) {
+               JSEvents._removeHandler(i--);
+             }
+          }
+        }
+        return 0;
+      },
+  getNodeNameForTarget(target) {
+        if (!target) return '';
+        if (target == window) return '#window';
+        if (target == screen) return '#screen';
+        return target?.nodeName || '';
+      },
+  fullscreenEnabled() {
+        return document.fullscreenEnabled
+        // Safari 13.0.3 on macOS Catalina 10.15.1 still ships with prefixed webkitFullscreenEnabled.
+        // TODO: If Safari at some point ships with unprefixed version, update the version check above.
+        || document.webkitFullscreenEnabled
+         ;
+      },
+  };
+  
+  var webglPowerPreferences = ["default","low-power","high-performance"];
+  
+  var maybeCStringToJsString = (cString) => {
+      // "cString > 2" checks if the input is a number, and isn't of the special
+      // values we accept here, EMSCRIPTEN_EVENT_TARGET_* (which map to 0, 1, 2).
+      // In other words, if cString > 2 then it's a pointer to a valid place in
+      // memory, and points to a C string.
+      return cString > 2 ? UTF8ToString(cString) : cString;
+    };
+  
+  /** @type {Object} */
+  var specialHTMLTargets = [0, typeof document != 'undefined' ? document : 0, typeof window != 'undefined' ? window : 0];
+  var findEventTarget = (target) => {
+      target = maybeCStringToJsString(target);
+      var domElement = specialHTMLTargets[target] || (typeof document != 'undefined' ? document.querySelector(target) : undefined);
+      return domElement;
+    };
+  
+  var findCanvasEventTarget = findEventTarget;
+  
   /** @suppress {duplicate } */
-  function syscallGetVarargI() {
-      assert(SYSCALLS.varargs != undefined);
-      // the `+` prepended here is necessary to convince the JSCompiler that varargs is indeed a number.
-      var ret = HEAP32[((+SYSCALLS.varargs)>>2)];
-      SYSCALLS.varargs += 4;
-      return ret;
-    }
-  var syscallGetVarargP = syscallGetVarargI;
+  var _emscripten_webgl_do_create_context = (target, attributes) => {
+      assert(attributes);
+      var a = ((attributes)>>2);
+      var powerPreference = HEAP32[a + (24>>2)];
+      var contextAttributes = {
+        'alpha': !!HEAP32[a + (0>>2)],
+        'depth': !!HEAP32[a + (4>>2)],
+        'stencil': !!HEAP32[a + (8>>2)],
+        'antialias': !!HEAP32[a + (12>>2)],
+        'premultipliedAlpha': !!HEAP32[a + (16>>2)],
+        'preserveDrawingBuffer': !!HEAP32[a + (20>>2)],
+        'powerPreference': webglPowerPreferences[powerPreference],
+        'failIfMajorPerformanceCaveat': !!HEAP32[a + (28>>2)],
+        // The following are not predefined WebGL context attributes in the WebGL specification, so the property names can be minified by Closure.
+        majorVersion: HEAP32[a + (32>>2)],
+        minorVersion: HEAP32[a + (36>>2)],
+        enableExtensionsByDefault: HEAP32[a + (40>>2)],
+        explicitSwapControl: HEAP32[a + (44>>2)],
+        proxyContextToMainThread: HEAP32[a + (48>>2)],
+        renderViaOffscreenBackBuffer: HEAP32[a + (52>>2)]
+      };
   
+      var canvas = findCanvasEventTarget(target);
   
+      if (!canvas) {
+        return 0;
+      }
+  
+      if (contextAttributes.explicitSwapControl) {
+        return 0;
+      }
+  
+      var contextHandle = GL.createContext(canvas, contextAttributes);
+      return contextHandle;
+    };
+  var _emscripten_webgl_create_context = _emscripten_webgl_do_create_context;
+
+  var ENV = {
+  };
+  
+  var getExecutableName = () => {
+      return thisProgram || './this.program';
+    };
+  var getEnvStrings = () => {
+      if (!getEnvStrings.strings) {
+        // Default values.
+        // Browser language detection #8751
+        var lang = ((typeof navigator == 'object' && navigator.languages && navigator.languages[0]) || 'C').replace('-', '_') + '.UTF-8';
+        var env = {
+          'USER': 'web_user',
+          'LOGNAME': 'web_user',
+          'PATH': '/',
+          'PWD': '/',
+          'HOME': '/home/web_user',
+          'LANG': lang,
+          '_': getExecutableName()
+        };
+        // Apply the user-provided values, if any.
+        for (var x in ENV) {
+          // x is a key in ENV; if ENV[x] is undefined, that means it was
+          // explicitly set to be so. We allow user code to do that to
+          // force variables with default values to remain unset.
+          if (ENV[x] === undefined) delete env[x];
+          else env[x] = ENV[x];
+        }
+        var strings = [];
+        for (var x in env) {
+          strings.push(`${x}=${env[x]}`);
+        }
+        getEnvStrings.strings = strings;
+      }
+      return getEnvStrings.strings;
+    };
+  
+  var stringToAscii = (str, buffer) => {
+      for (var i = 0; i < str.length; ++i) {
+        assert(str.charCodeAt(i) === (str.charCodeAt(i) & 0xff));
+        HEAP8[buffer++] = str.charCodeAt(i);
+      }
+      // Null-terminate the string
+      HEAP8[buffer] = 0;
+    };
+  var _environ_get = (__environ, environ_buf) => {
+      var bufSize = 0;
+      getEnvStrings().forEach((string, i) => {
+        var ptr = environ_buf + bufSize;
+        HEAPU32[(((__environ)+(i*4))>>2)] = ptr;
+        stringToAscii(string, ptr);
+        bufSize += string.length + 1;
+      });
+      return 0;
+    };
+
+  var _environ_sizes_get = (penviron_count, penviron_buf_size) => {
+      var strings = getEnvStrings();
+      HEAPU32[((penviron_count)>>2)] = strings.length;
+      var bufSize = 0;
+      strings.forEach((string) => bufSize += string.length + 1);
+      HEAPU32[((penviron_buf_size)>>2)] = bufSize;
+      return 0;
+    };
+
   var PATH = {
   isAbs:(path) => path.charAt(0) === '/',
   splitPath:(filename) => {
@@ -4157,1864 +4778,6 @@ function dbg(...args) {
         return ret;
       },
   };
-  function ___syscall_fcntl64(fd, cmd, varargs) {
-  SYSCALLS.varargs = varargs;
-  try {
-  
-      var stream = SYSCALLS.getStreamFromFD(fd);
-      switch (cmd) {
-        case 0: {
-          var arg = syscallGetVarargI();
-          if (arg < 0) {
-            return -28;
-          }
-          while (FS.streams[arg]) {
-            arg++;
-          }
-          var newStream;
-          newStream = FS.dupStream(stream, arg);
-          return newStream.fd;
-        }
-        case 1:
-        case 2:
-          return 0;  // FD_CLOEXEC makes no sense for a single process.
-        case 3:
-          return stream.flags;
-        case 4: {
-          var arg = syscallGetVarargI();
-          stream.flags |= arg;
-          return 0;
-        }
-        case 12: {
-          var arg = syscallGetVarargP();
-          var offset = 0;
-          // We're always unlocked.
-          HEAP16[(((arg)+(offset))>>1)] = 2;
-          return 0;
-        }
-        case 13:
-        case 14:
-          return 0; // Pretend that the locking is successful.
-      }
-      return -28;
-    } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
-    return -e.errno;
-  }
-  }
-
-  
-  function ___syscall_ioctl(fd, op, varargs) {
-  SYSCALLS.varargs = varargs;
-  try {
-  
-      var stream = SYSCALLS.getStreamFromFD(fd);
-      switch (op) {
-        case 21509: {
-          if (!stream.tty) return -59;
-          return 0;
-        }
-        case 21505: {
-          if (!stream.tty) return -59;
-          if (stream.tty.ops.ioctl_tcgets) {
-            var termios = stream.tty.ops.ioctl_tcgets(stream);
-            var argp = syscallGetVarargP();
-            HEAP32[((argp)>>2)] = termios.c_iflag || 0;
-            HEAP32[(((argp)+(4))>>2)] = termios.c_oflag || 0;
-            HEAP32[(((argp)+(8))>>2)] = termios.c_cflag || 0;
-            HEAP32[(((argp)+(12))>>2)] = termios.c_lflag || 0;
-            for (var i = 0; i < 32; i++) {
-              HEAP8[(argp + i)+(17)] = termios.c_cc[i] || 0;
-            }
-            return 0;
-          }
-          return 0;
-        }
-        case 21510:
-        case 21511:
-        case 21512: {
-          if (!stream.tty) return -59;
-          return 0; // no-op, not actually adjusting terminal settings
-        }
-        case 21506:
-        case 21507:
-        case 21508: {
-          if (!stream.tty) return -59;
-          if (stream.tty.ops.ioctl_tcsets) {
-            var argp = syscallGetVarargP();
-            var c_iflag = HEAP32[((argp)>>2)];
-            var c_oflag = HEAP32[(((argp)+(4))>>2)];
-            var c_cflag = HEAP32[(((argp)+(8))>>2)];
-            var c_lflag = HEAP32[(((argp)+(12))>>2)];
-            var c_cc = []
-            for (var i = 0; i < 32; i++) {
-              c_cc.push(HEAP8[(argp + i)+(17)]);
-            }
-            return stream.tty.ops.ioctl_tcsets(stream.tty, op, { c_iflag, c_oflag, c_cflag, c_lflag, c_cc });
-          }
-          return 0; // no-op, not actually adjusting terminal settings
-        }
-        case 21519: {
-          if (!stream.tty) return -59;
-          var argp = syscallGetVarargP();
-          HEAP32[((argp)>>2)] = 0;
-          return 0;
-        }
-        case 21520: {
-          if (!stream.tty) return -59;
-          return -28; // not supported
-        }
-        case 21531: {
-          var argp = syscallGetVarargP();
-          return FS.ioctl(stream, op, argp);
-        }
-        case 21523: {
-          // TODO: in theory we should write to the winsize struct that gets
-          // passed in, but for now musl doesn't read anything on it
-          if (!stream.tty) return -59;
-          if (stream.tty.ops.ioctl_tiocgwinsz) {
-            var winsize = stream.tty.ops.ioctl_tiocgwinsz(stream.tty);
-            var argp = syscallGetVarargP();
-            HEAP16[((argp)>>1)] = winsize[0];
-            HEAP16[(((argp)+(2))>>1)] = winsize[1];
-          }
-          return 0;
-        }
-        case 21524: {
-          // TODO: technically, this ioctl call should change the window size.
-          // but, since emscripten doesn't have any concept of a terminal window
-          // yet, we'll just silently throw it away as we do TIOCGWINSZ
-          if (!stream.tty) return -59;
-          return 0;
-        }
-        case 21515: {
-          if (!stream.tty) return -59;
-          return 0;
-        }
-        default: return -28; // not supported
-      }
-    } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
-    return -e.errno;
-  }
-  }
-
-  
-  function ___syscall_openat(dirfd, path, flags, varargs) {
-  SYSCALLS.varargs = varargs;
-  try {
-  
-      path = SYSCALLS.getStr(path);
-      path = SYSCALLS.calculateAt(dirfd, path);
-      var mode = varargs ? syscallGetVarargI() : 0;
-      return FS.open(path, flags, mode).fd;
-    } catch (e) {
-    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
-    return -e.errno;
-  }
-  }
-
-  var __abort_js = () => {
-      abort('native code called abort()');
-    };
-
-  var nowIsMonotonic = 1;
-  var __emscripten_get_now_is_monotonic = () => nowIsMonotonic;
-
-  var __emscripten_memcpy_js = (dest, src, num) => HEAPU8.copyWithin(dest, src, src + num);
-
-  var _emscripten_date_now = () => Date.now();
-
-  var _emscripten_get_now;
-      // Modern environment where performance.now() is supported:
-      // N.B. a shorter form "_emscripten_get_now = performance.now;" is
-      // unfortunately not allowed even in current browsers (e.g. FF Nightly 75).
-      _emscripten_get_now = () => performance.now();
-  ;
-
-  var getHeapMax = () =>
-      HEAPU8.length;
-  
-  var abortOnCannotGrowMemory = (requestedSize) => {
-      abort(`Cannot enlarge memory arrays to size ${requestedSize} bytes (OOM). Either (1) compile with -sINITIAL_MEMORY=X with X higher than the current value ${HEAP8.length}, (2) compile with -sALLOW_MEMORY_GROWTH which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with -sABORTING_MALLOC=0`);
-    };
-  var _emscripten_resize_heap = (requestedSize) => {
-      var oldSize = HEAPU8.length;
-      // With CAN_ADDRESS_2GB or MEMORY64, pointers are already unsigned.
-      requestedSize >>>= 0;
-      abortOnCannotGrowMemory(requestedSize);
-    };
-
-  var _emscripten_run_script = (ptr) => {
-      eval(UTF8ToString(ptr));
-    };
-
-  var JSEvents = {
-  removeAllEventListeners() {
-        while (JSEvents.eventHandlers.length) {
-          JSEvents._removeHandler(JSEvents.eventHandlers.length - 1);
-        }
-        JSEvents.deferredCalls = [];
-      },
-  inEventHandler:0,
-  deferredCalls:[],
-  deferCall(targetFunction, precedence, argsList) {
-        function arraysHaveEqualContent(arrA, arrB) {
-          if (arrA.length != arrB.length) return false;
-  
-          for (var i in arrA) {
-            if (arrA[i] != arrB[i]) return false;
-          }
-          return true;
-        }
-        // Test if the given call was already queued, and if so, don't add it again.
-        for (var i in JSEvents.deferredCalls) {
-          var call = JSEvents.deferredCalls[i];
-          if (call.targetFunction == targetFunction && arraysHaveEqualContent(call.argsList, argsList)) {
-            return;
-          }
-        }
-        JSEvents.deferredCalls.push({
-          targetFunction,
-          precedence,
-          argsList
-        });
-  
-        JSEvents.deferredCalls.sort((x,y) => x.precedence < y.precedence);
-      },
-  removeDeferredCalls(targetFunction) {
-        for (var i = 0; i < JSEvents.deferredCalls.length; ++i) {
-          if (JSEvents.deferredCalls[i].targetFunction == targetFunction) {
-            JSEvents.deferredCalls.splice(i, 1);
-            --i;
-          }
-        }
-      },
-  canPerformEventHandlerRequests() {
-        if (navigator.userActivation) {
-          // Verify against transient activation status from UserActivation API
-          // whether it is possible to perform a request here without needing to defer. See
-          // https://developer.mozilla.org/en-US/docs/Web/Security/User_activation#transient_activation
-          // and https://caniuse.com/mdn-api_useractivation
-          // At the time of writing, Firefox does not support this API: https://bugzilla.mozilla.org/show_bug.cgi?id=1791079
-          return navigator.userActivation.isActive;
-        }
-  
-        return JSEvents.inEventHandler && JSEvents.currentEventHandler.allowsDeferredCalls;
-      },
-  runDeferredCalls() {
-        if (!JSEvents.canPerformEventHandlerRequests()) {
-          return;
-        }
-        for (var i = 0; i < JSEvents.deferredCalls.length; ++i) {
-          var call = JSEvents.deferredCalls[i];
-          JSEvents.deferredCalls.splice(i, 1);
-          --i;
-          call.targetFunction(...call.argsList);
-        }
-      },
-  eventHandlers:[],
-  removeAllHandlersOnTarget:(target, eventTypeString) => {
-        for (var i = 0; i < JSEvents.eventHandlers.length; ++i) {
-          if (JSEvents.eventHandlers[i].target == target &&
-            (!eventTypeString || eventTypeString == JSEvents.eventHandlers[i].eventTypeString)) {
-             JSEvents._removeHandler(i--);
-           }
-        }
-      },
-  _removeHandler(i) {
-        var h = JSEvents.eventHandlers[i];
-        h.target.removeEventListener(h.eventTypeString, h.eventListenerFunc, h.useCapture);
-        JSEvents.eventHandlers.splice(i, 1);
-      },
-  registerOrRemoveHandler(eventHandler) {
-        if (!eventHandler.target) {
-          err('registerOrRemoveHandler: the target element for event handler registration does not exist, when processing the following event handler registration:');
-          console.dir(eventHandler);
-          return -4;
-        }
-        if (eventHandler.callbackfunc) {
-          eventHandler.eventListenerFunc = function(event) {
-            // Increment nesting count for the event handler.
-            ++JSEvents.inEventHandler;
-            JSEvents.currentEventHandler = eventHandler;
-            // Process any old deferred calls the user has placed.
-            JSEvents.runDeferredCalls();
-            // Process the actual event, calls back to user C code handler.
-            eventHandler.handlerFunc(event);
-            // Process any new deferred calls that were placed right now from this event handler.
-            JSEvents.runDeferredCalls();
-            // Out of event handler - restore nesting count.
-            --JSEvents.inEventHandler;
-          };
-  
-          eventHandler.target.addEventListener(eventHandler.eventTypeString,
-                                               eventHandler.eventListenerFunc,
-                                               eventHandler.useCapture);
-          JSEvents.eventHandlers.push(eventHandler);
-        } else {
-          for (var i = 0; i < JSEvents.eventHandlers.length; ++i) {
-            if (JSEvents.eventHandlers[i].target == eventHandler.target
-             && JSEvents.eventHandlers[i].eventTypeString == eventHandler.eventTypeString) {
-               JSEvents._removeHandler(i--);
-             }
-          }
-        }
-        return 0;
-      },
-  getNodeNameForTarget(target) {
-        if (!target) return '';
-        if (target == window) return '#window';
-        if (target == screen) return '#screen';
-        return target?.nodeName || '';
-      },
-  fullscreenEnabled() {
-        return document.fullscreenEnabled
-        // Safari 13.0.3 on macOS Catalina 10.15.1 still ships with prefixed webkitFullscreenEnabled.
-        // TODO: If Safari at some point ships with unprefixed version, update the version check above.
-        || document.webkitFullscreenEnabled
-         ;
-      },
-  };
-  
-  var maybeCStringToJsString = (cString) => {
-      // "cString > 2" checks if the input is a number, and isn't of the special
-      // values we accept here, EMSCRIPTEN_EVENT_TARGET_* (which map to 0, 1, 2).
-      // In other words, if cString > 2 then it's a pointer to a valid place in
-      // memory, and points to a C string.
-      return cString > 2 ? UTF8ToString(cString) : cString;
-    };
-  
-  /** @type {Object} */
-  var specialHTMLTargets = [0, typeof document != 'undefined' ? document : 0, typeof window != 'undefined' ? window : 0];
-  var findEventTarget = (target) => {
-      target = maybeCStringToJsString(target);
-      var domElement = specialHTMLTargets[target] || (typeof document != 'undefined' ? document.querySelector(target) : undefined);
-      return domElement;
-    };
-  
-  var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
-      assert(typeof maxBytesToWrite == 'number', 'stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!');
-      return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
-    };
-  
-  
-  var wasmTableMirror = [];
-  
-  /** @type {WebAssembly.Table} */
-  var wasmTable;
-  var getWasmTableEntry = (funcPtr) => {
-      var func = wasmTableMirror[funcPtr];
-      if (!func) {
-        if (funcPtr >= wasmTableMirror.length) wasmTableMirror.length = funcPtr + 1;
-        wasmTableMirror[funcPtr] = func = wasmTable.get(funcPtr);
-      }
-      assert(wasmTable.get(funcPtr) == func, 'JavaScript-side Wasm function table mirror is out of date!');
-      return func;
-    };
-  var registerKeyEventCallback = (target, userData, useCapture, callbackfunc, eventTypeId, eventTypeString, targetThread) => {
-      if (!JSEvents.keyEvent) JSEvents.keyEvent = _malloc(176);
-  
-      var keyEventHandlerFunc = (e) => {
-        assert(e);
-  
-        var keyEventData = JSEvents.keyEvent;
-        HEAPF64[((keyEventData)>>3)] = e.timeStamp;
-  
-        var idx =((keyEventData)>>2);
-  
-        HEAP32[idx + 2] = e.location;
-        HEAP32[idx + 3] = e.ctrlKey;
-        HEAP32[idx + 4] = e.shiftKey;
-        HEAP32[idx + 5] = e.altKey;
-        HEAP32[idx + 6] = e.metaKey;
-        HEAP32[idx + 7] = e.repeat;
-        HEAP32[idx + 8] = e.charCode;
-        HEAP32[idx + 9] = e.keyCode;
-        HEAP32[idx + 10] = e.which;
-        stringToUTF8(e.key || '', keyEventData + 44, 32);
-        stringToUTF8(e.code || '', keyEventData + 76, 32);
-        stringToUTF8(e.char || '', keyEventData + 108, 32);
-        stringToUTF8(e.locale || '', keyEventData + 140, 32);
-  
-        if (getWasmTableEntry(callbackfunc)(eventTypeId, keyEventData, userData)) e.preventDefault();
-      };
-  
-      var eventHandler = {
-        target: findEventTarget(target),
-        eventTypeString,
-        callbackfunc,
-        handlerFunc: keyEventHandlerFunc,
-        useCapture
-      };
-      return JSEvents.registerOrRemoveHandler(eventHandler);
-    };
-  var _emscripten_set_keydown_callback_on_thread = (target, userData, useCapture, callbackfunc, targetThread) =>
-      registerKeyEventCallback(target, userData, useCapture, callbackfunc, 2, "keydown", targetThread);
-
-  
-  var handleException = (e) => {
-      // Certain exception types we do not treat as errors since they are used for
-      // internal control flow.
-      // 1. ExitStatus, which is thrown by exit()
-      // 2. "unwind", which is thrown by emscripten_unwind_to_js_event_loop() and others
-      //    that wish to return to JS event loop.
-      if (e instanceof ExitStatus || e == 'unwind') {
-        return EXITSTATUS;
-      }
-      checkStackCookie();
-      if (e instanceof WebAssembly.RuntimeError) {
-        if (_emscripten_stack_get_current() <= 0) {
-          err('Stack overflow detected.  You can try increasing -sSTACK_SIZE (currently set to 65536)');
-        }
-      }
-      quit_(1, e);
-    };
-  
-  
-  var runtimeKeepaliveCounter = 0;
-  var keepRuntimeAlive = () => noExitRuntime || runtimeKeepaliveCounter > 0;
-  var _proc_exit = (code) => {
-      EXITSTATUS = code;
-      if (!keepRuntimeAlive()) {
-        Module['onExit']?.(code);
-        ABORT = true;
-      }
-      quit_(code, new ExitStatus(code));
-    };
-  
-  /** @suppress {duplicate } */
-  /** @param {boolean|number=} implicit */
-  var exitJS = (status, implicit) => {
-      EXITSTATUS = status;
-  
-      checkUnflushedContent();
-  
-      // if exit() was called explicitly, warn the user if the runtime isn't actually being shut down
-      if (keepRuntimeAlive() && !implicit) {
-        var msg = `program exited (with status: ${status}), but keepRuntimeAlive() is set (counter=${runtimeKeepaliveCounter}) due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)`;
-        err(msg);
-      }
-  
-      _proc_exit(status);
-    };
-  var _exit = exitJS;
-  
-  
-  var maybeExit = () => {
-      if (!keepRuntimeAlive()) {
-        try {
-          _exit(EXITSTATUS);
-        } catch (e) {
-          handleException(e);
-        }
-      }
-    };
-  var callUserCallback = (func) => {
-      if (ABORT) {
-        err('user callback triggered after runtime exited or application aborted.  Ignoring.');
-        return;
-      }
-      try {
-        func();
-        maybeExit();
-      } catch (e) {
-        handleException(e);
-      }
-    };
-  
-  /** @param {number=} timeout */
-  var safeSetTimeout = (func, timeout) => {
-      
-      return setTimeout(() => {
-        
-        callUserCallback(func);
-      }, timeout);
-    };
-  
-  
-  
-  
-  var Browser = {
-  mainLoop:{
-  running:false,
-  scheduler:null,
-  method:"",
-  currentlyRunningMainloop:0,
-  func:null,
-  arg:0,
-  timingMode:0,
-  timingValue:0,
-  currentFrameNumber:0,
-  queue:[],
-  pause() {
-          Browser.mainLoop.scheduler = null;
-          // Incrementing this signals the previous main loop that it's now become old, and it must return.
-          Browser.mainLoop.currentlyRunningMainloop++;
-        },
-  resume() {
-          Browser.mainLoop.currentlyRunningMainloop++;
-          var timingMode = Browser.mainLoop.timingMode;
-          var timingValue = Browser.mainLoop.timingValue;
-          var func = Browser.mainLoop.func;
-          Browser.mainLoop.func = null;
-          // do not set timing and call scheduler, we will do it on the next lines
-          setMainLoop(func, 0, false, Browser.mainLoop.arg, true);
-          _emscripten_set_main_loop_timing(timingMode, timingValue);
-          Browser.mainLoop.scheduler();
-        },
-  updateStatus() {
-          if (Module['setStatus']) {
-            var message = Module['statusMessage'] || 'Please wait...';
-            var remaining = Browser.mainLoop.remainingBlockers;
-            var expected = Browser.mainLoop.expectedBlockers;
-            if (remaining) {
-              if (remaining < expected) {
-                Module['setStatus'](`{message} ({expected - remaining}/{expected})`);
-              } else {
-                Module['setStatus'](message);
-              }
-            } else {
-              Module['setStatus']('');
-            }
-          }
-        },
-  runIter(func) {
-          if (ABORT) return;
-          if (Module['preMainLoop']) {
-            var preRet = Module['preMainLoop']();
-            if (preRet === false) {
-              return; // |return false| skips a frame
-            }
-          }
-          callUserCallback(func);
-          Module['postMainLoop']?.();
-        },
-  },
-  isFullscreen:false,
-  pointerLock:false,
-  moduleContextCreatedCallbacks:[],
-  workers:[],
-  init() {
-        if (Browser.initted) return;
-        Browser.initted = true;
-  
-        // Support for plugins that can process preloaded files. You can add more of these to
-        // your app by creating and appending to preloadPlugins.
-        //
-        // Each plugin is asked if it can handle a file based on the file's name. If it can,
-        // it is given the file's raw data. When it is done, it calls a callback with the file's
-        // (possibly modified) data. For example, a plugin might decompress a file, or it
-        // might create some side data structure for use later (like an Image element, etc.).
-  
-        var imagePlugin = {};
-        imagePlugin['canHandle'] = function imagePlugin_canHandle(name) {
-          return !Module.noImageDecoding && /\.(jpg|jpeg|png|bmp)$/i.test(name);
-        };
-        imagePlugin['handle'] = function imagePlugin_handle(byteArray, name, onload, onerror) {
-          var b = new Blob([byteArray], { type: Browser.getMimetype(name) });
-          if (b.size !== byteArray.length) { // Safari bug #118630
-            // Safari's Blob can only take an ArrayBuffer
-            b = new Blob([(new Uint8Array(byteArray)).buffer], { type: Browser.getMimetype(name) });
-          }
-          var url = URL.createObjectURL(b);
-          assert(typeof url == 'string', 'createObjectURL must return a url as a string');
-          var img = new Image();
-          img.onload = () => {
-            assert(img.complete, `Image ${name} could not be decoded`);
-            var canvas = /** @type {!HTMLCanvasElement} */ (document.createElement('canvas'));
-            canvas.width = img.width;
-            canvas.height = img.height;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            preloadedImages[name] = canvas;
-            URL.revokeObjectURL(url);
-            onload?.(byteArray);
-          };
-          img.onerror = (event) => {
-            err(`Image ${url} could not be decoded`);
-            onerror?.();
-          };
-          img.src = url;
-        };
-        preloadPlugins.push(imagePlugin);
-  
-        var audioPlugin = {};
-        audioPlugin['canHandle'] = function audioPlugin_canHandle(name) {
-          return !Module.noAudioDecoding && name.substr(-4) in { '.ogg': 1, '.wav': 1, '.mp3': 1 };
-        };
-        audioPlugin['handle'] = function audioPlugin_handle(byteArray, name, onload, onerror) {
-          var done = false;
-          function finish(audio) {
-            if (done) return;
-            done = true;
-            preloadedAudios[name] = audio;
-            onload?.(byteArray);
-          }
-          function fail() {
-            if (done) return;
-            done = true;
-            preloadedAudios[name] = new Audio(); // empty shim
-            onerror?.();
-          }
-          var b = new Blob([byteArray], { type: Browser.getMimetype(name) });
-          var url = URL.createObjectURL(b); // XXX we never revoke this!
-          assert(typeof url == 'string', 'createObjectURL must return a url as a string');
-          var audio = new Audio();
-          audio.addEventListener('canplaythrough', () => finish(audio), false); // use addEventListener due to chromium bug 124926
-          audio.onerror = function audio_onerror(event) {
-            if (done) return;
-            err(`warning: browser could not fully decode audio ${name}, trying slower base64 approach`);
-            function encode64(data) {
-              var BASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-              var PAD = '=';
-              var ret = '';
-              var leftchar = 0;
-              var leftbits = 0;
-              for (var i = 0; i < data.length; i++) {
-                leftchar = (leftchar << 8) | data[i];
-                leftbits += 8;
-                while (leftbits >= 6) {
-                  var curr = (leftchar >> (leftbits-6)) & 0x3f;
-                  leftbits -= 6;
-                  ret += BASE[curr];
-                }
-              }
-              if (leftbits == 2) {
-                ret += BASE[(leftchar&3) << 4];
-                ret += PAD + PAD;
-              } else if (leftbits == 4) {
-                ret += BASE[(leftchar&0xf) << 2];
-                ret += PAD;
-              }
-              return ret;
-            }
-            audio.src = 'data:audio/x-' + name.substr(-3) + ';base64,' + encode64(byteArray);
-            finish(audio); // we don't wait for confirmation this worked - but it's worth trying
-          };
-          audio.src = url;
-          // workaround for chrome bug 124926 - we do not always get oncanplaythrough or onerror
-          safeSetTimeout(() => {
-            finish(audio); // try to use it even though it is not necessarily ready to play
-          }, 10000);
-        };
-        preloadPlugins.push(audioPlugin);
-  
-        // Canvas event setup
-  
-        function pointerLockChange() {
-          Browser.pointerLock = document['pointerLockElement'] === Module['canvas'] ||
-                                document['mozPointerLockElement'] === Module['canvas'] ||
-                                document['webkitPointerLockElement'] === Module['canvas'] ||
-                                document['msPointerLockElement'] === Module['canvas'];
-        }
-        var canvas = Module['canvas'];
-        if (canvas) {
-          // forced aspect ratio can be enabled by defining 'forcedAspectRatio' on Module
-          // Module['forcedAspectRatio'] = 4 / 3;
-  
-          canvas.requestPointerLock = canvas['requestPointerLock'] ||
-                                      canvas['mozRequestPointerLock'] ||
-                                      canvas['webkitRequestPointerLock'] ||
-                                      canvas['msRequestPointerLock'] ||
-                                      (() => {});
-          canvas.exitPointerLock = document['exitPointerLock'] ||
-                                   document['mozExitPointerLock'] ||
-                                   document['webkitExitPointerLock'] ||
-                                   document['msExitPointerLock'] ||
-                                   (() => {}); // no-op if function does not exist
-          canvas.exitPointerLock = canvas.exitPointerLock.bind(document);
-  
-          document.addEventListener('pointerlockchange', pointerLockChange, false);
-          document.addEventListener('mozpointerlockchange', pointerLockChange, false);
-          document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
-          document.addEventListener('mspointerlockchange', pointerLockChange, false);
-  
-          if (Module['elementPointerLock']) {
-            canvas.addEventListener("click", (ev) => {
-              if (!Browser.pointerLock && Module['canvas'].requestPointerLock) {
-                Module['canvas'].requestPointerLock();
-                ev.preventDefault();
-              }
-            }, false);
-          }
-        }
-      },
-  createContext(/** @type {HTMLCanvasElement} */ canvas, useWebGL, setInModule, webGLContextAttributes) {
-        if (useWebGL && Module.ctx && canvas == Module.canvas) return Module.ctx; // no need to recreate GL context if it's already been created for this canvas.
-  
-        var ctx;
-        var contextHandle;
-        if (useWebGL) {
-          // For GLES2/desktop GL compatibility, adjust a few defaults to be different to WebGL defaults, so that they align better with the desktop defaults.
-          var contextAttributes = {
-            antialias: false,
-            alpha: false,
-            majorVersion: (typeof WebGL2RenderingContext != 'undefined') ? 2 : 1,
-          };
-  
-          if (webGLContextAttributes) {
-            for (var attribute in webGLContextAttributes) {
-              contextAttributes[attribute] = webGLContextAttributes[attribute];
-            }
-          }
-  
-          // This check of existence of GL is here to satisfy Closure compiler, which yells if variable GL is referenced below but GL object is not
-          // actually compiled in because application is not doing any GL operations. TODO: Ideally if GL is not being used, this function
-          // Browser.createContext() should not even be emitted.
-          if (typeof GL != 'undefined') {
-            contextHandle = GL.createContext(canvas, contextAttributes);
-            if (contextHandle) {
-              ctx = GL.getContext(contextHandle).GLctx;
-            }
-          }
-        } else {
-          ctx = canvas.getContext('2d');
-        }
-  
-        if (!ctx) return null;
-  
-        if (setInModule) {
-          if (!useWebGL) assert(typeof GLctx == 'undefined', 'cannot set in module if GLctx is used, but we are a non-GL context that would replace it');
-          Module.ctx = ctx;
-          if (useWebGL) GL.makeContextCurrent(contextHandle);
-          Module.useWebGL = useWebGL;
-          Browser.moduleContextCreatedCallbacks.forEach((callback) => callback());
-          Browser.init();
-        }
-        return ctx;
-      },
-  destroyContext(canvas, useWebGL, setInModule) {},
-  fullscreenHandlersInstalled:false,
-  lockPointer:undefined,
-  resizeCanvas:undefined,
-  requestFullscreen(lockPointer, resizeCanvas) {
-        Browser.lockPointer = lockPointer;
-        Browser.resizeCanvas = resizeCanvas;
-        if (typeof Browser.lockPointer == 'undefined') Browser.lockPointer = true;
-        if (typeof Browser.resizeCanvas == 'undefined') Browser.resizeCanvas = false;
-  
-        var canvas = Module['canvas'];
-        function fullscreenChange() {
-          Browser.isFullscreen = false;
-          var canvasContainer = canvas.parentNode;
-          if ((document['fullscreenElement'] || document['mozFullScreenElement'] ||
-               document['msFullscreenElement'] || document['webkitFullscreenElement'] ||
-               document['webkitCurrentFullScreenElement']) === canvasContainer) {
-            canvas.exitFullscreen = Browser.exitFullscreen;
-            if (Browser.lockPointer) canvas.requestPointerLock();
-            Browser.isFullscreen = true;
-            if (Browser.resizeCanvas) {
-              Browser.setFullscreenCanvasSize();
-            } else {
-              Browser.updateCanvasDimensions(canvas);
-            }
-          } else {
-            // remove the full screen specific parent of the canvas again to restore the HTML structure from before going full screen
-            canvasContainer.parentNode.insertBefore(canvas, canvasContainer);
-            canvasContainer.parentNode.removeChild(canvasContainer);
-  
-            if (Browser.resizeCanvas) {
-              Browser.setWindowedCanvasSize();
-            } else {
-              Browser.updateCanvasDimensions(canvas);
-            }
-          }
-          Module['onFullScreen']?.(Browser.isFullscreen);
-          Module['onFullscreen']?.(Browser.isFullscreen);
-        }
-  
-        if (!Browser.fullscreenHandlersInstalled) {
-          Browser.fullscreenHandlersInstalled = true;
-          document.addEventListener('fullscreenchange', fullscreenChange, false);
-          document.addEventListener('mozfullscreenchange', fullscreenChange, false);
-          document.addEventListener('webkitfullscreenchange', fullscreenChange, false);
-          document.addEventListener('MSFullscreenChange', fullscreenChange, false);
-        }
-  
-        // create a new parent to ensure the canvas has no siblings. this allows browsers to optimize full screen performance when its parent is the full screen root
-        var canvasContainer = document.createElement("div");
-        canvas.parentNode.insertBefore(canvasContainer, canvas);
-        canvasContainer.appendChild(canvas);
-  
-        // use parent of canvas as full screen root to allow aspect ratio correction (Firefox stretches the root to screen size)
-        canvasContainer.requestFullscreen = canvasContainer['requestFullscreen'] ||
-                                            canvasContainer['mozRequestFullScreen'] ||
-                                            canvasContainer['msRequestFullscreen'] ||
-                                           (canvasContainer['webkitRequestFullscreen'] ? () => canvasContainer['webkitRequestFullscreen'](Element['ALLOW_KEYBOARD_INPUT']) : null) ||
-                                           (canvasContainer['webkitRequestFullScreen'] ? () => canvasContainer['webkitRequestFullScreen'](Element['ALLOW_KEYBOARD_INPUT']) : null);
-  
-        canvasContainer.requestFullscreen();
-      },
-  requestFullScreen() {
-        abort('Module.requestFullScreen has been replaced by Module.requestFullscreen (without a capital S)');
-      },
-  exitFullscreen() {
-        // This is workaround for chrome. Trying to exit from fullscreen
-        // not in fullscreen state will cause "TypeError: Document not active"
-        // in chrome. See https://github.com/emscripten-core/emscripten/pull/8236
-        if (!Browser.isFullscreen) {
-          return false;
-        }
-  
-        var CFS = document['exitFullscreen'] ||
-                  document['cancelFullScreen'] ||
-                  document['mozCancelFullScreen'] ||
-                  document['msExitFullscreen'] ||
-                  document['webkitCancelFullScreen'] ||
-            (() => {});
-        CFS.apply(document, []);
-        return true;
-      },
-  nextRAF:0,
-  fakeRequestAnimationFrame(func) {
-        // try to keep 60fps between calls to here
-        var now = Date.now();
-        if (Browser.nextRAF === 0) {
-          Browser.nextRAF = now + 1000/60;
-        } else {
-          while (now + 2 >= Browser.nextRAF) { // fudge a little, to avoid timer jitter causing us to do lots of delay:0
-            Browser.nextRAF += 1000/60;
-          }
-        }
-        var delay = Math.max(Browser.nextRAF - now, 0);
-        setTimeout(func, delay);
-      },
-  requestAnimationFrame(func) {
-        if (typeof requestAnimationFrame == 'function') {
-          requestAnimationFrame(func);
-          return;
-        }
-        var RAF = Browser.fakeRequestAnimationFrame;
-        RAF(func);
-      },
-  safeSetTimeout(func, timeout) {
-        // Legacy function, this is used by the SDL2 port so we need to keep it
-        // around at least until that is updated.
-        // See https://github.com/libsdl-org/SDL/pull/6304
-        return safeSetTimeout(func, timeout);
-      },
-  safeRequestAnimationFrame(func) {
-        
-        return Browser.requestAnimationFrame(() => {
-          
-          callUserCallback(func);
-        });
-      },
-  getMimetype(name) {
-        return {
-          'jpg': 'image/jpeg',
-          'jpeg': 'image/jpeg',
-          'png': 'image/png',
-          'bmp': 'image/bmp',
-          'ogg': 'audio/ogg',
-          'wav': 'audio/wav',
-          'mp3': 'audio/mpeg'
-        }[name.substr(name.lastIndexOf('.')+1)];
-      },
-  getUserMedia(func) {
-        window.getUserMedia ||= navigator['getUserMedia'] ||
-                                navigator['mozGetUserMedia'];
-        window.getUserMedia(func);
-      },
-  getMovementX(event) {
-        return event['movementX'] ||
-               event['mozMovementX'] ||
-               event['webkitMovementX'] ||
-               0;
-      },
-  getMovementY(event) {
-        return event['movementY'] ||
-               event['mozMovementY'] ||
-               event['webkitMovementY'] ||
-               0;
-      },
-  getMouseWheelDelta(event) {
-        var delta = 0;
-        switch (event.type) {
-          case 'DOMMouseScroll':
-            // 3 lines make up a step
-            delta = event.detail / 3;
-            break;
-          case 'mousewheel':
-            // 120 units make up a step
-            delta = event.wheelDelta / 120;
-            break;
-          case 'wheel':
-            delta = event.deltaY
-            switch (event.deltaMode) {
-              case 0:
-                // DOM_DELTA_PIXEL: 100 pixels make up a step
-                delta /= 100;
-                break;
-              case 1:
-                // DOM_DELTA_LINE: 3 lines make up a step
-                delta /= 3;
-                break;
-              case 2:
-                // DOM_DELTA_PAGE: A page makes up 80 steps
-                delta *= 80;
-                break;
-              default:
-                throw 'unrecognized mouse wheel delta mode: ' + event.deltaMode;
-            }
-            break;
-          default:
-            throw 'unrecognized mouse wheel event: ' + event.type;
-        }
-        return delta;
-      },
-  mouseX:0,
-  mouseY:0,
-  mouseMovementX:0,
-  mouseMovementY:0,
-  touches:{
-  },
-  lastTouches:{
-  },
-  calculateMouseCoords(pageX, pageY) {
-        // Calculate the movement based on the changes
-        // in the coordinates.
-        var rect = Module["canvas"].getBoundingClientRect();
-        var cw = Module["canvas"].width;
-        var ch = Module["canvas"].height;
-  
-        // Neither .scrollX or .pageXOffset are defined in a spec, but
-        // we prefer .scrollX because it is currently in a spec draft.
-        // (see: http://www.w3.org/TR/2013/WD-cssom-view-20131217/)
-        var scrollX = ((typeof window.scrollX != 'undefined') ? window.scrollX : window.pageXOffset);
-        var scrollY = ((typeof window.scrollY != 'undefined') ? window.scrollY : window.pageYOffset);
-        // If this assert lands, it's likely because the browser doesn't support scrollX or pageXOffset
-        // and we have no viable fallback.
-        assert((typeof scrollX != 'undefined') && (typeof scrollY != 'undefined'), 'Unable to retrieve scroll position, mouse positions likely broken.');
-        var adjustedX = pageX - (scrollX + rect.left);
-        var adjustedY = pageY - (scrollY + rect.top);
-  
-        // the canvas might be CSS-scaled compared to its backbuffer;
-        // SDL-using content will want mouse coordinates in terms
-        // of backbuffer units.
-        adjustedX = adjustedX * (cw / rect.width);
-        adjustedY = adjustedY * (ch / rect.height);
-  
-        return { x: adjustedX, y: adjustedY };
-      },
-  setMouseCoords(pageX, pageY) {
-        const {x, y} = Browser.calculateMouseCoords(pageX, pageY);
-        Browser.mouseMovementX = x - Browser.mouseX;
-        Browser.mouseMovementY = y - Browser.mouseY;
-        Browser.mouseX = x;
-        Browser.mouseY = y;
-      },
-  calculateMouseEvent(event) { // event should be mousemove, mousedown or mouseup
-        if (Browser.pointerLock) {
-          // When the pointer is locked, calculate the coordinates
-          // based on the movement of the mouse.
-          // Workaround for Firefox bug 764498
-          if (event.type != 'mousemove' &&
-              ('mozMovementX' in event)) {
-            Browser.mouseMovementX = Browser.mouseMovementY = 0;
-          } else {
-            Browser.mouseMovementX = Browser.getMovementX(event);
-            Browser.mouseMovementY = Browser.getMovementY(event);
-          }
-  
-          // add the mouse delta to the current absolute mouse position
-          Browser.mouseX += Browser.mouseMovementX;
-          Browser.mouseY += Browser.mouseMovementY;
-        } else {
-          if (event.type === 'touchstart' || event.type === 'touchend' || event.type === 'touchmove') {
-            var touch = event.touch;
-            if (touch === undefined) {
-              return; // the "touch" property is only defined in SDL
-  
-            }
-            var coords = Browser.calculateMouseCoords(touch.pageX, touch.pageY);
-  
-            if (event.type === 'touchstart') {
-              Browser.lastTouches[touch.identifier] = coords;
-              Browser.touches[touch.identifier] = coords;
-            } else if (event.type === 'touchend' || event.type === 'touchmove') {
-              var last = Browser.touches[touch.identifier];
-              last ||= coords;
-              Browser.lastTouches[touch.identifier] = last;
-              Browser.touches[touch.identifier] = coords;
-            }
-            return;
-          }
-  
-          Browser.setMouseCoords(event.pageX, event.pageY);
-        }
-      },
-  resizeListeners:[],
-  updateResizeListeners() {
-        var canvas = Module['canvas'];
-        Browser.resizeListeners.forEach((listener) => listener(canvas.width, canvas.height));
-      },
-  setCanvasSize(width, height, noUpdates) {
-        var canvas = Module['canvas'];
-        Browser.updateCanvasDimensions(canvas, width, height);
-        if (!noUpdates) Browser.updateResizeListeners();
-      },
-  windowedWidth:0,
-  windowedHeight:0,
-  setFullscreenCanvasSize() {
-        // check if SDL is available
-        if (typeof SDL != "undefined") {
-          var flags = HEAPU32[((SDL.screen)>>2)];
-          flags = flags | 0x00800000; // set SDL_FULLSCREEN flag
-          HEAP32[((SDL.screen)>>2)] = flags;
-        }
-        Browser.updateCanvasDimensions(Module['canvas']);
-        Browser.updateResizeListeners();
-      },
-  setWindowedCanvasSize() {
-        // check if SDL is available
-        if (typeof SDL != "undefined") {
-          var flags = HEAPU32[((SDL.screen)>>2)];
-          flags = flags & ~0x00800000; // clear SDL_FULLSCREEN flag
-          HEAP32[((SDL.screen)>>2)] = flags;
-        }
-        Browser.updateCanvasDimensions(Module['canvas']);
-        Browser.updateResizeListeners();
-      },
-  updateCanvasDimensions(canvas, wNative, hNative) {
-        if (wNative && hNative) {
-          canvas.widthNative = wNative;
-          canvas.heightNative = hNative;
-        } else {
-          wNative = canvas.widthNative;
-          hNative = canvas.heightNative;
-        }
-        var w = wNative;
-        var h = hNative;
-        if (Module['forcedAspectRatio'] && Module['forcedAspectRatio'] > 0) {
-          if (w/h < Module['forcedAspectRatio']) {
-            w = Math.round(h * Module['forcedAspectRatio']);
-          } else {
-            h = Math.round(w / Module['forcedAspectRatio']);
-          }
-        }
-        if (((document['fullscreenElement'] || document['mozFullScreenElement'] ||
-             document['msFullscreenElement'] || document['webkitFullscreenElement'] ||
-             document['webkitCurrentFullScreenElement']) === canvas.parentNode) && (typeof screen != 'undefined')) {
-           var factor = Math.min(screen.width / w, screen.height / h);
-           w = Math.round(w * factor);
-           h = Math.round(h * factor);
-        }
-        if (Browser.resizeCanvas) {
-          if (canvas.width  != w) canvas.width  = w;
-          if (canvas.height != h) canvas.height = h;
-          if (typeof canvas.style != 'undefined') {
-            canvas.style.removeProperty( "width");
-            canvas.style.removeProperty("height");
-          }
-        } else {
-          if (canvas.width  != wNative) canvas.width  = wNative;
-          if (canvas.height != hNative) canvas.height = hNative;
-          if (typeof canvas.style != 'undefined') {
-            if (w != wNative || h != hNative) {
-              canvas.style.setProperty( "width", w + "px", "important");
-              canvas.style.setProperty("height", h + "px", "important");
-            } else {
-              canvas.style.removeProperty( "width");
-              canvas.style.removeProperty("height");
-            }
-          }
-        }
-      },
-  };
-  var _emscripten_set_main_loop_timing = (mode, value) => {
-      Browser.mainLoop.timingMode = mode;
-      Browser.mainLoop.timingValue = value;
-  
-      if (!Browser.mainLoop.func) {
-        err('emscripten_set_main_loop_timing: Cannot set timing mode for main loop since a main loop does not exist! Call emscripten_set_main_loop first to set one up.');
-        return 1; // Return non-zero on failure, can't set timing mode when there is no main loop.
-      }
-  
-      if (!Browser.mainLoop.running) {
-        
-        Browser.mainLoop.running = true;
-      }
-      if (mode == 0) {
-        Browser.mainLoop.scheduler = function Browser_mainLoop_scheduler_setTimeout() {
-          var timeUntilNextTick = Math.max(0, Browser.mainLoop.tickStartTime + value - _emscripten_get_now())|0;
-          setTimeout(Browser.mainLoop.runner, timeUntilNextTick); // doing this each time means that on exception, we stop
-        };
-        Browser.mainLoop.method = 'timeout';
-      } else if (mode == 1) {
-        Browser.mainLoop.scheduler = function Browser_mainLoop_scheduler_rAF() {
-          Browser.requestAnimationFrame(Browser.mainLoop.runner);
-        };
-        Browser.mainLoop.method = 'rAF';
-      } else if (mode == 2) {
-        if (typeof Browser.setImmediate == 'undefined') {
-          if (typeof setImmediate == 'undefined') {
-            // Emulate setImmediate. (note: not a complete polyfill, we don't emulate clearImmediate() to keep code size to minimum, since not needed)
-            var setImmediates = [];
-            var emscriptenMainLoopMessageId = 'setimmediate';
-            /** @param {Event} event */
-            var Browser_setImmediate_messageHandler = (event) => {
-              // When called in current thread or Worker, the main loop ID is structured slightly different to accommodate for --proxy-to-worker runtime listening to Worker events,
-              // so check for both cases.
-              if (event.data === emscriptenMainLoopMessageId || event.data.target === emscriptenMainLoopMessageId) {
-                event.stopPropagation();
-                setImmediates.shift()();
-              }
-            };
-            addEventListener("message", Browser_setImmediate_messageHandler, true);
-            Browser.setImmediate = /** @type{function(function(): ?, ...?): number} */(function Browser_emulated_setImmediate(func) {
-              setImmediates.push(func);
-              if (ENVIRONMENT_IS_WORKER) {
-                if (Module['setImmediates'] === undefined) Module['setImmediates'] = [];
-                Module['setImmediates'].push(func);
-                postMessage({target: emscriptenMainLoopMessageId}); // In --proxy-to-worker, route the message via proxyClient.js
-              } else postMessage(emscriptenMainLoopMessageId, "*"); // On the main thread, can just send the message to itself.
-            });
-          } else {
-            Browser.setImmediate = setImmediate;
-          }
-        }
-        Browser.mainLoop.scheduler = function Browser_mainLoop_scheduler_setImmediate() {
-          Browser.setImmediate(Browser.mainLoop.runner);
-        };
-        Browser.mainLoop.method = 'immediate';
-      }
-      return 0;
-    };
-  
-  
-  
-    /**
-     * @param {number=} arg
-     * @param {boolean=} noSetTiming
-     */
-  var setMainLoop = (browserIterationFunc, fps, simulateInfiniteLoop, arg, noSetTiming) => {
-      assert(!Browser.mainLoop.func, 'emscripten_set_main_loop: there can only be one main loop function at once: call emscripten_cancel_main_loop to cancel the previous one before setting a new one with different parameters.');
-      Browser.mainLoop.func = browserIterationFunc;
-      Browser.mainLoop.arg = arg;
-  
-      // Closure compiler bug(?): Closure does not see that the assignment
-      //   var thisMainLoopId = Browser.mainLoop.currentlyRunningMainloop
-      // is a value copy of a number (even with the JSDoc @type annotation)
-      // but optimizeis the code as if the assignment was a reference assignment,
-      // which results in Browser.mainLoop.pause() not working. Hence use a
-      // workaround to make Closure believe this is a value copy that should occur:
-      // (TODO: Minimize this down to a small test case and report - was unable
-      // to reproduce in a small written test case)
-      /** @type{number} */
-      var thisMainLoopId = (() => Browser.mainLoop.currentlyRunningMainloop)();
-      function checkIsRunning() {
-        if (thisMainLoopId < Browser.mainLoop.currentlyRunningMainloop) {
-          
-          return false;
-        }
-        return true;
-      }
-  
-      // We create the loop runner here but it is not actually running until
-      // _emscripten_set_main_loop_timing is called (which might happen a
-      // later time).  This member signifies that the current runner has not
-      // yet been started so that we can call runtimeKeepalivePush when it
-      // gets it timing set for the first time.
-      Browser.mainLoop.running = false;
-      Browser.mainLoop.runner = function Browser_mainLoop_runner() {
-        if (ABORT) return;
-        if (Browser.mainLoop.queue.length > 0) {
-          var start = Date.now();
-          var blocker = Browser.mainLoop.queue.shift();
-          blocker.func(blocker.arg);
-          if (Browser.mainLoop.remainingBlockers) {
-            var remaining = Browser.mainLoop.remainingBlockers;
-            var next = remaining%1 == 0 ? remaining-1 : Math.floor(remaining);
-            if (blocker.counted) {
-              Browser.mainLoop.remainingBlockers = next;
-            } else {
-              // not counted, but move the progress along a tiny bit
-              next = next + 0.5; // do not steal all the next one's progress
-              Browser.mainLoop.remainingBlockers = (8*remaining + next)/9;
-            }
-          }
-          Browser.mainLoop.updateStatus();
-  
-          // catches pause/resume main loop from blocker execution
-          if (!checkIsRunning()) return;
-  
-          setTimeout(Browser.mainLoop.runner, 0);
-          return;
-        }
-  
-        // catch pauses from non-main loop sources
-        if (!checkIsRunning()) return;
-  
-        // Implement very basic swap interval control
-        Browser.mainLoop.currentFrameNumber = Browser.mainLoop.currentFrameNumber + 1 | 0;
-        if (Browser.mainLoop.timingMode == 1 && Browser.mainLoop.timingValue > 1 && Browser.mainLoop.currentFrameNumber % Browser.mainLoop.timingValue != 0) {
-          // Not the scheduled time to render this frame - skip.
-          Browser.mainLoop.scheduler();
-          return;
-        } else if (Browser.mainLoop.timingMode == 0) {
-          Browser.mainLoop.tickStartTime = _emscripten_get_now();
-        }
-  
-        // Signal GL rendering layer that processing of a new frame is about to start. This helps it optimize
-        // VBO double-buffering and reduce GPU stalls.
-        GL.newRenderingFrameStarted();
-  
-        if (Browser.mainLoop.method === 'timeout' && Module.ctx) {
-          warnOnce('Looks like you are rendering without using requestAnimationFrame for the main loop. You should use 0 for the frame rate in emscripten_set_main_loop in order to use requestAnimationFrame, as that can greatly improve your frame rates!');
-          Browser.mainLoop.method = ''; // just warn once per call to set main loop
-        }
-  
-        Browser.mainLoop.runIter(browserIterationFunc);
-  
-        checkStackCookie();
-  
-        // catch pauses from the main loop itself
-        if (!checkIsRunning()) return;
-  
-        // Queue new audio data. This is important to be right after the main loop invocation, so that we will immediately be able
-        // to queue the newest produced audio samples.
-        // TODO: Consider adding pre- and post- rAF callbacks so that GL.newRenderingFrameStarted() and SDL.audio.queueNewAudioData()
-        //       do not need to be hardcoded into this function, but can be more generic.
-        if (typeof SDL == 'object') SDL.audio?.queueNewAudioData?.();
-  
-        Browser.mainLoop.scheduler();
-      }
-  
-      if (!noSetTiming) {
-        if (fps && fps > 0) {
-          _emscripten_set_main_loop_timing(0, 1000.0 / fps);
-        } else {
-          // Do rAF by rendering each frame (no decimating)
-          _emscripten_set_main_loop_timing(1, 1);
-        }
-  
-        Browser.mainLoop.scheduler();
-      }
-  
-      if (simulateInfiniteLoop) {
-        throw 'unwind';
-      }
-    };
-  
-  
-  var _emscripten_set_main_loop = (func, fps, simulateInfiniteLoop) => {
-      var browserIterationFunc = getWasmTableEntry(func);
-      setMainLoop(browserIterationFunc, fps, simulateInfiniteLoop);
-    };
-
-  
-  
-  var getBoundingClientRect = (e) => specialHTMLTargets.indexOf(e) < 0 ? e.getBoundingClientRect() : {'left':0,'top':0};
-  
-  var fillMouseEventData = (eventStruct, e, target) => {
-      assert(eventStruct % 4 == 0);
-      HEAPF64[((eventStruct)>>3)] = e.timeStamp;
-      var idx = ((eventStruct)>>2);
-      HEAP32[idx + 2] = e.screenX;
-      HEAP32[idx + 3] = e.screenY;
-      HEAP32[idx + 4] = e.clientX;
-      HEAP32[idx + 5] = e.clientY;
-      HEAP32[idx + 6] = e.ctrlKey;
-      HEAP32[idx + 7] = e.shiftKey;
-      HEAP32[idx + 8] = e.altKey;
-      HEAP32[idx + 9] = e.metaKey;
-      HEAP16[idx*2 + 20] = e.button;
-      HEAP16[idx*2 + 21] = e.buttons;
-  
-      HEAP32[idx + 11] = e["movementX"]
-        ;
-  
-      HEAP32[idx + 12] = e["movementY"]
-        ;
-  
-      // Note: rect contains doubles (truncated to placate SAFE_HEAP, which is the same behaviour when writing to HEAP32 anyway)
-      var rect = getBoundingClientRect(target);
-      HEAP32[idx + 13] = e.clientX - (rect.left | 0);
-      HEAP32[idx + 14] = e.clientY - (rect.top  | 0);
-  
-    };
-  
-  
-  
-  var registerMouseEventCallback = (target, userData, useCapture, callbackfunc, eventTypeId, eventTypeString, targetThread) => {
-      if (!JSEvents.mouseEvent) JSEvents.mouseEvent = _malloc(72);
-      target = findEventTarget(target);
-  
-      var mouseEventHandlerFunc = (e = event) => {
-        // TODO: Make this access thread safe, or this could update live while app is reading it.
-        fillMouseEventData(JSEvents.mouseEvent, e, target);
-  
-        if (getWasmTableEntry(callbackfunc)(eventTypeId, JSEvents.mouseEvent, userData)) e.preventDefault();
-      };
-  
-      var eventHandler = {
-        target,
-        allowsDeferredCalls: eventTypeString != 'mousemove' && eventTypeString != 'mouseenter' && eventTypeString != 'mouseleave', // Mouse move events do not allow fullscreen/pointer lock requests to be handled in them!
-        eventTypeString,
-        callbackfunc,
-        handlerFunc: mouseEventHandlerFunc,
-        useCapture
-      };
-      return JSEvents.registerOrRemoveHandler(eventHandler);
-    };
-  var _emscripten_set_mousedown_callback_on_thread = (target, userData, useCapture, callbackfunc, targetThread) =>
-      registerMouseEventCallback(target, userData, useCapture, callbackfunc, 5, "mousedown", targetThread);
-
-  var webgl_enable_ANGLE_instanced_arrays = (ctx) => {
-      // Extension available in WebGL 1 from Firefox 26 and Google Chrome 30 onwards. Core feature in WebGL 2.
-      var ext = ctx.getExtension('ANGLE_instanced_arrays');
-      if (ext) {
-        ctx['vertexAttribDivisor'] = (index, divisor) => ext['vertexAttribDivisorANGLE'](index, divisor);
-        ctx['drawArraysInstanced'] = (mode, first, count, primcount) => ext['drawArraysInstancedANGLE'](mode, first, count, primcount);
-        ctx['drawElementsInstanced'] = (mode, count, type, indices, primcount) => ext['drawElementsInstancedANGLE'](mode, count, type, indices, primcount);
-        return 1;
-      }
-    };
-  
-  var webgl_enable_OES_vertex_array_object = (ctx) => {
-      // Extension available in WebGL 1 from Firefox 25 and WebKit 536.28/desktop Safari 6.0.3 onwards. Core feature in WebGL 2.
-      var ext = ctx.getExtension('OES_vertex_array_object');
-      if (ext) {
-        ctx['createVertexArray'] = () => ext['createVertexArrayOES']();
-        ctx['deleteVertexArray'] = (vao) => ext['deleteVertexArrayOES'](vao);
-        ctx['bindVertexArray'] = (vao) => ext['bindVertexArrayOES'](vao);
-        ctx['isVertexArray'] = (vao) => ext['isVertexArrayOES'](vao);
-        return 1;
-      }
-    };
-  
-  var webgl_enable_WEBGL_draw_buffers = (ctx) => {
-      // Extension available in WebGL 1 from Firefox 28 onwards. Core feature in WebGL 2.
-      var ext = ctx.getExtension('WEBGL_draw_buffers');
-      if (ext) {
-        ctx['drawBuffers'] = (n, bufs) => ext['drawBuffersWEBGL'](n, bufs);
-        return 1;
-      }
-    };
-  
-  var webgl_enable_WEBGL_draw_instanced_base_vertex_base_instance = (ctx) =>
-      // Closure is expected to be allowed to minify the '.dibvbi' property, so not accessing it quoted.
-      !!(ctx.dibvbi = ctx.getExtension('WEBGL_draw_instanced_base_vertex_base_instance'));
-  
-  var webgl_enable_WEBGL_multi_draw_instanced_base_vertex_base_instance = (ctx) => {
-      // Closure is expected to be allowed to minify the '.mdibvbi' property, so not accessing it quoted.
-      return !!(ctx.mdibvbi = ctx.getExtension('WEBGL_multi_draw_instanced_base_vertex_base_instance'));
-    };
-  
-  var webgl_enable_WEBGL_multi_draw = (ctx) => {
-      // Closure is expected to be allowed to minify the '.multiDrawWebgl' property, so not accessing it quoted.
-      return !!(ctx.multiDrawWebgl = ctx.getExtension('WEBGL_multi_draw'));
-    };
-  
-  var getEmscriptenSupportedExtensions = (ctx) => {
-      // Restrict the list of advertised extensions to those that we actually
-      // support.
-      var supportedExtensions = [
-        // WebGL 1 extensions
-        'ANGLE_instanced_arrays',
-        'EXT_blend_minmax',
-        'EXT_disjoint_timer_query',
-        'EXT_frag_depth',
-        'EXT_shader_texture_lod',
-        'EXT_sRGB',
-        'OES_element_index_uint',
-        'OES_fbo_render_mipmap',
-        'OES_standard_derivatives',
-        'OES_texture_float',
-        'OES_texture_half_float',
-        'OES_texture_half_float_linear',
-        'OES_vertex_array_object',
-        'WEBGL_color_buffer_float',
-        'WEBGL_depth_texture',
-        'WEBGL_draw_buffers',
-        // WebGL 2 extensions
-        'EXT_color_buffer_float',
-        'EXT_conservative_depth',
-        'EXT_disjoint_timer_query_webgl2',
-        'EXT_texture_norm16',
-        'NV_shader_noperspective_interpolation',
-        'WEBGL_clip_cull_distance',
-        // WebGL 1 and WebGL 2 extensions
-        'EXT_color_buffer_half_float',
-        'EXT_depth_clamp',
-        'EXT_float_blend',
-        'EXT_texture_compression_bptc',
-        'EXT_texture_compression_rgtc',
-        'EXT_texture_filter_anisotropic',
-        'KHR_parallel_shader_compile',
-        'OES_texture_float_linear',
-        'WEBGL_blend_func_extended',
-        'WEBGL_compressed_texture_astc',
-        'WEBGL_compressed_texture_etc',
-        'WEBGL_compressed_texture_etc1',
-        'WEBGL_compressed_texture_s3tc',
-        'WEBGL_compressed_texture_s3tc_srgb',
-        'WEBGL_debug_renderer_info',
-        'WEBGL_debug_shaders',
-        'WEBGL_lose_context',
-        'WEBGL_multi_draw',
-      ];
-      // .getSupportedExtensions() can return null if context is lost, so coerce to empty array.
-      return (ctx.getSupportedExtensions() || []).filter(ext => supportedExtensions.includes(ext));
-    };
-  
-  
-  var GL = {
-  counter:1,
-  buffers:[],
-  mappedBuffers:{
-  },
-  programs:[],
-  framebuffers:[],
-  renderbuffers:[],
-  textures:[],
-  shaders:[],
-  vaos:[],
-  contexts:[],
-  offscreenCanvases:{
-  },
-  queries:[],
-  samplers:[],
-  transformFeedbacks:[],
-  syncs:[],
-  byteSizeByTypeRoot:5120,
-  byteSizeByType:[1,1,2,2,4,4,4,2,3,4,8],
-  stringCache:{
-  },
-  stringiCache:{
-  },
-  unpackAlignment:4,
-  recordError:(errorCode) => {
-        if (!GL.lastError) {
-          GL.lastError = errorCode;
-        }
-      },
-  getNewId:(table) => {
-        var ret = GL.counter++;
-        for (var i = table.length; i < ret; i++) {
-          table[i] = null;
-        }
-        return ret;
-      },
-  genObject:(n, buffers, createFunction, objectTable
-        ) => {
-        for (var i = 0; i < n; i++) {
-          var buffer = GLctx[createFunction]();
-          var id = buffer && GL.getNewId(objectTable);
-          if (buffer) {
-            buffer.name = id;
-            objectTable[id] = buffer;
-          } else {
-            GL.recordError(0x502 /* GL_INVALID_OPERATION */);
-          }
-          HEAP32[(((buffers)+(i*4))>>2)] = id;
-        }
-      },
-  MAX_TEMP_BUFFER_SIZE:2097152,
-  numTempVertexBuffersPerSize:64,
-  log2ceilLookup:(i) => 32 - Math.clz32(i === 0 ? 0 : i - 1),
-  generateTempBuffers:(quads, context) => {
-        var largestIndex = GL.log2ceilLookup(GL.MAX_TEMP_BUFFER_SIZE);
-        context.tempVertexBufferCounters1 = [];
-        context.tempVertexBufferCounters2 = [];
-        context.tempVertexBufferCounters1.length = context.tempVertexBufferCounters2.length = largestIndex+1;
-        context.tempVertexBuffers1 = [];
-        context.tempVertexBuffers2 = [];
-        context.tempVertexBuffers1.length = context.tempVertexBuffers2.length = largestIndex+1;
-        context.tempIndexBuffers = [];
-        context.tempIndexBuffers.length = largestIndex+1;
-        for (var i = 0; i <= largestIndex; ++i) {
-          context.tempIndexBuffers[i] = null; // Created on-demand
-          context.tempVertexBufferCounters1[i] = context.tempVertexBufferCounters2[i] = 0;
-          var ringbufferLength = GL.numTempVertexBuffersPerSize;
-          context.tempVertexBuffers1[i] = [];
-          context.tempVertexBuffers2[i] = [];
-          var ringbuffer1 = context.tempVertexBuffers1[i];
-          var ringbuffer2 = context.tempVertexBuffers2[i];
-          ringbuffer1.length = ringbuffer2.length = ringbufferLength;
-          for (var j = 0; j < ringbufferLength; ++j) {
-            ringbuffer1[j] = ringbuffer2[j] = null; // Created on-demand
-          }
-        }
-  
-        if (quads) {
-          // GL_QUAD indexes can be precalculated
-          context.tempQuadIndexBuffer = GLctx.createBuffer();
-          context.GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, context.tempQuadIndexBuffer);
-          var numIndexes = GL.MAX_TEMP_BUFFER_SIZE >> 1;
-          var quadIndexes = new Uint16Array(numIndexes);
-          var i = 0, v = 0;
-          while (1) {
-            quadIndexes[i++] = v;
-            if (i >= numIndexes) break;
-            quadIndexes[i++] = v+1;
-            if (i >= numIndexes) break;
-            quadIndexes[i++] = v+2;
-            if (i >= numIndexes) break;
-            quadIndexes[i++] = v;
-            if (i >= numIndexes) break;
-            quadIndexes[i++] = v+2;
-            if (i >= numIndexes) break;
-            quadIndexes[i++] = v+3;
-            if (i >= numIndexes) break;
-            v += 4;
-          }
-          context.GLctx.bufferData(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, quadIndexes, 0x88E4 /*GL_STATIC_DRAW*/);
-          context.GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, null);
-        }
-      },
-  getTempVertexBuffer:(sizeBytes) => {
-        var idx = GL.log2ceilLookup(sizeBytes);
-        var ringbuffer = GL.currentContext.tempVertexBuffers1[idx];
-        var nextFreeBufferIndex = GL.currentContext.tempVertexBufferCounters1[idx];
-        GL.currentContext.tempVertexBufferCounters1[idx] = (GL.currentContext.tempVertexBufferCounters1[idx]+1) & (GL.numTempVertexBuffersPerSize-1);
-        var vbo = ringbuffer[nextFreeBufferIndex];
-        if (vbo) {
-          return vbo;
-        }
-        var prevVBO = GLctx.getParameter(0x8894 /*GL_ARRAY_BUFFER_BINDING*/);
-        ringbuffer[nextFreeBufferIndex] = GLctx.createBuffer();
-        GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, ringbuffer[nextFreeBufferIndex]);
-        GLctx.bufferData(0x8892 /*GL_ARRAY_BUFFER*/, 1 << idx, 0x88E8 /*GL_DYNAMIC_DRAW*/);
-        GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, prevVBO);
-        return ringbuffer[nextFreeBufferIndex];
-      },
-  getTempIndexBuffer:(sizeBytes) => {
-        var idx = GL.log2ceilLookup(sizeBytes);
-        var ibo = GL.currentContext.tempIndexBuffers[idx];
-        if (ibo) {
-          return ibo;
-        }
-        var prevIBO = GLctx.getParameter(0x8895 /*ELEMENT_ARRAY_BUFFER_BINDING*/);
-        GL.currentContext.tempIndexBuffers[idx] = GLctx.createBuffer();
-        GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, GL.currentContext.tempIndexBuffers[idx]);
-        GLctx.bufferData(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, 1 << idx, 0x88E8 /*GL_DYNAMIC_DRAW*/);
-        GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, prevIBO);
-        return GL.currentContext.tempIndexBuffers[idx];
-      },
-  newRenderingFrameStarted:() => {
-        if (!GL.currentContext) {
-          return;
-        }
-        var vb = GL.currentContext.tempVertexBuffers1;
-        GL.currentContext.tempVertexBuffers1 = GL.currentContext.tempVertexBuffers2;
-        GL.currentContext.tempVertexBuffers2 = vb;
-        vb = GL.currentContext.tempVertexBufferCounters1;
-        GL.currentContext.tempVertexBufferCounters1 = GL.currentContext.tempVertexBufferCounters2;
-        GL.currentContext.tempVertexBufferCounters2 = vb;
-        var largestIndex = GL.log2ceilLookup(GL.MAX_TEMP_BUFFER_SIZE);
-        for (var i = 0; i <= largestIndex; ++i) {
-          GL.currentContext.tempVertexBufferCounters1[i] = 0;
-        }
-      },
-  getSource:(shader, count, string, length) => {
-        var source = '';
-        for (var i = 0; i < count; ++i) {
-          var len = length ? HEAPU32[(((length)+(i*4))>>2)] : undefined;
-          source += UTF8ToString(HEAPU32[(((string)+(i*4))>>2)], len);
-        }
-        return source;
-      },
-  calcBufLength:(size, type, stride, count) => {
-        if (stride > 0) {
-          return count * stride;  // XXXvlad this is not exactly correct I don't think
-        }
-        var typeSize = GL.byteSizeByType[type - GL.byteSizeByTypeRoot];
-        return size * typeSize * count;
-      },
-  usedTempBuffers:[],
-  preDrawHandleClientVertexAttribBindings:(count) => {
-        GL.resetBufferBinding = false;
-  
-        // TODO: initial pass to detect ranges we need to upload, might not need
-        // an upload per attrib
-        for (var i = 0; i < GL.currentContext.maxVertexAttribs; ++i) {
-          var cb = GL.currentContext.clientBuffers[i];
-          if (!cb.clientside || !cb.enabled) continue;
-  
-          GL.resetBufferBinding = true;
-  
-          var size = GL.calcBufLength(cb.size, cb.type, cb.stride, count);
-          var buf = GL.getTempVertexBuffer(size);
-          GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, buf);
-          GLctx.bufferSubData(0x8892 /*GL_ARRAY_BUFFER*/,
-                                   0,
-                                   HEAPU8.subarray(cb.ptr, cb.ptr + size));
-          cb.vertexAttribPointerAdaptor.call(GLctx, i, cb.size, cb.type, cb.normalized, cb.stride, 0);
-        }
-      },
-  postDrawHandleClientVertexAttribBindings:() => {
-        if (GL.resetBufferBinding) {
-          GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, GL.buffers[GLctx.currentArrayBufferBinding]);
-        }
-      },
-  createContext:(/** @type {HTMLCanvasElement} */ canvas, webGLContextAttributes) => {
-  
-        // BUG: Workaround Safari WebGL issue: After successfully acquiring WebGL
-        // context on a canvas, calling .getContext() will always return that
-        // context independent of which 'webgl' or 'webgl2'
-        // context version was passed. See:
-        //   https://bugs.webkit.org/show_bug.cgi?id=222758
-        // and:
-        //   https://github.com/emscripten-core/emscripten/issues/13295.
-        // TODO: Once the bug is fixed and shipped in Safari, adjust the Safari
-        // version field in above check.
-        if (!canvas.getContextSafariWebGL2Fixed) {
-          canvas.getContextSafariWebGL2Fixed = canvas.getContext;
-          /** @type {function(this:HTMLCanvasElement, string, (Object|null)=): (Object|null)} */
-          function fixedGetContext(ver, attrs) {
-            var gl = canvas.getContextSafariWebGL2Fixed(ver, attrs);
-            return ((ver == 'webgl') == (gl instanceof WebGLRenderingContext)) ? gl : null;
-          }
-          canvas.getContext = fixedGetContext;
-        }
-  
-        var ctx =
-          (webGLContextAttributes.majorVersion > 1)
-          ?
-            canvas.getContext("webgl2", webGLContextAttributes)
-          :
-          (canvas.getContext("webgl", webGLContextAttributes)
-            // https://caniuse.com/#feat=webgl
-            );
-  
-        if (!ctx) return 0;
-  
-        var handle = GL.registerContext(ctx, webGLContextAttributes);
-  
-        return handle;
-      },
-  registerContext:(ctx, webGLContextAttributes) => {
-        // without pthreads a context is just an integer ID
-        var handle = GL.getNewId(GL.contexts);
-  
-        var context = {
-          handle,
-          attributes: webGLContextAttributes,
-          version: webGLContextAttributes.majorVersion,
-          GLctx: ctx
-        };
-  
-        // Store the created context object so that we can access the context
-        // given a canvas without having to pass the parameters again.
-        if (ctx.canvas) ctx.canvas.GLctxObject = context;
-        GL.contexts[handle] = context;
-        if (typeof webGLContextAttributes.enableExtensionsByDefault == 'undefined' || webGLContextAttributes.enableExtensionsByDefault) {
-          GL.initExtensions(context);
-        }
-  
-        context.maxVertexAttribs = context.GLctx.getParameter(0x8869 /*GL_MAX_VERTEX_ATTRIBS*/);
-        context.clientBuffers = [];
-        for (var i = 0; i < context.maxVertexAttribs; i++) {
-          context.clientBuffers[i] = {
-            enabled: false,
-            clientside: false,
-            size: 0,
-            type: 0,
-            normalized: 0,
-            stride: 0,
-            ptr: 0,
-            vertexAttribPointerAdaptor: null,
-          };
-        }
-  
-        GL.generateTempBuffers(false, context);
-  
-        return handle;
-      },
-  makeContextCurrent:(contextHandle) => {
-  
-        // Active Emscripten GL layer context object.
-        GL.currentContext = GL.contexts[contextHandle];
-        // Active WebGL context object.
-        Module.ctx = GLctx = GL.currentContext?.GLctx;
-        return !(contextHandle && !GLctx);
-      },
-  getContext:(contextHandle) => {
-        return GL.contexts[contextHandle];
-      },
-  deleteContext:(contextHandle) => {
-        if (GL.currentContext === GL.contexts[contextHandle]) {
-          GL.currentContext = null;
-        }
-        if (typeof JSEvents == 'object') {
-          // Release all JS event handlers on the DOM element that the GL context is
-          // associated with since the context is now deleted.
-          JSEvents.removeAllHandlersOnTarget(GL.contexts[contextHandle].GLctx.canvas);
-        }
-        // Make sure the canvas object no longer refers to the context object so
-        // there are no GC surprises.
-        if (GL.contexts[contextHandle] && GL.contexts[contextHandle].GLctx.canvas) {
-          GL.contexts[contextHandle].GLctx.canvas.GLctxObject = undefined;
-        }
-        GL.contexts[contextHandle] = null;
-      },
-  initExtensions:(context) => {
-        // If this function is called without a specific context object, init the
-        // extensions of the currently active context.
-        context ||= GL.currentContext;
-  
-        if (context.initExtensionsDone) return;
-        context.initExtensionsDone = true;
-  
-        var GLctx = context.GLctx;
-  
-        // Detect the presence of a few extensions manually, ction GL interop
-        // layer itself will need to know if they exist.
-  
-        // Extensions that are only available in WebGL 1 (the calls will be no-ops
-        // if called on a WebGL 2 context active)
-        webgl_enable_ANGLE_instanced_arrays(GLctx);
-        webgl_enable_OES_vertex_array_object(GLctx);
-        webgl_enable_WEBGL_draw_buffers(GLctx);
-        // Extensions that are available from WebGL >= 2 (no-op if called on a WebGL 1 context active)
-        webgl_enable_WEBGL_draw_instanced_base_vertex_base_instance(GLctx);
-        webgl_enable_WEBGL_multi_draw_instanced_base_vertex_base_instance(GLctx);
-  
-        // On WebGL 2, EXT_disjoint_timer_query is replaced with an alternative
-        // that's based on core APIs, and exposes only the queryCounterEXT()
-        // entrypoint.
-        if (context.version >= 2) {
-          GLctx.disjointTimerQueryExt = GLctx.getExtension("EXT_disjoint_timer_query_webgl2");
-        }
-  
-        // However, Firefox exposes the WebGL 1 version on WebGL 2 as well and
-        // thus we look for the WebGL 1 version again if the WebGL 2 version
-        // isn't present. https://bugzilla.mozilla.org/show_bug.cgi?id=1328882
-        if (context.version < 2 || !GLctx.disjointTimerQueryExt)
-        {
-          GLctx.disjointTimerQueryExt = GLctx.getExtension("EXT_disjoint_timer_query");
-        }
-  
-        webgl_enable_WEBGL_multi_draw(GLctx);
-  
-        getEmscriptenSupportedExtensions(GLctx).forEach((ext) => {
-          // WEBGL_lose_context, WEBGL_debug_renderer_info and WEBGL_debug_shaders
-          // are not enabled by default.
-          if (!ext.includes('lose_context') && !ext.includes('debug')) {
-            // Call .getExtension() to enable that extension permanently.
-            GLctx.getExtension(ext);
-          }
-        });
-      },
-  };
-  
-  
-  var webglPowerPreferences = ["default","low-power","high-performance"];
-  
-  
-  var findCanvasEventTarget = findEventTarget;
-  
-  /** @suppress {duplicate } */
-  var _emscripten_webgl_do_create_context = (target, attributes) => {
-      assert(attributes);
-      var a = ((attributes)>>2);
-      var powerPreference = HEAP32[a + (24>>2)];
-      var contextAttributes = {
-        'alpha': !!HEAP32[a + (0>>2)],
-        'depth': !!HEAP32[a + (4>>2)],
-        'stencil': !!HEAP32[a + (8>>2)],
-        'antialias': !!HEAP32[a + (12>>2)],
-        'premultipliedAlpha': !!HEAP32[a + (16>>2)],
-        'preserveDrawingBuffer': !!HEAP32[a + (20>>2)],
-        'powerPreference': webglPowerPreferences[powerPreference],
-        'failIfMajorPerformanceCaveat': !!HEAP32[a + (28>>2)],
-        // The following are not predefined WebGL context attributes in the WebGL specification, so the property names can be minified by Closure.
-        majorVersion: HEAP32[a + (32>>2)],
-        minorVersion: HEAP32[a + (36>>2)],
-        enableExtensionsByDefault: HEAP32[a + (40>>2)],
-        explicitSwapControl: HEAP32[a + (44>>2)],
-        proxyContextToMainThread: HEAP32[a + (48>>2)],
-        renderViaOffscreenBackBuffer: HEAP32[a + (52>>2)]
-      };
-  
-      var canvas = findCanvasEventTarget(target);
-  
-      if (!canvas) {
-        return 0;
-      }
-  
-      if (contextAttributes.explicitSwapControl) {
-        return 0;
-      }
-  
-      var contextHandle = GL.createContext(canvas, contextAttributes);
-      return contextHandle;
-    };
-  var _emscripten_webgl_create_context = _emscripten_webgl_do_create_context;
-
-  var _emscripten_webgl_make_context_current = (contextHandle) => {
-      var success = GL.makeContextCurrent(contextHandle);
-      return success ? 0 : -5;
-    };
-
-  var ENV = {
-  };
-  
-  var getExecutableName = () => {
-      return thisProgram || './this.program';
-    };
-  var getEnvStrings = () => {
-      if (!getEnvStrings.strings) {
-        // Default values.
-        // Browser language detection #8751
-        var lang = ((typeof navigator == 'object' && navigator.languages && navigator.languages[0]) || 'C').replace('-', '_') + '.UTF-8';
-        var env = {
-          'USER': 'web_user',
-          'LOGNAME': 'web_user',
-          'PATH': '/',
-          'PWD': '/',
-          'HOME': '/home/web_user',
-          'LANG': lang,
-          '_': getExecutableName()
-        };
-        // Apply the user-provided values, if any.
-        for (var x in ENV) {
-          // x is a key in ENV; if ENV[x] is undefined, that means it was
-          // explicitly set to be so. We allow user code to do that to
-          // force variables with default values to remain unset.
-          if (ENV[x] === undefined) delete env[x];
-          else env[x] = ENV[x];
-        }
-        var strings = [];
-        for (var x in env) {
-          strings.push(`${x}=${env[x]}`);
-        }
-        getEnvStrings.strings = strings;
-      }
-      return getEnvStrings.strings;
-    };
-  
-  var stringToAscii = (str, buffer) => {
-      for (var i = 0; i < str.length; ++i) {
-        assert(str.charCodeAt(i) === (str.charCodeAt(i) & 0xff));
-        HEAP8[buffer++] = str.charCodeAt(i);
-      }
-      // Null-terminate the string
-      HEAP8[buffer] = 0;
-    };
-  var _environ_get = (__environ, environ_buf) => {
-      var bufSize = 0;
-      getEnvStrings().forEach((string, i) => {
-        var ptr = environ_buf + bufSize;
-        HEAPU32[(((__environ)+(i*4))>>2)] = ptr;
-        stringToAscii(string, ptr);
-        bufSize += string.length + 1;
-      });
-      return 0;
-    };
-
-  var _environ_sizes_get = (penviron_count, penviron_buf_size) => {
-      var strings = getEnvStrings();
-      HEAPU32[((penviron_count)>>2)] = strings.length;
-      var bufSize = 0;
-      strings.forEach((string) => bufSize += string.length + 1);
-      HEAPU32[((penviron_buf_size)>>2)] = bufSize;
-      return 0;
-    };
-
   function _fd_close(fd) {
   try {
   
@@ -6112,435 +4875,6 @@ function dbg(...args) {
     return e.errno;
   }
   }
-
-  var _glAttachShader = (program, shader) => {
-      GLctx.attachShader(GL.programs[program], GL.shaders[shader]);
-    };
-
-  var _glBindBuffer = (target, buffer) => {
-      if (target == 0x8892 /*GL_ARRAY_BUFFER*/) {
-        GLctx.currentArrayBufferBinding = buffer;
-      } else if (target == 0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/) {
-        GLctx.currentElementArrayBufferBinding = buffer;
-      }
-  
-      if (target == 0x88EB /*GL_PIXEL_PACK_BUFFER*/) {
-        // In WebGL 2 glReadPixels entry point, we need to use a different WebGL 2
-        // API function call when a buffer is bound to
-        // GL_PIXEL_PACK_BUFFER_BINDING point, so must keep track whether that
-        // binding point is non-null to know what is the proper API function to
-        // call.
-        GLctx.currentPixelPackBufferBinding = buffer;
-      } else if (target == 0x88EC /*GL_PIXEL_UNPACK_BUFFER*/) {
-        // In WebGL 2 gl(Compressed)Tex(Sub)Image[23]D entry points, we need to
-        // use a different WebGL 2 API function call when a buffer is bound to
-        // GL_PIXEL_UNPACK_BUFFER_BINDING point, so must keep track whether that
-        // binding point is non-null to know what is the proper API function to
-        // call.
-        GLctx.currentPixelUnpackBufferBinding = buffer;
-      }
-      GLctx.bindBuffer(target, GL.buffers[buffer]);
-    };
-
-  var _glBindVertexArray = (vao) => {
-      GLctx.bindVertexArray(GL.vaos[vao]);
-      var ibo = GLctx.getParameter(0x8895 /*ELEMENT_ARRAY_BUFFER_BINDING*/);
-      GLctx.currentElementArrayBufferBinding = ibo ? (ibo.name | 0) : 0;
-    };
-
-  var _glBufferData = (target, size, data, usage) => {
-  
-      if (GL.currentContext.version >= 2) {
-        // If size is zero, WebGL would interpret uploading the whole input
-        // arraybuffer (starting from given offset), which would not make sense in
-        // WebAssembly, so avoid uploading if size is zero. However we must still
-        // call bufferData to establish a backing storage of zero bytes.
-        if (data && size) {
-          GLctx.bufferData(target, HEAPU8, usage, data, size);
-        } else {
-          GLctx.bufferData(target, size, usage);
-        }
-        return;
-      }
-      // N.b. here first form specifies a heap subarray, second form an integer
-      // size, so the ?: code here is polymorphic. It is advised to avoid
-      // randomly mixing both uses in calling code, to avoid any potential JS
-      // engine JIT issues.
-      GLctx.bufferData(target, data ? HEAPU8.subarray(data, data+size) : size, usage);
-    };
-
-  var _glClear = (x0) => GLctx.clear(x0);
-
-  var _glClearColor = (x0, x1, x2, x3) => GLctx.clearColor(x0, x1, x2, x3);
-
-  var _glCompileShader = (shader) => {
-      GLctx.compileShader(GL.shaders[shader]);
-    };
-
-  var _glCreateProgram = () => {
-      var id = GL.getNewId(GL.programs);
-      var program = GLctx.createProgram();
-      // Store additional information needed for each shader program:
-      program.name = id;
-      // Lazy cache results of
-      // glGetProgramiv(GL_ACTIVE_UNIFORM_MAX_LENGTH/GL_ACTIVE_ATTRIBUTE_MAX_LENGTH/GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH)
-      program.maxUniformLength = program.maxAttributeLength = program.maxUniformBlockNameLength = 0;
-      program.uniformIdCounter = 1;
-      GL.programs[id] = program;
-      return id;
-    };
-
-  var _glCreateShader = (shaderType) => {
-      var id = GL.getNewId(GL.shaders);
-      GL.shaders[id] = GLctx.createShader(shaderType);
-  
-      return id;
-    };
-
-  var _glDeleteBuffers = (n, buffers) => {
-      for (var i = 0; i < n; i++) {
-        var id = HEAP32[(((buffers)+(i*4))>>2)];
-        var buffer = GL.buffers[id];
-  
-        // From spec: "glDeleteBuffers silently ignores 0's and names that do not
-        // correspond to existing buffer objects."
-        if (!buffer) continue;
-  
-        GLctx.deleteBuffer(buffer);
-        buffer.name = 0;
-        GL.buffers[id] = null;
-  
-        if (id == GLctx.currentArrayBufferBinding) GLctx.currentArrayBufferBinding = 0;
-        if (id == GLctx.currentElementArrayBufferBinding) GLctx.currentElementArrayBufferBinding = 0;
-        if (id == GLctx.currentPixelPackBufferBinding) GLctx.currentPixelPackBufferBinding = 0;
-        if (id == GLctx.currentPixelUnpackBufferBinding) GLctx.currentPixelUnpackBufferBinding = 0;
-      }
-    };
-
-  var _glDeleteShader = (id) => {
-      if (!id) return;
-      var shader = GL.shaders[id];
-      if (!shader) {
-        // glDeleteShader actually signals an error when deleting a nonexisting
-        // object, unlike some other GL delete functions.
-        GL.recordError(0x501 /* GL_INVALID_VALUE */);
-        return;
-      }
-      GLctx.deleteShader(shader);
-      GL.shaders[id] = null;
-    };
-
-  var _glDrawArrays = (mode, first, count) => {
-      // bind any client-side buffers
-      GL.preDrawHandleClientVertexAttribBindings(first + count);
-  
-      GLctx.drawArrays(mode, first, count);
-  
-      GL.postDrawHandleClientVertexAttribBindings();
-    };
-
-  var _glEnableVertexAttribArray = (index) => {
-      var cb = GL.currentContext.clientBuffers[index];
-      cb.enabled = true;
-      GLctx.enableVertexAttribArray(index);
-    };
-
-  var _glGenBuffers = (n, buffers) => {
-      GL.genObject(n, buffers, 'createBuffer', GL.buffers
-        );
-    };
-
-  var _glGenVertexArrays = (n, arrays) => {
-      GL.genObject(n, arrays, 'createVertexArray', GL.vaos
-        );
-    };
-
-  var _glGetProgramInfoLog = (program, maxLength, length, infoLog) => {
-      var log = GLctx.getProgramInfoLog(GL.programs[program]);
-      if (log === null) log = '(unknown error)';
-      var numBytesWrittenExclNull = (maxLength > 0 && infoLog) ? stringToUTF8(log, infoLog, maxLength) : 0;
-      if (length) HEAP32[((length)>>2)] = numBytesWrittenExclNull;
-    };
-
-  var _glGetProgramiv = (program, pname, p) => {
-      if (!p) {
-        // GLES2 specification does not specify how to behave if p is a null
-        // pointer. Since calling this function does not make sense if p == null,
-        // issue a GL error to notify user about it.
-        GL.recordError(0x501 /* GL_INVALID_VALUE */);
-        return;
-      }
-  
-      if (program >= GL.counter) {
-        GL.recordError(0x501 /* GL_INVALID_VALUE */);
-        return;
-      }
-  
-      program = GL.programs[program];
-  
-      if (pname == 0x8B84) { // GL_INFO_LOG_LENGTH
-        var log = GLctx.getProgramInfoLog(program);
-        if (log === null) log = '(unknown error)';
-        HEAP32[((p)>>2)] = log.length + 1;
-      } else if (pname == 0x8B87 /* GL_ACTIVE_UNIFORM_MAX_LENGTH */) {
-        if (!program.maxUniformLength) {
-          for (var i = 0; i < GLctx.getProgramParameter(program, 0x8B86/*GL_ACTIVE_UNIFORMS*/); ++i) {
-            program.maxUniformLength = Math.max(program.maxUniformLength, GLctx.getActiveUniform(program, i).name.length+1);
-          }
-        }
-        HEAP32[((p)>>2)] = program.maxUniformLength;
-      } else if (pname == 0x8B8A /* GL_ACTIVE_ATTRIBUTE_MAX_LENGTH */) {
-        if (!program.maxAttributeLength) {
-          for (var i = 0; i < GLctx.getProgramParameter(program, 0x8B89/*GL_ACTIVE_ATTRIBUTES*/); ++i) {
-            program.maxAttributeLength = Math.max(program.maxAttributeLength, GLctx.getActiveAttrib(program, i).name.length+1);
-          }
-        }
-        HEAP32[((p)>>2)] = program.maxAttributeLength;
-      } else if (pname == 0x8A35 /* GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH */) {
-        if (!program.maxUniformBlockNameLength) {
-          for (var i = 0; i < GLctx.getProgramParameter(program, 0x8A36/*GL_ACTIVE_UNIFORM_BLOCKS*/); ++i) {
-            program.maxUniformBlockNameLength = Math.max(program.maxUniformBlockNameLength, GLctx.getActiveUniformBlockName(program, i).length+1);
-          }
-        }
-        HEAP32[((p)>>2)] = program.maxUniformBlockNameLength;
-      } else {
-        HEAP32[((p)>>2)] = GLctx.getProgramParameter(program, pname);
-      }
-    };
-
-  
-  var _glGetShaderInfoLog = (shader, maxLength, length, infoLog) => {
-      var log = GLctx.getShaderInfoLog(GL.shaders[shader]);
-      if (log === null) log = '(unknown error)';
-      var numBytesWrittenExclNull = (maxLength > 0 && infoLog) ? stringToUTF8(log, infoLog, maxLength) : 0;
-      if (length) HEAP32[((length)>>2)] = numBytesWrittenExclNull;
-    };
-
-  var _glGetShaderiv = (shader, pname, p) => {
-      if (!p) {
-        // GLES2 specification does not specify how to behave if p is a null
-        // pointer. Since calling this function does not make sense if p == null,
-        // issue a GL error to notify user about it.
-        GL.recordError(0x501 /* GL_INVALID_VALUE */);
-        return;
-      }
-      if (pname == 0x8B84) { // GL_INFO_LOG_LENGTH
-        var log = GLctx.getShaderInfoLog(GL.shaders[shader]);
-        if (log === null) log = '(unknown error)';
-        // The GLES2 specification says that if the shader has an empty info log,
-        // a value of 0 is returned. Otherwise the log has a null char appended.
-        // (An empty string is falsey, so we can just check that instead of
-        // looking at log.length.)
-        var logLength = log ? log.length + 1 : 0;
-        HEAP32[((p)>>2)] = logLength;
-      } else if (pname == 0x8B88) { // GL_SHADER_SOURCE_LENGTH
-        var source = GLctx.getShaderSource(GL.shaders[shader]);
-        // source may be a null, or the empty string, both of which are falsey
-        // values that we report a 0 length for.
-        var sourceLength = source ? source.length + 1 : 0;
-        HEAP32[((p)>>2)] = sourceLength;
-      } else {
-        HEAP32[((p)>>2)] = GLctx.getShaderParameter(GL.shaders[shader], pname);
-      }
-    };
-
-  /** @suppress {checkTypes} */
-  var jstoi_q = (str) => parseInt(str);
-  
-  /** @noinline */
-  var webglGetLeftBracePos = (name) => name.slice(-1) == ']' && name.lastIndexOf('[');
-  
-  var webglPrepareUniformLocationsBeforeFirstUse = (program) => {
-      var uniformLocsById = program.uniformLocsById, // Maps GLuint -> WebGLUniformLocation
-        uniformSizeAndIdsByName = program.uniformSizeAndIdsByName, // Maps name -> [uniform array length, GLuint]
-        i, j;
-  
-      // On the first time invocation of glGetUniformLocation on this shader program:
-      // initialize cache data structures and discover which uniforms are arrays.
-      if (!uniformLocsById) {
-        // maps GLint integer locations to WebGLUniformLocations
-        program.uniformLocsById = uniformLocsById = {};
-        // maps integer locations back to uniform name strings, so that we can lazily fetch uniform array locations
-        program.uniformArrayNamesById = {};
-  
-        for (i = 0; i < GLctx.getProgramParameter(program, 0x8B86/*GL_ACTIVE_UNIFORMS*/); ++i) {
-          var u = GLctx.getActiveUniform(program, i);
-          var nm = u.name;
-          var sz = u.size;
-          var lb = webglGetLeftBracePos(nm);
-          var arrayName = lb > 0 ? nm.slice(0, lb) : nm;
-  
-          // Assign a new location.
-          var id = program.uniformIdCounter;
-          program.uniformIdCounter += sz;
-          // Eagerly get the location of the uniformArray[0] base element.
-          // The remaining indices >0 will be left for lazy evaluation to
-          // improve performance. Those may never be needed to fetch, if the
-          // application fills arrays always in full starting from the first
-          // element of the array.
-          uniformSizeAndIdsByName[arrayName] = [sz, id];
-  
-          // Store placeholder integers in place that highlight that these
-          // >0 index locations are array indices pending population.
-          for (j = 0; j < sz; ++j) {
-            uniformLocsById[id] = j;
-            program.uniformArrayNamesById[id++] = arrayName;
-          }
-        }
-      }
-    };
-  
-  
-  
-  var _glGetUniformLocation = (program, name) => {
-  
-      name = UTF8ToString(name);
-  
-      if (program = GL.programs[program]) {
-        webglPrepareUniformLocationsBeforeFirstUse(program);
-        var uniformLocsById = program.uniformLocsById; // Maps GLuint -> WebGLUniformLocation
-        var arrayIndex = 0;
-        var uniformBaseName = name;
-  
-        // Invariant: when populating integer IDs for uniform locations, we must
-        // maintain the precondition that arrays reside in contiguous addresses,
-        // i.e. for a 'vec4 colors[10];', colors[4] must be at location
-        // colors[0]+4.  However, user might call glGetUniformLocation(program,
-        // "colors") for an array, so we cannot discover based on the user input
-        // arguments whether the uniform we are dealing with is an array. The only
-        // way to discover which uniforms are arrays is to enumerate over all the
-        // active uniforms in the program.
-        var leftBrace = webglGetLeftBracePos(name);
-  
-        // If user passed an array accessor "[index]", parse the array index off the accessor.
-        if (leftBrace > 0) {
-          arrayIndex = jstoi_q(name.slice(leftBrace + 1)) >>> 0; // "index]", coerce parseInt(']') with >>>0 to treat "foo[]" as "foo[0]" and foo[-1] as unsigned out-of-bounds.
-          uniformBaseName = name.slice(0, leftBrace);
-        }
-  
-        // Have we cached the location of this uniform before?
-        // A pair [array length, GLint of the uniform location]
-        var sizeAndId = program.uniformSizeAndIdsByName[uniformBaseName];
-  
-        // If an uniform with this name exists, and if its index is within the
-        // array limits (if it's even an array), query the WebGLlocation, or
-        // return an existing cached location.
-        if (sizeAndId && arrayIndex < sizeAndId[0]) {
-          arrayIndex += sizeAndId[1]; // Add the base location of the uniform to the array index offset.
-          if ((uniformLocsById[arrayIndex] = uniformLocsById[arrayIndex] || GLctx.getUniformLocation(program, name))) {
-            return arrayIndex;
-          }
-        }
-      }
-      else {
-        // N.b. we are currently unable to distinguish between GL program IDs that
-        // never existed vs GL program IDs that have been deleted, so report
-        // GL_INVALID_VALUE in both cases.
-        GL.recordError(0x501 /* GL_INVALID_VALUE */);
-      }
-      return -1;
-    };
-
-  var _glLinkProgram = (program) => {
-      program = GL.programs[program];
-      GLctx.linkProgram(program);
-      // Invalidate earlier computed uniform->ID mappings, those have now become stale
-      program.uniformLocsById = 0; // Mark as null-like so that glGetUniformLocation() knows to populate this again.
-      program.uniformSizeAndIdsByName = {};
-  
-    };
-
-  var _glShaderSource = (shader, count, string, length) => {
-      var source = GL.getSource(shader, count, string, length);
-  
-      GLctx.shaderSource(GL.shaders[shader], source);
-    };
-
-  var webglGetUniformLocation = (location) => {
-      var p = GLctx.currentProgram;
-  
-      if (p) {
-        var webglLoc = p.uniformLocsById[location];
-        // p.uniformLocsById[location] stores either an integer, or a
-        // WebGLUniformLocation.
-        // If an integer, we have not yet bound the location, so do it now. The
-        // integer value specifies the array index we should bind to.
-        if (typeof webglLoc == 'number') {
-          p.uniformLocsById[location] = webglLoc = GLctx.getUniformLocation(p, p.uniformArrayNamesById[location] + (webglLoc > 0 ? `[${webglLoc}]` : ''));
-        }
-        // Else an already cached WebGLUniformLocation, return it.
-        return webglLoc;
-      } else {
-        GL.recordError(0x502/*GL_INVALID_OPERATION*/);
-      }
-    };
-  
-  var miniTempWebGLFloatBuffers = [];
-  
-  var _glUniformMatrix4fv = (location, count, transpose, value) => {
-  
-      if (GL.currentContext.version >= 2) {
-        count && GLctx.uniformMatrix4fv(webglGetUniformLocation(location), !!transpose, HEAPF32, ((value)>>2), count*16);
-        return;
-      }
-  
-      if (count <= 18) {
-        // avoid allocation when uploading few enough uniforms
-        var view = miniTempWebGLFloatBuffers[16*count];
-        // hoist the heap out of the loop for size and for pthreads+growth.
-        var heap = HEAPF32;
-        value = ((value)>>2);
-        for (var i = 0; i < 16 * count; i += 16) {
-          var dst = value + i;
-          view[i] = heap[dst];
-          view[i + 1] = heap[dst + 1];
-          view[i + 2] = heap[dst + 2];
-          view[i + 3] = heap[dst + 3];
-          view[i + 4] = heap[dst + 4];
-          view[i + 5] = heap[dst + 5];
-          view[i + 6] = heap[dst + 6];
-          view[i + 7] = heap[dst + 7];
-          view[i + 8] = heap[dst + 8];
-          view[i + 9] = heap[dst + 9];
-          view[i + 10] = heap[dst + 10];
-          view[i + 11] = heap[dst + 11];
-          view[i + 12] = heap[dst + 12];
-          view[i + 13] = heap[dst + 13];
-          view[i + 14] = heap[dst + 14];
-          view[i + 15] = heap[dst + 15];
-        }
-      } else
-      {
-        var view = HEAPF32.subarray((((value)>>2)), ((value+count*64)>>2));
-      }
-      GLctx.uniformMatrix4fv(webglGetUniformLocation(location), !!transpose, view);
-    };
-
-  var _glUseProgram = (program) => {
-      program = GL.programs[program];
-      GLctx.useProgram(program);
-      // Record the currently active program so that we can access the uniform
-      // mapping table of that program.
-      GLctx.currentProgram = program;
-    };
-
-  var _glVertexAttribPointer = (index, size, type, normalized, stride, ptr) => {
-      var cb = GL.currentContext.clientBuffers[index];
-      if (!GLctx.currentArrayBufferBinding) {
-        cb.size = size;
-        cb.type = type;
-        cb.normalized = normalized;
-        cb.stride = stride;
-        cb.ptr = ptr;
-        cb.clientside = true;
-        cb.vertexAttribPointerAdaptor = function(index, size, type, normalized, stride, ptr) {
-          this.vertexAttribPointer(index, size, type, normalized, stride, ptr);
-        };
-        return;
-      }
-      cb.clientside = false;
-      GLctx.vertexAttribPointer(index, size, type, !!normalized, stride, ptr);
-    };
 
   var isLeapYear = (year) => year%4 === 0 && (year%100 !== 0 || year%400 === 0);
   
@@ -6845,46 +5179,65 @@ function dbg(...args) {
       return _strftime(s, maxsize, format, tm); // no locale support yet
     };
 
+  
+  var runtimeKeepaliveCounter = 0;
+  var keepRuntimeAlive = () => noExitRuntime || runtimeKeepaliveCounter > 0;
+  var _proc_exit = (code) => {
+      EXITSTATUS = code;
+      if (!keepRuntimeAlive()) {
+        Module['onExit']?.(code);
+        ABORT = true;
+      }
+      quit_(code, new ExitStatus(code));
+    };
+  
+  /** @param {boolean|number=} implicit */
+  var exitJS = (status, implicit) => {
+      EXITSTATUS = status;
+  
+      checkUnflushedContent();
+  
+      // if exit() was called explicitly, warn the user if the runtime isn't actually being shut down
+      if (keepRuntimeAlive() && !implicit) {
+        var msg = `program exited (with status: ${status}), but keepRuntimeAlive() is set (counter=${runtimeKeepaliveCounter}) due to an async operation, so halting execution but not exiting the runtime or preventing further async execution (you can use emscripten_force_exit, if you want to force a true shutdown)`;
+        err(msg);
+      }
+  
+      _proc_exit(status);
+    };
 
+  var handleException = (e) => {
+      // Certain exception types we do not treat as errors since they are used for
+      // internal control flow.
+      // 1. ExitStatus, which is thrown by exit()
+      // 2. "unwind", which is thrown by emscripten_unwind_to_js_event_loop() and others
+      //    that wish to return to JS event loop.
+      if (e instanceof ExitStatus || e == 'unwind') {
+        return EXITSTATUS;
+      }
+      checkStackCookie();
+      if (e instanceof WebAssembly.RuntimeError) {
+        if (_emscripten_stack_get_current() <= 0) {
+          err('Stack overflow detected.  You can try increasing -sSTACK_SIZE (currently set to 65536)');
+        }
+      }
+      quit_(1, e);
+    };
 
 
 
 
   var FS_unlink = (path) => FS.unlink(path);
+var GLctx;;
 
   FS.createPreloadedFile = FS_createPreloadedFile;
   FS.staticInit();Module["FS_createPath"] = FS.createPath;Module["FS_createDataFile"] = FS.createDataFile;Module["FS_createPreloadedFile"] = FS.createPreloadedFile;Module["FS_unlink"] = FS.unlink;Module["FS_createLazyFile"] = FS.createLazyFile;Module["FS_createDevice"] = FS.createDevice;;
-
-      // exports
-      Module["requestFullscreen"] = Browser.requestFullscreen;
-      Module["requestFullScreen"] = Browser.requestFullScreen;
-      Module["requestAnimationFrame"] = Browser.requestAnimationFrame;
-      Module["setCanvasSize"] = Browser.setCanvasSize;
-      Module["pauseMainLoop"] = Browser.mainLoop.pause;
-      Module["resumeMainLoop"] = Browser.mainLoop.resume;
-      Module["getUserMedia"] = Browser.getUserMedia;
-      Module["createContext"] = Browser.createContext;
-      var preloadedImages = {};
-      var preloadedAudios = {};;
-var GLctx;;
-var miniTempWebGLFloatBuffersStorage = new Float32Array(288);
-  for (/**@suppress{duplicate}*/var i = 0; i < 288; ++i) {
-    miniTempWebGLFloatBuffers[i] = miniTempWebGLFloatBuffersStorage.subarray(0, i);
-  };
 function checkIncomingModuleAPI() {
   ignoredModuleProp('fetchSettings');
 }
 var wasmImports = {
   /** @export */
   __assert_fail: ___assert_fail,
-  /** @export */
-  __cxa_throw: ___cxa_throw,
-  /** @export */
-  __syscall_fcntl64: ___syscall_fcntl64,
-  /** @export */
-  __syscall_ioctl: ___syscall_ioctl,
-  /** @export */
-  __syscall_openat: ___syscall_openat,
   /** @export */
   _abort_js: __abort_js,
   /** @export */
@@ -6898,17 +5251,7 @@ var wasmImports = {
   /** @export */
   emscripten_resize_heap: _emscripten_resize_heap,
   /** @export */
-  emscripten_run_script: _emscripten_run_script,
-  /** @export */
-  emscripten_set_keydown_callback_on_thread: _emscripten_set_keydown_callback_on_thread,
-  /** @export */
-  emscripten_set_main_loop: _emscripten_set_main_loop,
-  /** @export */
-  emscripten_set_mousedown_callback_on_thread: _emscripten_set_mousedown_callback_on_thread,
-  /** @export */
   emscripten_webgl_create_context: _emscripten_webgl_create_context,
-  /** @export */
-  emscripten_webgl_make_context_current: _emscripten_webgl_make_context_current,
   /** @export */
   environ_get: _environ_get,
   /** @export */
@@ -6921,56 +5264,6 @@ var wasmImports = {
   fd_seek: _fd_seek,
   /** @export */
   fd_write: _fd_write,
-  /** @export */
-  glAttachShader: _glAttachShader,
-  /** @export */
-  glBindBuffer: _glBindBuffer,
-  /** @export */
-  glBindVertexArray: _glBindVertexArray,
-  /** @export */
-  glBufferData: _glBufferData,
-  /** @export */
-  glClear: _glClear,
-  /** @export */
-  glClearColor: _glClearColor,
-  /** @export */
-  glCompileShader: _glCompileShader,
-  /** @export */
-  glCreateProgram: _glCreateProgram,
-  /** @export */
-  glCreateShader: _glCreateShader,
-  /** @export */
-  glDeleteBuffers: _glDeleteBuffers,
-  /** @export */
-  glDeleteShader: _glDeleteShader,
-  /** @export */
-  glDrawArrays: _glDrawArrays,
-  /** @export */
-  glEnableVertexAttribArray: _glEnableVertexAttribArray,
-  /** @export */
-  glGenBuffers: _glGenBuffers,
-  /** @export */
-  glGenVertexArrays: _glGenVertexArrays,
-  /** @export */
-  glGetProgramInfoLog: _glGetProgramInfoLog,
-  /** @export */
-  glGetProgramiv: _glGetProgramiv,
-  /** @export */
-  glGetShaderInfoLog: _glGetShaderInfoLog,
-  /** @export */
-  glGetShaderiv: _glGetShaderiv,
-  /** @export */
-  glGetUniformLocation: _glGetUniformLocation,
-  /** @export */
-  glLinkProgram: _glLinkProgram,
-  /** @export */
-  glShaderSource: _glShaderSource,
-  /** @export */
-  glUniformMatrix4fv: _glUniformMatrix4fv,
-  /** @export */
-  glUseProgram: _glUseProgram,
-  /** @export */
-  glVertexAttribPointer: _glVertexAttribPointer,
   /** @export */
   strftime_l: _strftime_l
 };
@@ -6987,8 +5280,8 @@ var __emscripten_stack_restore = (a0) => (__emscripten_stack_restore = wasmExpor
 var __emscripten_stack_alloc = (a0) => (__emscripten_stack_alloc = wasmExports['_emscripten_stack_alloc'])(a0);
 var _emscripten_stack_get_current = () => (_emscripten_stack_get_current = wasmExports['emscripten_stack_get_current'])();
 var ___cxa_is_pointer_type = createExportWrapper('__cxa_is_pointer_type', 1);
-var dynCall_jiji = Module['dynCall_jiji'] = createExportWrapper('dynCall_jiji', 5);
 var dynCall_viijii = Module['dynCall_viijii'] = createExportWrapper('dynCall_viijii', 7);
+var dynCall_jiji = Module['dynCall_jiji'] = createExportWrapper('dynCall_jiji', 5);
 var dynCall_iiiiij = Module['dynCall_iiiiij'] = createExportWrapper('dynCall_iiiiij', 7);
 var dynCall_iiiiijj = Module['dynCall_iiiiijj'] = createExportWrapper('dynCall_iiiiijj', 9);
 var dynCall_iiiiiijj = Module['dynCall_iiiiiijj'] = createExportWrapper('dynCall_iiiiiijj', 10);
@@ -7028,6 +5321,7 @@ var missingLibrarySymbols = [
   'writeSockaddr',
   'emscriptenLog',
   'readEmAsmArgs',
+  'jstoi_q',
   'listenOnce',
   'autoResumeAudioContext',
   'dynCallLegacy',
@@ -7035,6 +5329,8 @@ var missingLibrarySymbols = [
   'dynCall',
   'runtimeKeepalivePush',
   'runtimeKeepalivePop',
+  'callUserCallback',
+  'maybeExit',
   'asmjsMangle',
   'HandleAllocator',
   'getNativeTypeSize',
@@ -7059,6 +5355,7 @@ var missingLibrarySymbols = [
   'strLen',
   'reSign',
   'formatString',
+  'stringToUTF8',
   'intArrayToString',
   'AsciiToString',
   'UTF16ToString',
@@ -7069,6 +5366,10 @@ var missingLibrarySymbols = [
   'lengthBytesUTF32',
   'stringToNewUTF8',
   'stringToUTF8OnStack',
+  'registerKeyEventCallback',
+  'getBoundingClientRect',
+  'fillMouseEventData',
+  'registerMouseEventCallback',
   'registerWheelEventCallback',
   'registerUiEventCallback',
   'registerFocusEventCallback',
@@ -7111,6 +5412,7 @@ var missingLibrarySymbols = [
   'wasiRightsToMuslOFlags',
   'wasiOFlagsToMuslOFlags',
   'createDyncallWrapper',
+  'safeSetTimeout',
   'setImmediateWrapped',
   'clearImmediateWrapped',
   'polyfillSetImmediate',
@@ -7118,8 +5420,10 @@ var missingLibrarySymbols = [
   'makePromise',
   'idsToPromises',
   'makePromiseCallback',
+  'ExceptionInfo',
   'findMatchingCatch',
   'Browser_asyncPrepareDataCounter',
+  'setMainLoop',
   'getSocketFromFD',
   'getSocketAddress',
   'FS_mkdirTree',
@@ -7131,6 +5435,9 @@ var missingLibrarySymbols = [
   'colorChannelsInGlTextureFormat',
   'emscriptenWebGLGetTexPixelData',
   'emscriptenWebGLGetUniform',
+  'webglGetUniformLocation',
+  'webglPrepareUniformLocationsBeforeFirstUse',
+  'webglGetLeftBracePos',
   'emscriptenWebGLGetVertexAttrib',
   '__glGetActiveAttribOrUniform',
   'emscriptenWebGLGetBufferBinding',
@@ -7194,13 +5501,10 @@ var unexportedSymbols = [
   'timers',
   'warnOnce',
   'readEmAsmArgsArray',
-  'jstoi_q',
   'jstoi_s',
   'getExecutableName',
   'handleException',
   'keepRuntimeAlive',
-  'callUserCallback',
-  'maybeExit',
   'asyncLoad',
   'alignMemory',
   'mmapAlloc',
@@ -7216,21 +5520,16 @@ var unexportedSymbols = [
   'UTF8ArrayToString',
   'UTF8ToString',
   'stringToUTF8Array',
-  'stringToUTF8',
   'lengthBytesUTF8',
   'intArrayFromString',
   'stringToAscii',
   'UTF16Decoder',
   'writeArrayToMemory',
   'JSEvents',
-  'registerKeyEventCallback',
   'specialHTMLTargets',
   'maybeCStringToJsString',
   'findEventTarget',
   'findCanvasEventTarget',
-  'getBoundingClientRect',
-  'fillMouseEventData',
-  'registerMouseEventCallback',
   'currentFullscreenStrategy',
   'restoreOldWindowedStyle',
   'UNWIND_CACHE',
@@ -7238,14 +5537,11 @@ var unexportedSymbols = [
   'getEnvStrings',
   'doReadv',
   'doWritev',
-  'safeSetTimeout',
   'promiseMap',
   'uncaughtExceptionCount',
   'exceptionLast',
   'exceptionCaught',
-  'ExceptionInfo',
   'Browser',
-  'setMainLoop',
   'getPreloadedImageData__data',
   'wget',
   'SYSCALLS',
@@ -7267,9 +5563,6 @@ var unexportedSymbols = [
   'webgl_enable_WEBGL_draw_buffers',
   'webgl_enable_WEBGL_multi_draw',
   'GL',
-  'webglGetUniformLocation',
-  'webglPrepareUniformLocationsBeforeFirstUse',
-  'webglGetLeftBracePos',
   'AL',
   'GLUT',
   'EGL',

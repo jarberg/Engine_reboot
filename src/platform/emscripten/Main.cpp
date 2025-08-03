@@ -49,10 +49,14 @@ int main(){
 	attrs.minorVersion = 0;
 
 	context = emscripten_webgl_create_context("#canvas", &attrs);
-	
+
 	if (!context) {
 		std::cerr << "Failed to initialize WebGL context!" << std::endl;
 		return -1;
+	}
+	else {
+		std::cout << "WebGL 2 context created successfully." << std::endl;
+		return 0;
 	}
 	emscripten_webgl_make_context_current(context);
 
