@@ -4,8 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-
-#include <cstring>  // Include for strcpy
+#include <cstring>
 
 // General template function declaration
 template <typename T>
@@ -14,8 +13,7 @@ T read_file(const std::string& filePath);
 // Specialization for std::string
 template <>
 std::string read_file<std::string>(const std::string& filePath) {
-    // Path should be relative to the root of the Emscripten virtual file system
-    std::ifstream file(filePath);
+    std::ifstream file(filePath, std::ios::in | std::ios::binary);  // <-- BINARY MODE
 
     if (!file.is_open()) {
         std::cerr << "Failed to open shader file: " << filePath << std::endl;
@@ -23,15 +21,14 @@ std::string read_file<std::string>(const std::string& filePath) {
     }
 
     std::stringstream buffer;
-    buffer << file.rdbuf();  // Read the file's content into the stringstream
-    return buffer.str();      // Convert the stream into a string and return it
+    buffer << file.rdbuf();
+    return buffer.str();
 }
 
 // Specialization for char*
 template <>
 char* read_file<char*>(const std::string& filePath) {
-    // Path should be relative to the root of the Emscripten virtual file system
-    std::ifstream file(filePath);
+    std::ifstream file(filePath, std::ios::in | std::ios::binary);  // <-- BINARY MODE
 
     if (!file.is_open()) {
         std::cerr << "Failed to open shader file: " << filePath << std::endl;
@@ -39,17 +36,15 @@ char* read_file<char*>(const std::string& filePath) {
     }
 
     std::stringstream buffer;
-    buffer << file.rdbuf();  // Read the file's content into the stringstream
-    std::string content = buffer.str();  // Convert the stream into a string
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
 
-    // Allocate memory for the char* and copy the content
-    char* result = new char[content.size() + 1];  // +1 for the null terminator
+    char* result = new char[content.size() + 1];
 #ifdef _WIN32
-    strcpy_s(result, content.size() + 1, content.c_str());// Copy the string content to the char*
-
+    strcpy_s(result, content.size() + 1, content.c_str());
 #else
     std::strcpy(result, content.c_str());
-#endif  
+#endif
 
-    return result;  // Caller is responsible for freeing this memory
+    return result;
 }

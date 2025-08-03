@@ -6,23 +6,18 @@ model model_datatable::get_model(int id)
     std::map<unsigned int, model>::iterator ret_iterator;
 
     if ((ret_iterator = m.find(id)) != m.end()) {
-        //if the element is found before the end of the map
-        // std::cout << " : found : Value : " << m[id].name << std::endl;
-        //if the element is present then you can access it using the index
         return ret_iterator->second;
     }
     return model(std::string("error"), { { 1.0f, 0.0f, -1.0f } });
 }
 
-void model_datatable::add_model(model new_model)
-{
+void model_datatable::add_model(model new_model){
     int new_id = generate_new_id();
     this->model_datatable_map.emplace(new_id, std::move(new_model));
     save_dataTable();
 }
 
-void model_datatable::add_model(std::string _name, std::vector<float> _points)
-{
+void model_datatable::add_model(std::string _name, std::vector<float> _points){
     model newModel(_name, _points);
     add_model(newModel);
 }
@@ -52,19 +47,18 @@ void model_datatable::save_dataTable() {
 
 void model_datatable::load_dataTable() {
     std::ifstream file("resources/models.dat");
-
     if (file.is_open() && file.peek() != std::ifstream::traits_type::eof()) {
         std::string line;
-        std::getline(file, line, '{');  // Skip the opening brace
-        std::getline(file, line, '{');  // Skip to the models object
+        std::getline(file, line, '{');  
+        std::getline(file, line, '{');  
         while (std::getline(file, line, '"')) {
             int id;
             file >> id;
-            std::getline(file, line, ':'); // Skip to the model data
+            std::getline(file, line, ':'); 
             model m;
             file >> m;
             model_datatable_map[id] = m;
-            std::getline(file, line, ','); // Skip to the next model or end
+            std::getline(file, line, ',');
             if (line.find("}") != std::string::npos) {
                 break;
             }
