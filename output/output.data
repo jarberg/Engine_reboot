@@ -7,7 +7,7 @@ out vec4 FragColor;  // Output color
 void main()
 {
     FragColor = abs(vertexColor); // Set the fragment color
-}hello#version 300 es
+}#version 300 es
 layout (location = 0) in vec3 aPos; // the position variable has attribute position 0
 
 uniform mat4 uTransform; // your transform matrix
