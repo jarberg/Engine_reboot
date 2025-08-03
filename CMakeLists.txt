@@ -54,7 +54,7 @@ if(EMSCRIPTEN)
         "--relative-paths"
     )
 
-    if(EXISTS "${CMAKE_SOURCE_DIR}/Resources")
+    if(EXISTS "${CMAKE_SOURCE_DIR}/resources")
         message(STATUS "Preloading Resources/ into root")
         list(APPEND EM_FLAGS "--preload-file" "${CMAKE_SOURCE_DIR}/resources@/resources")
     endif()
