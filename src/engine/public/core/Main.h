@@ -73,7 +73,8 @@ void init() {
 
 	std::string vsPath = "resources/shaders/test" + std::string(vertexShader_ext);
 	std::string fsPath = "resources/shaders/test" + std::string(fragmentShader_ext);
-	std::cout << "Vertex Shader Source:\n" << std::string(vertexShader_ext) << std::endl;
+	std::cout << "Vertex Shader path:\n" << vsPath << std::endl;
+	std::cout << "fragment Shader Source:\n" << fsPath << std::endl;
 	// Create and compile the vertex shader
 	const char* vertexShaderSource = read_file<char*>(vsPath);
 	const char* fragmentShaderSource = read_file<char*>(fsPath);
