@@ -46,13 +46,20 @@ if(EMSCRIPTEN)
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/output
     )
 
-    set(EM_FLAGS "-s USE_WEBGL2=1 -s FULL_ES3=1 --emrun --relative-paths")
+    # Define list of linker flags
+    set(EM_FLAGS
+        "-s USE_WEBGL2=1"
+        "-s FULL_ES3=1"
+        "--emrun"
+        "--relative-paths"
+    )
 
     if(EXISTS "${CMAKE_SOURCE_DIR}/Resources")
         message(STATUS "Preloading Resources/ into root")
-	set(EM_FLAGS "${EM_FLAGS} --preload-file ${CMAKE_SOURCE_DIR}/Resources@/Resources")
+        list(APPEND EM_FLAGS "--preload-file" "${CMAKE_SOURCE_DIR}/resources@/resources")
     endif()
 
-    # Apply linker flags correctly to executable
-    set_target_properties(Main PROPERTIES LINK_FLAGS "${EM_FLAGS}")
+    # Join the flags into a single string to avoid command line parsing issues
+    string(JOIN " " EM_FLAGS_STR ${EM_FLAGS})
+    set_target_properties(Main PROPERTIES LINK_FLAGS "${EM_FLAGS_STR}")
 endif()

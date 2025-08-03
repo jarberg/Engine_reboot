@@ -1,4 +1,4 @@
-#version 300 es
+{ "models": {"1": { "name": "name", "vertex": [-0.5, -0.5, 0, 0.5, -0.5, 0, 0, 0.5, 0] }} }#version 300 es
 precision mediump float;  // Specify default precision for float
 
 in vec4 vertexColor; // Input from the vertex shader
@@ -18,4 +18,4 @@ void main()
 {
     gl_Position = uTransform*vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor
     vertexColor = vec4(aPos, 1.0); // set the output variable to a dark-red color
-}{ "models": {"1": { "name": "name", "vertex": [-0.5, -0.5, 0, 0.5, -0.5, 0, 0, 0.5, 0] }} }
+}

@@ -71,8 +71,8 @@ void init() {
 
 	myWorld = new World();
 
-	std::string vsPath = "Resources/Shader/test" + std::string(vertexShader_ext);
-	std::string fsPath = "Resources/Shader/test" + std::string(fragmentShader_ext);
+	std::string vsPath = "resources/shaders/test" + std::string(vertexShader_ext);
+	std::string fsPath = "resources/shaders/test" + std::string(fragmentShader_ext);
 
 	// Create and compile the vertex shader
 	const char* vertexShaderSource = read_file<char*>(vsPath);
