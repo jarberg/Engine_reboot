@@ -4,7 +4,7 @@
 void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyPressedEvent> e)
 {
 	World* world = owner.get_world();
-
+    
     if (!world->has_component<PositionComponent>(owner)) {
         return;
     }

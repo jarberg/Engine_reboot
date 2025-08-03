@@ -56,12 +56,12 @@ int main(){
 	}
 	else {
 		std::cout << "WebGL 2 context created successfully." << std::endl;
-		return 0;
 	}
+	std::cout << "before make context" << std::endl;
 	emscripten_webgl_make_context_current(context);
-
+	std::cout << "before init" << std::endl;
 	init();
-
+	std::cout << "before run script" << std::endl;
 	emscripten_run_script("document.getElementById('canvas').setAttribute('tabindex', '0');");
 	initInputHandlers();
 	emscripten_set_main_loop(mainLoop, 0, 1);

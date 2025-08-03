@@ -1,4 +1,3 @@
-
 #version 300 es
 precision mediump float;  // Specify default precision for float
 
