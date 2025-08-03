@@ -1,4 +1,5 @@
-{ "models": {"1": { "name": "name", "vertex": [-0.5, -0.5, 0, 0.5, -0.5, 0, 0, 0.5, 0] }} }#version 300 es
+{ "models": {"1": { "name": "name", "vertex": [-0.5, -0.5, 0, 0.5, -0.5, 0, 0, 0.5, 0] }} }
+#version 300 es
 precision mediump float;  // Specify default precision for float
 
 in vec4 vertexColor; // Input from the vertex shader
@@ -7,7 +8,9 @@ out vec4 FragColor;  // Output color
 void main()
 {
     FragColor = abs(vertexColor); // Set the fragment color
-}hello#version 300 es
+}
+hello
+#version 300 es
 layout (location = 0) in vec3 aPos; // the position variable has attribute position 0
 
 uniform mat4 uTransform; // your transform matrix
