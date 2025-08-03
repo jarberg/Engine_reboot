@@ -36,7 +36,7 @@ int model_datatable::generate_new_id() {
 }
 
 void model_datatable::save_dataTable() {
-    std::ofstream file("Resources/models.dat");
+    std::ofstream file("resources/models.dat");
     if (file.is_open()) {
         file << "{ \"models\": {";
         for (auto it = model_datatable_map.begin(); it != model_datatable_map.end(); ++it) {
@@ -51,7 +51,7 @@ void model_datatable::save_dataTable() {
 }
 
 void model_datatable::load_dataTable() {
-    std::ifstream file("Resources/models.dat");
+    std::ifstream file("resources/models.dat");
 
     if (file.is_open() && file.peek() != std::ifstream::traits_type::eof()) {
         std::string line;

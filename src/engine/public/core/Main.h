@@ -77,7 +77,8 @@ void init() {
 	// Create and compile the vertex shader
 	const char* vertexShaderSource = read_file<char*>(vsPath);
 	const char* fragmentShaderSource = read_file<char*>(fsPath);
-
+	std::cout << "Vertex Shader Source: " << vertexShaderSource << std::endl;
+	std::cout << "Fragment Shader Source: " << fragmentShaderSource << std::endl;
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
