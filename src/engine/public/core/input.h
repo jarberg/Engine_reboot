@@ -13,7 +13,7 @@ public:
     InputHandler() {
         if (!inputDispatcher) {
             inputDispatcher = new EventDispatcher();
-            *keyStates = { 0 };
+           
         }
     }
 

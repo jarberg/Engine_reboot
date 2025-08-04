@@ -48,13 +48,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\models.dat">
+    <None Include="resources\models.json">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Resources\Shader\test.frag">
+    <None Include="resources\shaders\test.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Resources\Shader\test.vert">
+    <None Include="resources\shaders\test.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

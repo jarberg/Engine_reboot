@@ -5,7 +5,7 @@ ResourceManager::ResourceManager() {}
 void ResourceManager::create_model(unsigned int _id, model m)
 {
     // Create and setup glmodel
-    glmodel glm = glmodel(_id, createBuffer(), createVertexArray(), m.vertex_pos.size(), m.vertex_pos);
+    glmodel glm = glmodel(_id, createBuffer(), createVertexArray(), m.vertex_pos.size() / 3, m.vertex_pos);
 
     glm.bind();
     glm.upload();  // Upload data to GPU

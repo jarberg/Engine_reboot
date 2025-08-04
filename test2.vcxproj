@@ -134,9 +134,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\models.dat" />
-    <None Include="Resources\Shader\test.frag" />
-    <None Include="Resources\Shader\test.vert" />
+    <None Include="resources\models.json" />
+    <None Include="resources\shaders\test.frag" />
+    <None Include="resources\shaders\test.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\engine\core\GL.h" />
