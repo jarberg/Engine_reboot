@@ -29,6 +29,7 @@ using EventCallback = std::function<void(std::shared_ptr<Event>)>;
 
 class EventDispatcher {
 private:
+
     std::unordered_map<std::size_t, std::vector<EventCallback>> listeners;
 
     // Helper function to get a unique event type ID

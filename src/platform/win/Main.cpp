@@ -54,10 +54,7 @@ GLFWwindow* initWindow(const int width, const int height, const char* title) {
 int mainLoop(GLFWwindow* window) {
 	
 	while (!glfwWindowShouldClose(window)) {
-		currentTime = std::chrono::high_resolution_clock::now();
 
-		deltaTime = currentTime - lastTime;
-		lastTime = currentTime;
 
 		// Clear the screen to black
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -71,7 +68,7 @@ int mainLoop(GLFWwindow* window) {
 		// Swap buffers and poll IO events
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		myWorld->update(deltaTime.count());
+		myWorld->update();
 	}
 	return 0;
 }
@@ -79,8 +76,8 @@ int mainLoop(GLFWwindow* window) {
 int main() {
 
 
-	const int width = 800;
-	const int height = 600;
+	const int width = 1024;
+	const int height = 720;
 
 	GLFWwindow* window = initWindow(width, height, "GLFW Window Example");
 	if (!window) return -1;

@@ -27,10 +27,6 @@ extern World* myWorld;
 
 ResourceManager* RMan;
 unsigned int shaderProgram;
-auto lastTime = std::chrono::high_resolution_clock::now();
-auto currentTime = std::chrono::high_resolution_clock::now();
-std::chrono::duration<float> deltaTime;
-
 Entity PlayerEntity;
 
 int main();

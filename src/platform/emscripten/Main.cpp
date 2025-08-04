@@ -23,15 +23,13 @@ void mainLoop() {
 	glClearColor(0.5, 0.5, 0.5, 1); // Clear the canvas with a grey color
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	currentTime = std::chrono::high_resolution_clock::now(); 
-
-	deltaTime = currentTime - lastTime;
-	lastTime = currentTime;
+	pollInput();
+	myWorld->update();
 
 	// Now render the triangle
 	render(myWorld->get_registry());
 
-	myWorld->update(deltaTime.count());
+	
 }
 
 int main(){
@@ -63,6 +61,11 @@ int main(){
 	init();
 	std::cout << "before run script" << std::endl;
 	emscripten_run_script("document.getElementById('canvas').setAttribute('tabindex', '0');");
+	EMSCRIPTEN_RESULT result = emscripten_set_canvas_element_size("#canvas", 1280, 720);
+	if (result != EMSCRIPTEN_RESULT_SUCCESS) {
+		printf("Failed to set canvas size.\n");
+	}
+	glViewport(0, 0, 1280, 720);
 	initInputHandlers();
 	emscripten_set_main_loop(mainLoop, 0, 1);
 
