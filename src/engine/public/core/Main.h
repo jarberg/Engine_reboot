@@ -32,30 +32,25 @@ Entity PlayerEntity;
 int main();
 
 void render(entt::registry& registry) {
-	auto view = registry.view<StaticMeshComponent, PositionComponent>();
+	auto view = registry.view<StaticMeshComponent, PositionComponent, RotationComponent>();
 	glUseProgram(shaderProgram);
 	for (auto entity : view) {
 		auto& buffer = view.get<StaticMeshComponent>(entity);
 		auto& position = view.get<PositionComponent>(entity);
+		auto& rotation = view.get<RotationComponent>(entity);
 
 		glmodel* m = RMan->get_model(buffer.meshID);
 
 		if (m) {
 			m->bind();
-
-			float transform[16] = {
-			1.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f, 0.0f,
-			static_cast<float>(position.x),
-			static_cast<float>(position.y),
-			static_cast<float>(position.z), 
-			1.0f  // <- translation in last row (column-major)
-			};
+			rotation.matrix[12] = static_cast<float>(position.x);
+			rotation.matrix[13] = static_cast<float>(position.y);
+			rotation.matrix[14] = static_cast<float>(position.z);
+			rotation.matrix[15] = 1.0f;
 
 			GLint transformLoc = glGetUniformLocation(shaderProgram, "uTransform");
 
-			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform);
+			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, rotation.matrix);
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, m->vertCount);
 			m->unbind();
@@ -128,6 +123,7 @@ void init() {
 	PlayerEntity = myWorld->create_entity("test");
 	myWorld->add_component<StaticMeshComponent>(PlayerEntity,1);
 	myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
+	myWorld->add_component<RotationComponent>(PlayerEntity);
 
 
 

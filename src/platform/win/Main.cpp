@@ -52,20 +52,15 @@ GLFWwindow* initWindow(const int width, const int height, const char* title) {
 }
 
 int mainLoop(GLFWwindow* window) {
-	
 	while (!glfwWindowShouldClose(window)) {
 
-
-		// Clear the screen to black
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		pollInput();
-		
 
 		render(myWorld->get_registry());
 
-		// Swap buffers and poll IO events
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		myWorld->update();

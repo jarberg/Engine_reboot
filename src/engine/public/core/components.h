@@ -25,8 +25,16 @@ struct UuidComponent
 struct PositionComponent
 {
 	double x, y, z;
-};
 
+};
+struct RotationComponent
+{
+	double x, y, z;
+	float matrix[16] = { 1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1 };
+};
 struct VelocityComponent
 {
 	double x, y, z;
@@ -54,6 +62,7 @@ public :
 	}
 
 	void inputEvent(Entity owner, std::shared_ptr<KeyPressedEvent> e);
+
 };
 
 struct StaticMeshComponent {

@@ -25,6 +25,7 @@ EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userDa
 
 EM_BOOL key_down(int eventType, const EmscriptenKeyboardEvent* e, void* userData) {
     InputHandler::keyStates[e->keyCode] = 1;
+    std::cout << "[keydown] Detected key \n" << e->keyCode;
     return EM_TRUE;
 }
 
@@ -63,6 +64,7 @@ void pollInput() {
             if (i == 39) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Right));
             if (i == 38) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Up));
             if (i == 40) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Down));
+			if (i == 17) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Ctrl));
         }
     }
 }
