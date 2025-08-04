@@ -34,3 +34,8 @@ void pollInput() {
 void shutdownInputHandlers() {
     // Optional cleanup
 }
+
+
+void InputHandler::clearKeyStates() {  
+    std::fill(std::begin(InputHandler::keyStates), std::end(InputHandler::keyStates), 0); // Clear the key states after processing  
+}

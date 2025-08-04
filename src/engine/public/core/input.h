@@ -20,7 +20,7 @@ public:
     ~InputHandler() {
         delete inputDispatcher;
     }
-
+    static void clearKeyStates();
 };
 
 void initInputHandlers();

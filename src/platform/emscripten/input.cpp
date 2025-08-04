@@ -8,29 +8,18 @@
 EventDispatcher* InputHandler::inputDispatcher = new EventDispatcher();
 unsigned int InputHandler::keyStates[256] = {0};
 
-EM_BOOL on_key_down(int eventType, const EmscriptenKeyboardEvent* e, void* userData) {
-
-    auto* dispatcher = InputHandler::GetInstance()->inputDispatcher;
-
-    if (e->keyCode == 37) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Left));
-    if (e->keyCode == 39) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Right));
-    if (e->keyCode == 38) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Up));
-    if (e->keyCode == 40) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Down));
-
-    return EM_TRUE;
-}
-
 bool canvasFocused = false;
 
-EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userData) {
-    std::cout << "[mouse_down] Button: " << e->button << std::endl;
+void InputHandler::clearKeyStates() {
+    std::fill(std::begin(InputHandler::keyStates), std::end(InputHandler::keyStates), 0); // Clear the key states after processing  
+}
 
+EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userData) {
     if (!canvasFocused) {
         canvasFocused = true;
         std::cout << "[focus] Focusing canvas after user click\n";
         emscripten_run_script("document.getElementById('canvas').focus();");
     }
-
     return EM_TRUE;
 }
 
@@ -42,6 +31,27 @@ EM_BOOL key_down(int eventType, const EmscriptenKeyboardEvent* e, void* userData
 EM_BOOL key_up(int eventType, const EmscriptenKeyboardEvent* e, void* userData) {
     InputHandler::keyStates[e->keyCode] = 0;
     return EM_TRUE;
+}
+
+EM_BOOL on_focus(int eventType, const EmscriptenFocusEvent* e, void* userData) {
+    std::cout << "[focus] Canvas gained focus\n";
+    canvasFocused = true;
+    return EM_TRUE;
+}
+
+EM_BOOL on_blur(int eventType, const EmscriptenFocusEvent* e, void* userData) {
+    std::cout << "[focus] Canvas lost focus\n";
+    canvasFocused = false;
+	InputHandler::clearKeyStates(); // Clear key states on blur
+    return EM_TRUE;
+}
+
+EM_BOOL on_document_keydown(int eventType, const EmscriptenKeyboardEvent* e, void* userData) {
+    if (!canvasFocused) {
+        std::cout << "[keydown] Detected key while canvas is not focused. Refocusing canvas...\n";
+        emscripten_run_script("document.getElementById('canvas').focus();");
+    }
+    return EM_TRUE;  // Let the event propagate to the canvas if it gains focus
 }
 
 void pollInput() {
@@ -68,7 +78,13 @@ void initInputHandlers() {
     emscripten_set_keydown_callback("#canvas", nullptr, EM_TRUE, key_down);
     emscripten_set_keyup_callback("#canvas", nullptr, EM_TRUE, key_up);
 
+    emscripten_set_focus_callback("#canvas", nullptr, EM_TRUE, on_focus);
+    emscripten_set_blur_callback("#canvas", nullptr, EM_TRUE, on_blur);
+
     emscripten_set_mousedown_callback("#canvas", nullptr, EM_TRUE, on_mouse_down);
+
+    emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, nullptr, EM_TRUE, on_document_keydown);
+
 }
 
 void shutdownInputHandlers() {

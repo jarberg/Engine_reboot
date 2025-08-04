@@ -120,6 +120,7 @@ void init() {
 	RMan = ResourceManager::GetInstance();
 
 	dataTable->load_dataTable();
+
 	for (auto& [key, value] : dataTable->get_model_map()) {
 		RMan->create_model(key, value);
 	}
