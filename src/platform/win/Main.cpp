@@ -8,7 +8,7 @@ std::vector<int> myVector = { 0, 0, 0};
 World* myWorld = new World();
 
 
-GLFWwindow* initWindow(const int width, const int height, const char* title) {
+GLFWwindow* initWindow(int width, int height, const char* title) {
 	if (!glfwInit()) {
 		std::cerr << "Failed to initialize GLFW" << std::endl;
 		return nullptr;
@@ -71,21 +71,24 @@ int mainLoop(GLFWwindow* window) {
 int main() {
 
 
-	const int width = 1024;
-	const int height = 720;
+	float width = 1280;
+	float height = 720;
+
+	int widthInt = static_cast<int>(width);
+	int heightInt = static_cast<int>(height);
 
 	GLFWwindow* window = initWindow(width, height, "GLFW Window Example");
 	if (!window) return -1;
+	
+	
+	glfwGetWindowSize(window, &widthInt, &heightInt); // Get window size (not framebuffer)
+
 
 	createPerspectiveMatrix(45.0f * 3.14159f / 180.0f,  // 45° FOV
-		1280.0f / 720.0f, // aspect ratio
+		width / height, // aspect ratio
 		0.1f,                       // near plane
 		500.0f,                     // far plane
 		projection);
-
-
-
-
 
 
 	init();

@@ -59,19 +59,28 @@ int main(){
 	std::cout << "before init" << std::endl;
 
 	myWorld = new World();
-	createPerspectiveMatrix(45.0f * 3.14159f / 180.0f,  // 45° FOV
-		1280 / 720, // aspect ratio
-		0.1f,                       // near plane
-		500.0f,                     // far plane
-		projection);
+
+	float width = 1280;
+	float height = 720;
+
+
 	init();
 	std::cout << "before run script" << std::endl;
 	emscripten_run_script("document.getElementById('canvas').setAttribute('tabindex', '0');");
-	EMSCRIPTEN_RESULT result = emscripten_set_canvas_element_size("#canvas", 1280, 720);
+	EMSCRIPTEN_RESULT result = emscripten_set_canvas_element_size("#canvas", width, height);
 	if (result != EMSCRIPTEN_RESULT_SUCCESS) {
 		printf("Failed to set canvas size.\n");
 	}
-	glViewport(0, 0, 1280, 720);
+
+
+
+	createPerspectiveMatrix(45.0f * 3.14159f / 180.0f,  // 45° FOV
+		width / height, // aspect ratio
+		0.1f,                       // near plane
+		500.0f,                     // far plane
+		projection);
+	
+	glViewport(0, 0, width, height);
 	
 	initInputHandlers();
 	emscripten_set_main_loop(mainLoop, 0, 1);
