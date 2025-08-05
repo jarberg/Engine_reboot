@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)lib\glad\include;$(SolutionDir)include;$(SolutionDir)lib;$(SolutionDir)src\engine\public;$(SolutionDir)src\platform\win;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)lib\glad\include;$(SolutionDir)include;$(SolutionDir)lib;$(SolutionDir)src\engine\public;$(SolutionDir)src\platform\win;$(SolutionDir)lib\tiny_gltf;$(IncludePath)</IncludePath>
     <ExternalIncludePath>C:\Users\mjarb\Projects\emsdk\upstream\emscripten\cache\sysroot\include;C:\Users\mjarb\Projects\glad\include;C:\Users\mjarb\Projects\test2\lib\entt;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -143,6 +143,10 @@
     <ClInclude Include="lib\entt\entt.hpp" />
     <ClInclude Include="lib\glad\include\glad\glad.h" />
     <ClInclude Include="lib\glad\include\KHR\khrplatform.h" />
+    <ClInclude Include="lib\tiny_gltf\json.hpp" />
+    <ClInclude Include="lib\tiny_gltf\stb_image.h" />
+    <ClInclude Include="lib\tiny_gltf\stb_image_write.h" />
+    <ClInclude Include="lib\tiny_gltf\tiny_gltf.h" />
     <ClInclude Include="src\engine\public\core\components.h" />
     <ClInclude Include="src\engine\public\core\entity.h" />
     <ClInclude Include="src\engine\public\core\Events.h" />

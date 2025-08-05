@@ -6,26 +6,30 @@
 #include <fstream>
 #include <filesystem>
 
-struct model {
+
+
+struct Model {
     std::string name;
+    std::vector<unsigned short> indices;
     std::vector<float> vertex_pos;
     size_t vertexCount = 0;
 
-    model() = default;
-    model(const std::string& name, const std::vector<float>& vertex_pos)
-        : name(name), vertex_pos(vertex_pos) {
+
+    Model() = default;
+    Model(const std::string& name, const std::vector<float>& vertex_pos, std::vector<unsigned short> indices)
+        : name(name), vertex_pos(vertex_pos), indices(indices) {
         vertexCount = vertex_pos.size();
     }
 
-    model(const model& other) = default;
-    model(model&& other) noexcept = default;
+    Model(const Model& other) = default;
+    Model(Model&& other) noexcept = default;
 
-    model& operator=(const model& other) = default;
-    model& operator=(model&& other) noexcept = default;
+    Model& operator=(const Model& other) = default;
+    Model& operator=(Model&& other) noexcept = default;
 
-    ~model() = default;
+    ~Model() = default;
 
-    friend std::ostream& operator<<(std::ostream& os, const model& m) {
+    friend std::ostream& operator<<(std::ostream& os, const Model& m) {
         os << "{ \"name\": \"" << m.name << "\", \"vertex\": [";
         for (size_t i = 0; i < m.vertex_pos.size(); ++i) {
             os << m.vertex_pos[i];
@@ -37,7 +41,9 @@ struct model {
         return os;
     }
 
-    friend std::istream& operator>>(std::istream& is, model& m) {
+
+
+    friend std::istream& operator>>(std::istream& is, Model& m) {
         // Basic deserialization logic (you can improve it)
         std::string line;
         std::getline(is, line, '"');  // Skip the opening brace and name key

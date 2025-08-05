@@ -25,7 +25,9 @@ void pollInput() {
     if (isKeyPressed(VK_RIGHT))InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Right));
     if (isKeyPressed(VK_UP)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Up));
     if (isKeyPressed(VK_DOWN)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Down));
-    if (isKeyPressed(VK_CONTROL)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Ctrl));    if (isKeyPressed(VK_ESCAPE)) {
+    if (isKeyPressed(VK_CONTROL)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Ctrl));    
+    if (isKeyPressed(VK_MENU)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Alt));
+    if (isKeyPressed(VK_ESCAPE)) {
         std::cout << "Escape pressed, quitting...\n";
         exit(0);
     }

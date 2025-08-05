@@ -14,6 +14,8 @@ file(GLOB_RECURSE HEADER_FILES
     "${CMAKE_SOURCE_DIR}/include/*.hpp"
     "${ENTT_DIR}/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/engine/public/*.h"
+    "${CMAKE_SOURCE_DIR}/lib/tiny_gltf/*.h"
+    "${CMAKE_SOURCE_DIR}/lib/tiny_gltf/*.hpp"
 )
 
 if(EMSCRIPTEN)
@@ -32,6 +34,7 @@ target_include_directories(Main PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${GLAD_DIR}/include
     ${CMAKE_SOURCE_DIR}/src/engine/public
+    ${CMAKE_SOURCE_DIR}/lib/tiny_gltf/
     ${ENTT_DIR}
 )
 

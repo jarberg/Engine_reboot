@@ -1,68 +1,90 @@
 #include <core/modelLookup.h>
+#include <fstream>
+#include <iostream>
 
-model model_datatable::get_model(int id)
-{	
-    auto m = this->model_datatable_map;
-    std::map<unsigned int, model>::iterator ret_iterator;
+using json = nlohmann::json;
 
-    if ((ret_iterator = m.find(id)) != m.end()) {
-        return ret_iterator->second;
-    }
-    return model(std::string("error"), { { 1.0f, 0.0f, -1.0f } });
+
+// JSON serialization
+void to_json(json& j, const Model& m) {
+    j = json{ {"name", m.name}, {"vertex", m.vertex_pos}, {"indices" , m.indices}};
 }
 
-void model_datatable::add_model(model new_model){
+void from_json(const json& j, Model& m) {
+    j.at("name").get_to(m.name);
+    j.at("vertex").get_to(m.vertex_pos);
+    j.at("indices").get_to(m.indices);
+
+}
+
+
+Model model_datatable::get_model(int id) {
+    auto it = model_datatable_map.find(id);
+    if (it != model_datatable_map.end()) {
+        return it->second;
+    }
+    return error_model();
+}
+
+void model_datatable::add_model(Model new_model) {
     int new_id = generate_new_id();
-    this->model_datatable_map.emplace(new_id, std::move(new_model));
+    model_datatable_map.emplace(new_id, std::move(new_model));
     save_dataTable();
 }
 
-void model_datatable::add_model(std::string _name, std::vector<float> _points){
-    model newModel(_name, _points);
-    add_model(newModel);
+void model_datatable::add_model(std::string _name, std::vector<float> _points, std::vector<unsigned short> _indices) {
+    Model new_model(std::move(_name), std::move(_points), std::move(_indices));
+    add_model(new_model);
 }
-
 
 int model_datatable::generate_new_id() {
     if (model_datatable_map.empty()) {
-        return 1; // Start with ID 1 if map is empty
+        return 1;
     }
-    return model_datatable_map.rbegin()->first + 1; // Generate ID as max key + 1
+    return model_datatable_map.rbegin()->first + 1;
 }
 
 void model_datatable::save_dataTable() {
     std::ofstream file("resources/models.json");
-    if (file.is_open()) {
-        file << "{ \"models\": {";
-        for (auto it = model_datatable_map.begin(); it != model_datatable_map.end(); ++it) {
-            if (it != model_datatable_map.begin()) {
-                file << ", ";
-            }
-            file << "\"" << it->first << "\": " << it->second;
-        }
-        file << "} }";
-        file.close();
+    if (!file.is_open()) {
+        std::cerr << "Failed to open models.json for writing\n";
+        return;
     }
+
+    file << "{ \"models\": {";
+    bool first = true;
+    for (const auto& [id, model] : model_datatable_map) {
+        if (!first) file << ", ";
+        file << "\"" << id << "\": " << json(model);
+        first = false;
+    }
+    file << "} }";
+    file.close();
 }
 
 void model_datatable::load_dataTable() {
     std::ifstream file("resources/models.json");
-    if (file.is_open() && file.peek() != std::ifstream::traits_type::eof()) {
-        std::string line;
-        std::getline(file, line, '{');  
-        std::getline(file, line, '{');  
-        while (std::getline(file, line, '"')) {
-            int id;
-            file >> id;
-            std::getline(file, line, ':'); 
-            model m;
-            file >> m;
-            model_datatable_map[id] = m;
-            std::getline(file, line, ',');
-            if (line.find("}") != std::string::npos) {
-                break;
-            }
-        }
-        file.close();
+    if (!file.is_open()) {
+        std::cerr << "Failed to open models.json\n";
+        return;
+    }
+
+    json j;
+    file >> j;
+
+    if (!j.contains("models")) {
+        std::cerr << "JSON does not contain 'models'\n";
+        return;
+    }
+
+    for (auto& [key, value] : j["models"].items()) {
+        int id = std::stoi(key);
+        Model m = value.get<Model>();
+        model_datatable_map[id] = std::move(m);
     }
 }
+
+Model model_datatable::error_model() {
+    return Model("error", { 1.0f, 0.0f, -1.0f }, {0,1,2});
+}
+

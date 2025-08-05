@@ -3,7 +3,7 @@
 #include <cmath>
 
 
-void createRotationMatrixXYZ(float pitch, float yaw, float roll, float out[16]) {
+void createRotationMatrixXYZ(double pitch, double yaw, double roll, float out[16]) {
     // Rotation around X-axis (pitch)
     float cx = std::cos(pitch);
     float sx = std::sin(pitch);
@@ -41,6 +41,7 @@ void createRotationMatrixXYZ(float pitch, float yaw, float roll, float out[16]) 
 void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyPressedEvent> e)
 {
     unsigned int ctrlPressed = InputHandler::GetInstance()->keyStates[17];
+    unsigned int altPressed = InputHandler::GetInstance()->keyStates[18];
 
     World* world = owner.get_world();
     float dt = world->get_delta_time();
@@ -48,7 +49,6 @@ void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyPressedEven
         return;
     }
 
-    
     if (ctrlPressed) {
         RotationComponent& rotComp = world->get_component<RotationComponent>(owner);
         switch (e->key) {
@@ -71,20 +71,36 @@ void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyPressedEven
     else
     {
         PositionComponent& posComp = world->get_component<PositionComponent>(owner);
-        switch (e->key) {
-        case KeyCode::Left:
-            posComp.x -= 1.0f * dt;
-            break;
-        case KeyCode::Right:
-            posComp.x += 1.0f * dt;
-            break;
-        case KeyCode::Up:
-            posComp.y += 1.0f * dt;
-            break;
-        case KeyCode::Down:
-            posComp.y -= 1.0f * dt;
-            break;
+
+        if (altPressed) {
+            switch (e->key) {
+            case KeyCode::Up:
+                posComp.z += 1.0f * dt;
+
+                break;
+            case KeyCode::Down:
+                posComp.z -= 1.0f * dt;
+                break;
+            }
         }
+        else {
+            switch (e->key) {
+            case KeyCode::Left:
+                posComp.x -= 1.0f * dt;
+                break;
+            case KeyCode::Right:
+                posComp.x += 1.0f * dt;
+                break;
+            case KeyCode::Up:
+                posComp.y += 1.0f * dt;
+
+                break;
+            case KeyCode::Down:
+                posComp.y -= 1.0f * dt;
+                break;
+            }
+        }
+
     }
 
 }

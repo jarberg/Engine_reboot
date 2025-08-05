@@ -13,7 +13,7 @@ public:
 };  
 
 enum class KeyCode {
-    Left, Right, Down, Up, Escape, Ctrl
+    Left, Right, Down, Up, Escape, Ctrl, Alt
     // Add other keys as needed
 };
 

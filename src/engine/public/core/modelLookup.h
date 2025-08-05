@@ -7,6 +7,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include <json.hpp>
+
 #include "core/singleton.h"
 #include "core/types.h"
 
@@ -19,22 +21,34 @@ private:
         load_dataTable();
     };
 	void save_dataTable();
-	std::map<unsigned int, model> model_datatable_map;
+	std::map<unsigned int, Model> model_datatable_map;
 	int generate_new_id();
 
 public:
 
-	model get_model(int id);
+	Model get_model(int id);
+	void print_data() {
+		for (const auto& [id, model] : model_datatable_map) {
+			std::cout << "ID: " << id << ", Name: " << model.name << std::endl;
+			std::cout << "Vertices: ";
+			for (float v : model.vertex_pos) {
+				std::cout << v << " ";
+			}
+			std::cout << std::endl;
+		}
+	}
 
-	std::map<unsigned int, model>& get_model_map() {
+	std::map<unsigned int, Model>& get_model_map() {
 		return model_datatable_map;
 	}
 
-	void add_model(model new_model); 
-	void add_model(std::string, std::vector<float> points);
+	void add_model(Model new_model);
+	void add_model(std::string _name, std::vector<float> _points, std::vector<unsigned short> _indices);
 	
 	// Constructor that loads the data on initialization
 	void load_dataTable();
+
+	Model error_model();
 
 	~model_datatable() {
 		save_dataTable();

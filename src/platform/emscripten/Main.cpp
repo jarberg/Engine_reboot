@@ -20,13 +20,12 @@ World* myWorld = nullptr;
 void mainLoop() {
 	
 	emscripten_webgl_make_context_current(context);
-	glClearColor(0.5, 0.5, 0.5, 1); // Clear the canvas with a grey color
+	glClearColor(0.5, 0.5, 0.5, 1); 
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	pollInput();
 	myWorld->update();
 
-	// Now render the triangle
 	render(myWorld->get_registry());
 
 	
@@ -58,6 +57,13 @@ int main(){
 	std::cout << "before make context" << std::endl;
 	emscripten_webgl_make_context_current(context);
 	std::cout << "before init" << std::endl;
+
+	myWorld = new World();
+	createPerspectiveMatrix(45.0f * 3.14159f / 180.0f,  // 45° FOV
+		1280 / 720, // aspect ratio
+		0.1f,                       // near plane
+		500.0f,                     // far plane
+		projection);
 	init();
 	std::cout << "before run script" << std::endl;
 	emscripten_run_script("document.getElementById('canvas').setAttribute('tabindex', '0');");
@@ -66,6 +72,7 @@ int main(){
 		printf("Failed to set canvas size.\n");
 	}
 	glViewport(0, 0, 1280, 720);
+	
 	initInputHandlers();
 	emscripten_set_main_loop(mainLoop, 0, 1);
 

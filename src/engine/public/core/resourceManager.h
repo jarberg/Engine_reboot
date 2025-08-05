@@ -2,55 +2,48 @@
 
 #include <vector>
 #include <map>
+#include <iostream>
 
 #include "core/singleton.h"
 #include "core/types.h"
-
 #include "engine/core/GL.h"
-
 
 struct glmodel {
     unsigned int ID;
     unsigned int VBO;
     unsigned int VAO;
-    size_t vertCount;
+    unsigned int EBO;
+    size_t indexCount;
     std::vector<float> vertex_pos;
-    
-    glmodel() {
-        ID = 25;
-        VBO = 25;
-        VAO = 25;
-        vertCount = 0;
-        vertex_pos = {};
-    };
-    
-    glmodel(unsigned int _ID, unsigned int _VBO, unsigned int _VAO, size_t _vertCount, const std::vector<float>& _vertex_pos = {})
-        : ID(_ID), VBO(_VBO), VAO(_VAO), vertCount(_vertCount), vertex_pos(_vertex_pos) {}
+    std::vector<uint16_t> indices;
+
+    glmodel()
+        : ID(0), VBO(0), VAO(0), EBO(0), indexCount(0) {
+    }
+
+    glmodel(unsigned int _ID, unsigned int _VBO, unsigned int _VAO, unsigned int _EBO,
+        size_t _indexCount, const std::vector<float>& _vertex_pos = {}, const std::vector<uint16_t>& _indices = {})
+        : ID(_ID), VBO(_VBO), VAO(_VAO), EBO(_EBO), indexCount(_indexCount), vertex_pos(_vertex_pos), indices(_indices) {
+    }
 
     void upload();
     void bind();
     void unbind();
 
-    // Define the equality operator
     bool operator==(const glmodel& other) const {
-        // Implement your comparison logic here
-        // For example, compare all relevant members:
-        return ID == other.ID;/* comparison of members */;
+        return ID == other.ID;
     }
 };
 
-class ResourceManager:public Singleton<ResourceManager> {
+class ResourceManager : public Singleton<ResourceManager> {
     friend class Singleton<ResourceManager>;
 
 private:
     std::map<unsigned int, glmodel> buffers;
     ResourceManager();
 
-
 public:
-
-    void create_model(unsigned int _id, model m); 
-    
+    void create_model(unsigned int _id, Model m);
     glmodel* get_model(unsigned int _id);
 
     unsigned int createBuffer() {
@@ -60,9 +53,9 @@ public:
     }
 
     unsigned int createVertexArray() {
-        unsigned int buffer;
-        glGenVertexArrays(1, &buffer);
-        return buffer;
+        unsigned int array;
+        glGenVertexArrays(1, &array);
+        return array;
     }
 
     void deleteBuffer(unsigned int buffer) {
@@ -71,10 +64,10 @@ public:
     }
 
     ~ResourceManager() {
-        for (auto model : buffers) {
-            glDeleteBuffers(1, &model.second.VAO);
+        for (auto& model : buffers) {
             glDeleteBuffers(1, &model.second.VBO);
+            glDeleteBuffers(1, &model.second.EBO);
+            glDeleteVertexArrays(1, &model.second.VAO);
         }
     }
-
 };

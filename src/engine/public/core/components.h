@@ -30,7 +30,8 @@ struct PositionComponent
 struct RotationComponent
 {
 	double x, y, z;
-	float matrix[16] = { 1, 0, 0, 0,
+	float matrix[16] = 
+	          { 1, 0, 0, 0,
 				0, 1, 0, 0,
 				0, 0, 1, 0,
 				0, 0, 0, 1 };

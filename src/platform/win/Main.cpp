@@ -5,7 +5,7 @@
 #include <vector>
 
 std::vector<int> myVector = { 0, 0, 0};
-World* myWorld = nullptr;
+World* myWorld = new World();
 
 
 GLFWwindow* initWindow(const int width, const int height, const char* title) {
@@ -77,15 +77,26 @@ int main() {
 	GLFWwindow* window = initWindow(width, height, "GLFW Window Example");
 	if (!window) return -1;
 
+	createPerspectiveMatrix(45.0f * 3.14159f / 180.0f,  // 45° FOV
+		1280.0f / 720.0f, // aspect ratio
+		0.1f,                       // near plane
+		500.0f,                     // far plane
+		projection);
+
+
+
+
+
+
 	init();
 	initInputHandlers();
-
 
 	mainLoop(window);
 
 	// Clean up and exit
 	glfwDestroyWindow(window);
 	glfwTerminate();
+
 
 
 	return 0;

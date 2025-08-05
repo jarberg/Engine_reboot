@@ -11,7 +11,7 @@ unsigned int InputHandler::keyStates[256] = {0};
 bool canvasFocused = false;
 
 void InputHandler::clearKeyStates() {
-    std::fill(std::begin(InputHandler::keyStates), std::end(InputHandler::keyStates), 0); // Clear the key states after processing  
+    std::fill(std::begin(InputHandler::keyStates), std::end(InputHandler::keyStates), 0); 
 }
 
 EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userData) {
@@ -65,6 +65,8 @@ void pollInput() {
             if (i == 38) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Up));
             if (i == 40) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Down));
 			if (i == 17) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Ctrl));
+            if (i == 18) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Alt));
+
         }
     }
 }
