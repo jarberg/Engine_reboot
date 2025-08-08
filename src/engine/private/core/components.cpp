@@ -104,3 +104,7 @@ void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyPressedEven
     }
 
 }
+
+CameraComponent::CameraComponent()
+{
+}

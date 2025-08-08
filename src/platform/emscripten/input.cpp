@@ -61,8 +61,8 @@ void pollInput() {
     for (int i = 0; i < 256; i++) {
         if (InputHandler::keyStates[i]==1) {
             if (i == 37) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Left));
-            if (i == 39) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Right));
             if (i == 38) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Up));
+            if (i == 39) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Right));
             if (i == 40) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Down));
 			if (i == 17) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Ctrl));
             if (i == 18) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Alt));

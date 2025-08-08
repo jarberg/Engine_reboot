@@ -13,8 +13,13 @@ public:
 };  
 
 enum class KeyCode {
-    Left, Right, Down, Up, Escape, Ctrl, Alt
-    // Add other keys as needed
+    Left = 37,
+    Up = 38,
+    Right = 39, 
+    Down = 40,
+    Escape,
+    Ctrl = 17,
+    Alt = 18
 };
 
 class KeyPressedEvent : public Event {
@@ -24,7 +29,6 @@ public:
     explicit KeyPressedEvent(KeyCode key) : key(key) {}
 };
 
-// Type alias for Event Callbacks
 using EventCallback = std::function<void(std::shared_ptr<Event>)>;
 
 class EventDispatcher {
@@ -32,7 +36,6 @@ private:
 
     std::unordered_map<std::size_t, std::vector<EventCallback>> listeners;
 
-    // Helper function to get a unique event type ID
     template<typename T>
     static std::size_t GetEventTypeID() {
         return typeid(T).hash_code();

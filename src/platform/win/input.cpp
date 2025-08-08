@@ -11,6 +11,12 @@
 EventDispatcher* InputHandler::inputDispatcher = new EventDispatcher();
 unsigned int InputHandler::keyStates[256] = { 0 };
 
+static inline KeyCode WindowsVKToJSKeyCode(int vk){
+    switch (vk) {
+    default: return  KeyCode(vk);
+    }
+}
+
 void initInputHandlers() {
     std::cout << "Windows input initialized. Press ESC to quit.\n";
 	
@@ -21,23 +27,49 @@ bool isKeyPressed(int vkey) {
 }
 
 void pollInput() {
-    if (isKeyPressed(VK_LEFT)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Left));
-    if (isKeyPressed(VK_RIGHT))InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Right));
-    if (isKeyPressed(VK_UP)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Up));
-    if (isKeyPressed(VK_DOWN)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Down));
-    if (isKeyPressed(VK_CONTROL)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Ctrl));    
-    if (isKeyPressed(VK_MENU)) InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Alt));
-    if (isKeyPressed(VK_ESCAPE)) {
-        std::cout << "Escape pressed, quitting...\n";
-        exit(0);
+    KeyCode E_keyCode;
+    auto* input = InputHandler::GetInstance();
+
+    if (isKeyPressed(VK_LEFT)) {
+        E_keyCode = WindowsVKToJSKeyCode(VK_LEFT);
+        InputHandler::setKeyState(E_keyCode);
     }
+    if (isKeyPressed(VK_RIGHT)) {
+        E_keyCode = WindowsVKToJSKeyCode(VK_RIGHT);
+        InputHandler::setKeyState(E_keyCode);
+    }
+    if (isKeyPressed(VK_UP)) {
+        E_keyCode = WindowsVKToJSKeyCode(VK_UP);
+        InputHandler::setKeyState(E_keyCode);
+    }
+    if (isKeyPressed(VK_DOWN)) {
+        E_keyCode = WindowsVKToJSKeyCode(VK_DOWN);
+        InputHandler::setKeyState(E_keyCode);
+    }
+    if (isKeyPressed(VK_CONTROL)) {
+        E_keyCode = WindowsVKToJSKeyCode(VK_CONTROL);
+        InputHandler::setKeyState(E_keyCode);
+    }
+    if (isKeyPressed(VK_MENU)) {
+        E_keyCode = WindowsVKToJSKeyCode(VK_MENU);
+        InputHandler::setKeyState(E_keyCode);
+    }
+ 
+}
+
+void InputHandler::setKeyState(KeyCode jsKeyCode){
+
+    int state = InputHandler::keyStates[int(jsKeyCode)];
+    InputHandler::keyStates[int(jsKeyCode)] = (state + 1) % 2;
+
+    InputHandler::GetInstance()->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(jsKeyCode));
+    
+}
+
+void InputHandler::clearKeyStates() {
+    std::fill(std::begin(InputHandler::keyStates), std::end(InputHandler::keyStates), 0); // Clear the key states after processing  
 }
 
 void shutdownInputHandlers() {
-    // Optional cleanup
-}
 
-
-void InputHandler::clearKeyStates() {  
-    std::fill(std::begin(InputHandler::keyStates), std::end(InputHandler::keyStates), 0); // Clear the key states after processing  
 }

@@ -18,17 +18,11 @@ EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
 World* myWorld = nullptr;
 
 void mainLoop() {
-	
-	emscripten_webgl_make_context_current(context);
-	glClearColor(0.5, 0.5, 0.5, 1); 
-	glClear(GL_COLOR_BUFFER_BIT);
+
 
 	pollInput();
 	myWorld->update();
-
 	render(myWorld->get_registry());
-
-	
 }
 
 int main(){
@@ -42,11 +36,11 @@ int main(){
 	attrs.preserveDrawingBuffer = EM_FALSE;
 	attrs.enableExtensionsByDefault = EM_TRUE;
 	attrs.premultipliedAlpha = EM_FALSE;
-	attrs.majorVersion = 2; // Requesting WebGL 2 context
+	attrs.majorVersion = 2; 
 	attrs.minorVersion = 0;
 
 	context = emscripten_webgl_create_context("#canvas", &attrs);
-
+		emscripten_webgl_make_context_current(context);
 	if (!context) {
 		std::cerr << "Failed to initialize WebGL context!" << std::endl;
 		return -1;
@@ -60,10 +54,6 @@ int main(){
 
 	myWorld = new World();
 
-	float width = 1280;
-	float height = 720;
-
-
 	init();
 	std::cout << "before run script" << std::endl;
 	emscripten_run_script("document.getElementById('canvas').setAttribute('tabindex', '0');");
@@ -71,14 +61,6 @@ int main(){
 	if (result != EMSCRIPTEN_RESULT_SUCCESS) {
 		printf("Failed to set canvas size.\n");
 	}
-
-
-
-	createPerspectiveMatrix(45.0f * 3.14159f / 180.0f,  // 45° FOV
-		width / height, // aspect ratio
-		0.1f,                       // near plane
-		500.0f,                     // far plane
-		projection);
 	
 	glViewport(0, 0, width, height);
 	

@@ -30,6 +30,9 @@
 extern World* myWorld;
 std::array<float, 16> projection;
 
+float width = 1280;
+float height = 720;
+
 ResourceManager* RMan;
 unsigned int shaderProgram;
 Entity PlayerEntity;
@@ -38,25 +41,33 @@ int main();
 
 void render(entt::registry& registry) {
 	auto view = registry.view<StaticMeshComponent, PositionComponent, RotationComponent>();
+
+	glClearColor(0.5, 0.5, 0.5, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	glUseProgram(shaderProgram);
+
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
-	
+
+	auto cameraview = registry.view<CameraComponent>();
+	CameraComponent& cam = cameraview.get<CameraComponent>(cameraview.front());
+
 	for (auto entity : view) {
 		auto& buffer = view.get<StaticMeshComponent>(entity);
-		auto& position = view.get<PositionComponent>(entity);
-		auto& rotation = view.get<RotationComponent>(entity);
-
 		glmodel* m = RMan->get_model(buffer.meshID);
-		float cameraMatrix[16] = {
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			0, 0, -5, 1  // move everything -10 on Z (camera is at +10)
-				};
 		if (m) {
 			m->bind();
+
+			GLint perspLoc = glGetUniformLocation(shaderProgram, "uPersp");
+			glUniformMatrix4fv(perspLoc, 1, GL_FALSE, cam.perspectiveMatrix.data());
+			GLint cameraLoc = glGetUniformLocation(shaderProgram, "uCamera");
+			glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, cam.cameraMatrix.data());
+
+			auto& position = view.get<PositionComponent>(entity);
+			auto& rotation = view.get<RotationComponent>(entity);
+
 			rotation.matrix[12] = static_cast<float>(position.x);
 			rotation.matrix[13] = static_cast<float>(position.y);
 			rotation.matrix[14] = static_cast<float>(position.z);
@@ -65,41 +76,14 @@ void render(entt::registry& registry) {
 			GLint transformLoc = glGetUniformLocation(shaderProgram, "uTransform");
 			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, rotation.matrix);
 
-			GLint perspLoc = glGetUniformLocation(shaderProgram, "uPersp");
-			glUniformMatrix4fv(perspLoc, 1, GL_FALSE, projection.data());
-
-			GLint cameraLoc = glGetUniformLocation(shaderProgram, "uCamera");
-			glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, cameraMatrix);
-
 			glDrawElements(GL_TRIANGLES, m->indexCount, GL_UNSIGNED_SHORT, 0);
+
 			m->unbind();
 		}
 	}
 }
 
-void createPerspectiveMatrix(float fovYRadians, float aspect, float nearPlane, float farPlane, std::array<float, 16>& out) {
-	float f = 1.0f / std::tan(fovYRadians / 2.0f);
 
-	out[0] = f / aspect;
-	out[1] = 0.0f;
-	out[2] = 0.0f;
-	out[3] = 0.0f;
-
-	out[4] = 0.0f;
-	out[5] = f;
-	out[6] = 0.0f;
-	out[7] = 0.0f;
-
-	out[8] = 0.0f;
-	out[9] = 0.0f;
-	out[10] = (farPlane + nearPlane) / (nearPlane - farPlane); // OpenGL-style
-	out[11] = -1.0f;
-
-	out[12] = 0.0f;
-	out[13] = 0.0f;
-	out[14] = (2.0f * farPlane * nearPlane) / (nearPlane - farPlane); // OpenGL-style
-	out[15] = 0.0f;
-}
 
 void load_files(const std::string& path, Model& modelOut) {
 	tinygltf::TinyGLTF loader;
@@ -244,6 +228,9 @@ void init() {
 	myWorld->add_component<StaticMeshComponent>(PlayerEntity,2);
 	myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
 	myWorld->add_component<RotationComponent>(PlayerEntity);
+
+	Entity cameraEntity = myWorld->create_entity("camera");
+	myWorld->add_component<CameraComponent>(cameraEntity, 90.0f, width/height, 0.1f, 100.0f);
 
 	std::cout << "Hello, world!" << std::endl;
 }

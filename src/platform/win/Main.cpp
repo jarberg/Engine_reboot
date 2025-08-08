@@ -69,38 +69,21 @@ int mainLoop(GLFWwindow* window) {
 }
 
 int main() {
-
-
-	float width = 1280;
-	float height = 720;
-
 	int widthInt = static_cast<int>(width);
 	int heightInt = static_cast<int>(height);
 
 	GLFWwindow* window = initWindow(width, height, "GLFW Window Example");
 	if (!window) return -1;
 	
-	
 	glfwGetWindowSize(window, &widthInt, &heightInt); // Get window size (not framebuffer)
-
-
-	createPerspectiveMatrix(45.0f * 3.14159f / 180.0f,  // 45° FOV
-		width / height, // aspect ratio
-		0.1f,                       // near plane
-		500.0f,                     // far plane
-		projection);
-
 
 	init();
 	initInputHandlers();
 
 	mainLoop(window);
 
-	// Clean up and exit
 	glfwDestroyWindow(window);
 	glfwTerminate();
-
-
 
 	return 0;
 }
