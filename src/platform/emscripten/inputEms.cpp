@@ -3,16 +3,13 @@
 #include <emscripten/html5.h>
 #include <emscripten/emscripten.h>
 
+#include <algorithm>  
 #include <iostream>
 
-EventDispatcher* InputHandler::inputDispatcher = new EventDispatcher();
-unsigned int InputHandler::keyStates[256] = {0};
+
 
 bool canvasFocused = false;
 
-void InputHandler::clearKeyStates() {
-    std::fill(std::begin(InputHandler::keyStates), std::end(InputHandler::keyStates), 0); 
-}
 
 EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userData) {
     if (!canvasFocused) {
@@ -23,14 +20,21 @@ EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userDa
     return EM_TRUE;
 }
 
-EM_BOOL key_down(int eventType, const EmscriptenKeyboardEvent* e, void* userData) {
-    InputHandler::keyStates[e->keyCode] = 1;
-    std::cout << "[keydown] Detected key \n" << e->keyCode;
+EM_BOOL key_down(int, const EmscriptenKeyboardEvent* e, void*) {
+    int k = (int)e->keyCode;
+    if (k >= 0 && k < 256) {
+        InputHandler::keyStates[k] = 1;
+    }
     return EM_TRUE;
 }
 
-EM_BOOL key_up(int eventType, const EmscriptenKeyboardEvent* e, void* userData) {
-    InputHandler::keyStates[e->keyCode] = 0;
+EM_BOOL key_up(int, const EmscriptenKeyboardEvent* e, void*) {
+    int k = (int)e->keyCode;
+    if (k >= 0 && k < 256) {
+        InputHandler::keyStates[k] = 0;
+        InputHandler::GetInstance()->inputDispatcher->Dispatch(
+            std::make_shared<KeyReleasedEvent>(static_cast<KeyCode>(k)));
+    }
     return EM_TRUE;
 }
 
@@ -55,24 +59,8 @@ EM_BOOL on_document_keydown(int eventType, const EmscriptenKeyboardEvent* e, voi
     return EM_TRUE;  // Let the event propagate to the canvas if it gains focus
 }
 
-void pollInput() {
 
-    InputHandler* Input = InputHandler::GetInstance();
-    for (int i = 0; i < 256; i++) {
-        if (InputHandler::keyStates[i]==1) {
-            if (i == 37) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Left));
-            if (i == 38) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Up));
-            if (i == 39) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Right));
-            if (i == 40) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Down));
-			if (i == 17) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Ctrl));
-            if (i == 18) Input->inputDispatcher->Dispatch(std::make_shared<KeyPressedEvent>(KeyCode::Alt));
-
-        }
-    }
-}
-
-
-void initInputHandlers() {
+void initInputHandlers(WindowHandle /*unused*/) {
     std::cout << "[initInputHandlers] Setting up input...\n";
 
     // Ensure canvas is focusable
@@ -89,9 +77,5 @@ void initInputHandlers() {
 
     emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, nullptr, EM_TRUE, on_document_keydown);
 
-}
-
-void shutdownInputHandlers() {
-    // Optional: deregister callbacks if needed
 }
 

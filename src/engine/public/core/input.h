@@ -1,50 +1,45 @@
+// input.h
 #pragma once
-
+#include <cstdint>
 #include "core/singleton.h"
 #include <core/Events.h>
 
-enum InputKeyCode {
-    KEY_CTRL = 17, 
-    KEY_ALT = 18, 
-    KEY_SPACE = 32,
-    KEY_PRIOR = 33,
-    KEY_NEXT = 34,
-    KEY_END = 35,
-    KEY_HOME = 36,
-    KEY_LEFT = 37,
-    KEY_UP = 38,
-    KEY_RIGHT = 39,
-    KEY_DOWN = 40,
-    KEY_SELECT = 41,
-    KEY_PRINT = 42,
-    KEY_SNAPSHOT = 44,
-    KEY_INSERT = 45,
-    KEY_DELETE = 46,
-    KEY_HELP = 47,
-};
+using WindowHandle = void*;
+
+enum class KeyAction : std::int8_t { Release = 0, Press = 1, Repeat = 2 };
 
 class InputHandler : public Singleton<InputHandler> {
     friend class Singleton<InputHandler>;
-
 public:
     static unsigned int keyStates[256];
     static EventDispatcher* inputDispatcher;
 
     InputHandler() {
-        if (!inputDispatcher) {
-            inputDispatcher = new EventDispatcher();
-        }
+        if (!inputDispatcher) inputDispatcher = new EventDispatcher();
     }
     ~InputHandler() {
         delete inputDispatcher;
+        inputDispatcher = nullptr;
     }
-	static void setKeyState(KeyCode jsKeyCode);
+
+    // Engine-agnostic API
+    static void setKeyState(int jsKeyCode, KeyAction action);
     static void clearKeyStates();
+    static void fireHeldPressed();
 };
 
+void initInputHandlers(WindowHandle window);
 
-static inline int VK_to_JS(int vk) { return vk; }
+// Engine-agnostic callback signature (no GLFW here)
+using KeyCallback = void(*)(WindowHandle window,
+    int jsKeyCode,
+    int scancode,
+    KeyAction action,
+    std::uint16_t mods);
 
-void initInputHandlers();
-void shutdownInputHandlers();
-void pollInput();
+// Engine-agnostic wiring points
+namespace Input {
+    void SetKeyCallback(KeyCallback cb);          // Engine registers its key sink (usually a small shim)
+    void InstallBackendKeyHook(WindowHandle win); // Platform hooks into the window
+         // Initialize input handlers, called by the engine
+}

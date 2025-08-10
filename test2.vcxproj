@@ -164,10 +164,11 @@
     <ClCompile Include="lib\glad\src\glad.c" />
     <ClCompile Include="src\engine\private\core\components.cpp" />
     <ClCompile Include="src\engine\private\core\entity.cpp" />
+    <ClCompile Include="src\engine\private\core\input.cpp" />
     <ClCompile Include="src\engine\private\core\modelLookup.cpp" />
     <ClCompile Include="src\engine\private\core\resourceManager.cpp" />
     <ClCompile Include="src\engine\private\core\world.cpp" />
-    <ClCompile Include="src\platform\win\input.cpp" />
+    <ClCompile Include="src\platform\win\inputWin.cpp" />
     <ClCompile Include="src\platform\win\Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

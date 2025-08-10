@@ -4,9 +4,16 @@
 
 #include <vector>
 
+
 std::vector<int> myVector = { 0, 0, 0};
 World* myWorld = new World();
 
+extern void initInputHandlers(WindowHandle window);
+
+static void OnKey(WindowHandle, int jsKey, int scancode, KeyAction action, std::uint16_t mods) {
+	InputHandler::setKeyState(jsKey, action);
+	(void)scancode; (void)mods;
+}
 
 GLFWwindow* initWindow(int width, int height, const char* title) {
 	if (!glfwInit()) {
@@ -48,6 +55,8 @@ GLFWwindow* initWindow(int width, int height, const char* title) {
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		});
 
+
+
 	return window;
 }
 
@@ -57,7 +66,8 @@ int mainLoop(GLFWwindow* window) {
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		pollInput();
+
+		InputHandler::fireHeldPressed();
 
 		render(myWorld->get_registry());
 
@@ -78,7 +88,8 @@ int main() {
 	glfwGetWindowSize(window, &widthInt, &heightInt); // Get window size (not framebuffer)
 
 	init();
-	initInputHandlers();
+	
+	initInputHandlers(static_cast<WindowHandle>(window));
 
 	mainLoop(window);
 

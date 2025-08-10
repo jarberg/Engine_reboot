@@ -5,6 +5,7 @@
 #include <core/input.h>
 
 #include "core/entity.h"
+#include "core/Events.h"
 #include "core/world.h"
 #include "core/fileLoader.h"
 #include <core/extensions.h>

@@ -20,7 +20,8 @@ World* myWorld = nullptr;
 void mainLoop() {
 
 
-	pollInput();
+	InputHandler::fireHeldPressed();
+
 	myWorld->update();
 	render(myWorld->get_registry());
 }
@@ -63,8 +64,9 @@ int main(){
 	}
 	
 	glViewport(0, 0, width, height);
-	
-	initInputHandlers();
+
+	initInputHandlers(nullptr);
+
 	emscripten_set_main_loop(mainLoop, 0, 1);
 
 	return 0;

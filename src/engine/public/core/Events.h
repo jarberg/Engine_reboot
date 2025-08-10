@@ -28,6 +28,12 @@ public:
 
     explicit KeyPressedEvent(KeyCode key) : key(key) {}
 };
+class KeyReleasedEvent : public Event {
+public:
+    KeyCode key;
+
+    explicit KeyReleasedEvent(KeyCode key) : key(key) {}
+};
 
 using EventCallback = std::function<void(std::shared_ptr<Event>)>;
 
