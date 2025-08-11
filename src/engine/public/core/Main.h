@@ -47,9 +47,10 @@ void render(entt::registry& registry) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(shaderProgram);
-
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
+	//glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
 
 	auto cameraview = registry.view<CameraComponent>();
@@ -226,7 +227,7 @@ void init() {
 	dataTable->print_data();
 
 	PlayerEntity = myWorld->create_entity("test");
-	myWorld->add_component<StaticMeshComponent>(PlayerEntity,2);
+	myWorld->add_component<StaticMeshComponent>(PlayerEntity,3);
 	myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
 	myWorld->add_component<RotationComponent>(PlayerEntity);
 
