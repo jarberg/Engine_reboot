@@ -158,6 +158,7 @@
     <ClInclude Include="src\engine\public\core\resourceManager.h" />
     <ClInclude Include="src\engine\public\core\singleton.h" />
     <ClInclude Include="src\engine\public\core\types.h" />
+    <ClInclude Include="src\engine\public\core\vectors.h" />
     <ClInclude Include="src\engine\public\core\world.h" />
   </ItemGroup>
   <ItemGroup>

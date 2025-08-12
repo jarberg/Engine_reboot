@@ -119,6 +119,9 @@
     <ClInclude Include="lib\tiny_gltf\stb_image_write.h">
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\public\core\vectors.h">
+      <Filter>Source Files\public\engine\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib\glad\src\glad.c">

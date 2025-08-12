@@ -4,6 +4,7 @@
 #include <core/entity.h>
 #include <core/world.h>
 #include <core/input.h>
+#include "core/vectors.h"
 
 class Entity;
 
@@ -12,8 +13,7 @@ struct Tag
 	std::string tag;
 };
 
-struct DirtyTag :Tag
-{
+struct DirtyTag :Tag{
 };
 
 struct UuidComponent
@@ -21,20 +21,28 @@ struct UuidComponent
 	std::uint32_t uuid;
 	UuidComponent(const std::uint32_t& _uuid) : uuid(_uuid) {}
 };
+
 struct PositionComponent
 {
 	double x, y, z;
 
 };
+
 struct CameraComponent
 {
-	float FOV = 45.0f; // Field of View in degrees
+	float FOV = 45.0f; 
 	float fovYRadians = FOV * 3.141592;
 	float aspect = 1280/720;
 	float nearPlane = 0.1;
 	float farPlane = 100;
 
-	double x, y, z;
+
+	Vec3 eye = { 0,0,-3 };
+	Vec3 target = { 0,0,0 };
+	Vec3 up = { 0,1,0 };
+
+	CameraOrbit orbit = CameraOrbit(up,target);
+
 
 	std::array<float, 16> perspectiveMatrix =
 		{ 1, 0, 0, 0,
@@ -47,13 +55,14 @@ struct CameraComponent
 		  0, 1, 0, 0,
 		  0, 0, 1, 0,
 		  0, 0, -5, 1 };
+
 	CameraComponent();
 	CameraComponent(float FOV,float _aspect, float _nearPlane, float _farPlane) 
 		: FOV(FOV), aspect(_aspect), nearPlane(_nearPlane), farPlane(_farPlane) {
 		fovYRadians = FOV * 3.141592 / 180.0f;
 		createPerspectiveMatrix(fovYRadians, aspect, nearPlane, farPlane, perspectiveMatrix);
+		cameraMatrix = lookAt(eye, target, up);
 	}
-
 	void createPerspectiveMatrix(float fovYRadians, float aspect, float nearPlane, float farPlane, std::array<float, 16>& out) {
 		float f = 1.0f / std::tan(fovYRadians / 2.0f);
 
@@ -78,7 +87,6 @@ struct CameraComponent
 		out[15] = 0.0f;
 	}
 };
-
 
 struct RotationComponent
 {
