@@ -10,5 +10,5 @@ void main()
     else FragColor= vec4(1,1,1,1);;    
     
     //FragColor = abs(vertexColor); // Set the fragment color
-    FragColor = vec4(vertexColor.xyz, 1.0);
+    FragColor = abs(vec4(vertexColor.xyz, 1.0));
 }
