@@ -103,10 +103,10 @@ void CharacterComponent::inputHeldEvent(Entity owner, std::shared_ptr<KeyEvent> 
         else {
             switch (e->key) {
             case KeyCode::Left:
-                posComp.x -= 1.0f * dt;
+                posComp.x += 1.0f * dt;
                 break;
             case KeyCode::Right:
-                posComp.x += 1.0f * dt;
+                posComp.x -= 1.0f * dt;
                 break;
             case KeyCode::Up:
                 posComp.y += 1.0f * dt;

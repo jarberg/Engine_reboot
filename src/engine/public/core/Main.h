@@ -19,8 +19,6 @@
 #include <iostream>
 #include <chrono>
 
-
-
 #include "engine/core/GL.h"
 
 

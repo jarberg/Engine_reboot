@@ -1,14 +1,24 @@
 #version 300 es
-layout (location = 0) in vec3 aPos; // the position variable has attribute position 0
+precision highp float;
+
+layout (location = 0) in vec3 aPos; // vertex position
+
+out vec3 vNormal;
+out vec3 vWorldPos;
 
 uniform mat4 uPersp; 
 uniform mat4 uCamera; 
-uniform mat4 uTransform; // your transform matrix
-
-out vec4 vertexColor; // specify a color output to the fragment shader
+uniform mat4 uTransform; // model matrix
 
 void main()
 {
-    gl_Position = uPersp*uCamera*uTransform*vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor
-    vertexColor =  uPersp*uCamera*uTransform*vec4(aPos, 1.0); // set the output variable to a dark-red color
+    // World-space position
+    vec4 worldPos = uTransform * vec4(aPos, 1.0);
+    vWorldPos = worldPos.xyz;
+
+    // Use position as the normal (quick hack for testing)
+    vNormal = normalize(vWorldPos);
+
+    // Final clip-space position
+    gl_Position = uPersp * uCamera * worldPos;
 }

@@ -1,14 +1,29 @@
 #version 300 es
-precision mediump float;  // Specify default precision for float
+precision highp float;
 
-in vec4 vertexColor; // Input from the vertex shader
-out vec4 FragColor;  // Output color
+in vec3 vNormal;    
+in vec3 vWorldPos;
+out vec4 FragColor;
+
+uniform mat4 uCamera; // camera world transform (inverse view)
 
 void main()
-{   
-    if (gl_FrontFacing) FragColor= vec4(1,0,0,1);
-    else FragColor= vec4(1,1,1,1);;    
-    
-    //FragColor = abs(vertexColor); // Set the fragment color
-    FragColor = abs(vec4(vertexColor.xyz, 1.0));
+{
+    // Camera position
+    vec3 camPos = uCamera[3].xyz;
+
+    // Direction to light (camera)
+    vec3 lightDir = normalize(camPos - vWorldPos);
+
+    // Lambertian diffuse term
+    float diffuse = max(dot(normalize(vNormal), lightDir), 0.0);
+
+    // Distance attenuation
+    float dist = length(vWorldPos - camPos);
+    float attenuation = 1.0 / (1.0 + 0.09 * dist + 0.032 * dist * dist);
+
+    // Combine
+    float intensity = diffuse * attenuation;
+
+    FragColor = vec4(vec3(intensity), 1.0);
 }
