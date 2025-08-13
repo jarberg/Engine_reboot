@@ -38,10 +38,26 @@ void createRotationMatrixXYZ(double pitch, double yaw, double roll, float out[16
     out[15] = 1.0f;
 }
 
-void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyPressedEvent> e)
+CameraComponent::CameraComponent()
 {
-    unsigned int ctrlPressed = InputHandler::GetInstance()->keyStates[17];
-    unsigned int altPressed = InputHandler::GetInstance()->keyStates[18];
+}
+    
+void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyEvent> e)
+{   
+    switch (e->action) {
+    case KeyAction::Press: 
+        inputPressedEvent(owner, e); break;
+	case KeyAction::Repeat:
+		inputHeldEvent(owner, e); break;
+    case KeyAction::Release: 
+		inputReleaseEvent(owner, e); break;
+    }
+}
+
+void CharacterComponent::inputHeldEvent(Entity owner, std::shared_ptr<KeyEvent> e)
+{
+    const bool ctrlPressed = (e->mod & 1u) != 0;
+    const bool altPressed = (e->mod & 2u) != 0;
 
     World* world = owner.get_world();
     float dt = world->get_delta_time();
@@ -102,9 +118,14 @@ void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyPressedEven
         }
 
     }
-
 }
 
-CameraComponent::CameraComponent()
+void CharacterComponent::inputReleaseEvent(Entity owner, std::shared_ptr<KeyEvent> e)
 {
+	std::cout << "key Released " << int(e->key) << std::endl;
+}
+
+void CharacterComponent::inputPressedEvent(Entity owner, std::shared_ptr<KeyEvent> e)
+{
+    std::cout << "key pressed " << int(e->key) << std::endl;
 }

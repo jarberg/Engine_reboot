@@ -16,25 +16,18 @@ EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userDa
         canvasFocused = true;
         std::cout << "[focus] Focusing canvas after user click\n";
         emscripten_run_script("document.getElementById('canvas').focus();");
+        InputHandler::setKeyState(e->button, KeyAction::Press);
     }
     return EM_TRUE;
 }
 
 EM_BOOL key_down(int, const EmscriptenKeyboardEvent* e, void*) {
-    int k = (int)e->keyCode;
-    if (k >= 0 && k < 256) {
-        InputHandler::keyStates[k] = 1;
-    }
+	InputHandler::setKeyState(e->keyCode, KeyAction::Press);
     return EM_TRUE;
 }
 
 EM_BOOL key_up(int, const EmscriptenKeyboardEvent* e, void*) {
-    int k = (int)e->keyCode;
-    if (k >= 0 && k < 256) {
-        InputHandler::keyStates[k] = 0;
-        InputHandler::GetInstance()->inputDispatcher->Dispatch(
-            std::make_shared<KeyReleasedEvent>(static_cast<KeyCode>(k)));
-    }
+    InputHandler::setKeyState(e->keyCode, KeyAction::Release);
     return EM_TRUE;
 }
 

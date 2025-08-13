@@ -24,20 +24,24 @@ static int GLFWToJS(int key) {
     case GLFW_KEY_BACKSPACE:        return 8;
     case GLFW_KEY_DELETE:           return 46;
     case GLFW_KEY_SPACE:            return 32;
-	case GLFW_KEY_LEFT_CONTROL:     return 17; // Ctrl
-	case GLFW_KEY_LEFT_ALT:         return 18; // Alt
-    default:                 return key; // letters/numbers align with JS keyCode
+	case GLFW_KEY_LEFT_CONTROL:     return 17;  // Ctrl
+	case GLFW_KEY_LEFT_ALT:         return 18;  // Alt
+    default:                        return key; // letters/numbers align with JS keyCode
     }
 }
 
 static inline KeyAction GLFWActionToKA(int a) {
-    if (a == GLFW_PRESS)  return KeyAction::Press;
-    if (a == GLFW_REPEAT) return KeyAction::Repeat;
+    if (a == GLFW_PRESS)    return KeyAction::Press;
+    if (a == GLFW_REPEAT)   return KeyAction::Repeat;
+    if (a == GLFW_RELEASE)  return KeyAction::Release;
     return KeyAction::Release;
 }
 
+
 // ---- Bridge state ----
 static std::atomic<KeyCallback> g_cb{ nullptr };
+static std::atomic<MouseCallback> m_cb{ nullptr };
+
 
 // GLFW -> engine-agnostic callback
 static void GLFW_KeyTrampoline(GLFWwindow* w, int key, int scancode, int action, int mods) {
@@ -50,22 +54,33 @@ static void GLFW_KeyTrampoline(GLFWwindow* w, int key, int scancode, int action,
         static_cast<std::uint16_t>(mods));
 }
 
+static void GLFW_MouseTrampoline(GLFWwindow* w, int button, int action, int mods) {
+    auto cb = m_cb.load();
+    if (!cb) return;
+    cb(static_cast<WindowHandle>(w),
+        GLFWToJS(button),
+        GLFWActionToKA(action),
+        static_cast<std::uint16_t>(mods));
+}
+
 void initInputHandlers(WindowHandle window) {
     auto* gw = reinterpret_cast<GLFWwindow*>(window);
 
     Input::SetKeyCallback([](WindowHandle, int jsKey, int /*scancode*/, KeyAction act, std::uint16_t /*mods*/) {
         InputHandler::setKeyState(jsKey, act);
         });
-
-    Input::InstallBackendKeyHook(window); // this already casts inside to GLFWwindow*
-    // (If your InstallBackendKeyHook needs it, you can pass 'gw' after casting.)
+    Input::SetMouseCallback([](WindowHandle, int jsKey, KeyAction act, std::uint16_t /*mods*/) {
+        InputHandler::setKeyState(jsKey, act);
+        });
+    Input::InstallBackendKeyHook(window);
 }
 
-// Wire into GLFW for this window
 namespace Input {
     void SetKeyCallback(KeyCallback cb) { g_cb.store(cb); }
+    void SetMouseCallback(MouseCallback cb) { m_cb.store(cb); }
     void InstallBackendKeyHook(WindowHandle window) {
         auto* gw = reinterpret_cast<GLFWwindow*>(window);
         glfwSetKeyCallback(gw, GLFW_KeyTrampoline);
+        glfwSetMouseButtonCallback(gw, GLFW_MouseTrampoline);
     }
 }

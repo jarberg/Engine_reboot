@@ -6,7 +6,7 @@
 
 using WindowHandle = void*;
 
-enum class KeyAction : std::int8_t { Release = 0, Press = 1, Repeat = 2 };
+
 
 class InputHandler : public Singleton<InputHandler> {
     friend class Singleton<InputHandler>;
@@ -37,9 +37,15 @@ using KeyCallback = void(*)(WindowHandle window,
     KeyAction action,
     std::uint16_t mods);
 
+using MouseCallback = void(*)(WindowHandle window,
+    int jsKeyCode,
+    KeyAction action,
+    std::uint16_t mods);
+
 // Engine-agnostic wiring points
 namespace Input {
     void SetKeyCallback(KeyCallback cb);          // Engine registers its key sink (usually a small shim)
+    void SetMouseCallback(MouseCallback cb);
     void InstallBackendKeyHook(WindowHandle win); // Platform hooks into the window
          // Initialize input handlers, called by the engine
 }

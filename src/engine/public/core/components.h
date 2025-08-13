@@ -8,41 +8,35 @@
 
 class Entity;
 
-struct Tag
-{
+struct Tag{
 	std::string tag;
 };
 
 struct DirtyTag :Tag{
 };
 
-struct UuidComponent
-{
+struct UuidComponent{
 	std::uint32_t uuid;
 	UuidComponent(const std::uint32_t& _uuid) : uuid(_uuid) {}
 };
 
-struct PositionComponent
-{
+struct PositionComponent{
 	double x, y, z;
 
 };
 
-struct CameraComponent
-{
+struct CameraComponent{
 	float FOV = 45.0f; 
 	float fovYRadians = FOV * 3.141592;
 	float aspect = 1280/720;
 	float nearPlane = 0.1;
 	float farPlane = 100;
 
-
 	Vec3 eye = { 0,0,-3 };
 	Vec3 target = { 0,0,0 };
 	Vec3 up = { 0,1,0 };
 
 	CameraOrbit orbit = CameraOrbit(up,target);
-
 
 	std::array<float, 16> perspectiveMatrix =
 		{ 1, 0, 0, 0,
@@ -63,6 +57,7 @@ struct CameraComponent
 		createPerspectiveMatrix(fovYRadians, aspect, nearPlane, farPlane, perspectiveMatrix);
 		cameraMatrix = lookAt(eye, target, up);
 	}
+
 	void createPerspectiveMatrix(float fovYRadians, float aspect, float nearPlane, float farPlane, std::array<float, 16>& out) {
 		float f = 1.0f / std::tan(fovYRadians / 2.0f);
 
@@ -78,14 +73,15 @@ struct CameraComponent
 
 		out[8] = 0.0f;
 		out[9] = 0.0f;
-		out[10] = (farPlane + nearPlane) / (nearPlane - farPlane); // OpenGL-style
+		out[10] = (farPlane + nearPlane) / (nearPlane - farPlane);
 		out[11] = -1.0f;
 
 		out[12] = 0.0f;
 		out[13] = 0.0f;
-		out[14] = (2.0f * farPlane * nearPlane) / (nearPlane - farPlane); // OpenGL-style
+		out[14] = (2.0f * farPlane * nearPlane) / (nearPlane - farPlane); 
 		out[15] = 0.0f;
 	}
+
 };
 
 struct RotationComponent
@@ -97,6 +93,7 @@ struct RotationComponent
 				0, 0, 1, 0,
 				0, 0, 0, 1 };
 };
+
 struct VelocityComponent
 {
 	double x, y, z;
@@ -116,14 +113,18 @@ struct CharacterComponent
 public :
 	CharacterComponent(Entity _owner):owner(_owner) {
 		InputHandler* input = InputHandler::GetInstance();
-		input->inputDispatcher->Subscribe<KeyPressedEvent>(
-			[this](std::shared_ptr<KeyPressedEvent> e) {
+		input->inputDispatcher->Subscribe<KeyEvent>(
+			[this](std::shared_ptr<KeyEvent> e) {
 				this->inputEvent(owner, e);
 			}
 		);
 	}
 
-	void inputEvent(Entity owner, std::shared_ptr<KeyPressedEvent> e);
+	void inputEvent(Entity owner, std::shared_ptr<KeyEvent> e);
+
+	void inputHeldEvent(Entity owner, std::shared_ptr<KeyEvent> e );
+	void inputPressedEvent(Entity owner, std::shared_ptr<KeyEvent> e);
+	void inputReleaseEvent(Entity owner, std::shared_ptr<KeyEvent> e);
 
 };
 
