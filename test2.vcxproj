@@ -152,7 +152,10 @@
     <ClInclude Include="src\engine\public\core\Events.h" />
     <ClInclude Include="src\engine\public\core\extensions.h" />
     <ClInclude Include="src\engine\public\core\fileLoader.h" />
+    <ClInclude Include="src\engine\public\core\files\gltf.h" />
     <ClInclude Include="src\engine\public\core\input.h" />
+    <ClInclude Include="src\engine\public\core\input\input_Events.h" />
+    <ClInclude Include="src\engine\public\core\input\input_types.h" />
     <ClInclude Include="src\engine\public\core\Main.h" />
     <ClInclude Include="src\engine\public\core\modelLookup.h" />
     <ClInclude Include="src\engine\public\core\resourceManager.h" />
@@ -169,6 +172,12 @@
     <ClCompile Include="src\engine\private\core\modelLookup.cpp" />
     <ClCompile Include="src\engine\private\core\resourceManager.cpp" />
     <ClCompile Include="src\engine\private\core\world.cpp" />
+  <ClCompile Include="src\platform\emscripten\inputEms.cpp">
+    <ExcludedFromBuild>true</ExcludedFromBuild>
+  </ClCompile>
+  <ClCompile Include="src\platform\emscripten\Main.cpp">
+    <ExcludedFromBuild>true</ExcludedFromBuild>
+  </ClCompile>
     <ClCompile Include="src\platform\win\inputWin.cpp" />
     <ClCompile Include="src\platform\win\Main.cpp" />
   </ItemGroup>

@@ -8,6 +8,9 @@
 #include <core/components.h>
 #include <core/world.h>
 
+#include <core/input/input_types.h>
+#include <core/input/input_Events.h>
+
 EventDispatcher* InputHandler::inputDispatcher = nullptr;
 unsigned int InputHandler::keyStates[256] = { 0 };
 

@@ -4,8 +4,9 @@
 #include "core/singleton.h"
 #include <core/Events.h>
 
-using WindowHandle = void*;
+#include <core/input/input_types.h>
 
+using WindowHandle = void*;
 
 
 class InputHandler : public Singleton<InputHandler> {

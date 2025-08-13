@@ -3,6 +3,7 @@
 #include <cmath>
 
 
+
 void createRotationMatrixXYZ(double pitch, double yaw, double roll, float out[16]) {
     // Rotation around X-axis (pitch)
     float cx = std::cos(pitch);
