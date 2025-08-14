@@ -91,6 +91,7 @@ int main() {
 	
 	initInputHandlers(static_cast<WindowHandle>(window));
 
+
 	mainLoop(window);
 
 	glfwDestroyWindow(window);

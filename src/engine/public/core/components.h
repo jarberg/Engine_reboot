@@ -7,6 +7,9 @@
 #include "core/vectors.h"
 #include <core/input/input_Events.h>
 
+#include <core/material.h>
+
+
 class Entity;
 
 struct Tag{
@@ -131,8 +134,9 @@ public :
 
 struct StaticMeshComponent {
 	int meshID;
-
+	Material::Material* material;
 	StaticMeshComponent(int _ID):meshID(_ID) {
-			
+		material = new Material::Material(nullptr);
 	};
+	StaticMeshComponent(int _ID, Material::Material* material) :meshID(_ID), material(material){};
 };

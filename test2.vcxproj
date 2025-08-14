@@ -157,8 +157,10 @@
     <ClInclude Include="src\engine\public\core\input\input_Events.h" />
     <ClInclude Include="src\engine\public\core\input\input_types.h" />
     <ClInclude Include="src\engine\public\core\Main.h" />
+    <ClInclude Include="src\engine\public\core\material.h" />
     <ClInclude Include="src\engine\public\core\modelLookup.h" />
     <ClInclude Include="src\engine\public\core\resourceManager.h" />
+    <ClInclude Include="src\engine\public\core\shader.h" />
     <ClInclude Include="src\engine\public\core\singleton.h" />
     <ClInclude Include="src\engine\public\core\types.h" />
     <ClInclude Include="src\engine\public\core\vectors.h" />
@@ -169,17 +171,22 @@
     <ClCompile Include="src\engine\private\core\components.cpp" />
     <ClCompile Include="src\engine\private\core\entity.cpp" />
     <ClCompile Include="src\engine\private\core\input.cpp" />
+    <ClCompile Include="src\engine\private\core\material.cpp" />
     <ClCompile Include="src\engine\private\core\modelLookup.cpp" />
     <ClCompile Include="src\engine\private\core\resourceManager.cpp" />
+    <ClCompile Include="src\engine\private\core\shader.cpp" />
     <ClCompile Include="src\engine\private\core\world.cpp" />
-  <ClCompile Include="src\platform\emscripten\inputEms.cpp">
-    <ExcludedFromBuild>true</ExcludedFromBuild>
-  </ClCompile>
-  <ClCompile Include="src\platform\emscripten\Main.cpp">
-    <ExcludedFromBuild>true</ExcludedFromBuild>
-  </ClCompile>
+    <ClCompile Include="src\platform\emscripten\inputEms.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\platform\emscripten\Main.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\platform\win\inputWin.cpp" />
     <ClCompile Include="src\platform\win\Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\textures\test.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

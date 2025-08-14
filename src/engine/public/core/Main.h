@@ -38,28 +38,22 @@ void render(entt::registry& registry) {
 	auto view = registry.view<StaticMeshComponent, PositionComponent, RotationComponent>();
 
 	glClearColor(0.5, 0.5, 0.5, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(shaderProgram);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glEnable(GL_CULL_FACE);
-	//glFrontFace(GL_CCW);
-	glCullFace(GL_BACK);
 
 	auto cameraview = registry.view<CameraComponent>();
 	CameraComponent& cam = cameraview.get<CameraComponent>(cameraview.front());
 
 	for (auto entity : view) {
 		auto& buffer = view.get<StaticMeshComponent>(entity);
+		auto& mat = buffer.material;
 		glmodel* m = RMan->get_model(buffer.meshID);
 		if (m) {
 			m->bind();
-
-			GLint perspLoc = glGetUniformLocation(shaderProgram, "uPersp");
-			glUniformMatrix4fv(perspLoc, 1, GL_FALSE, cam.perspectiveMatrix.data());
-			GLint cameraLoc = glGetUniformLocation(shaderProgram, "uCamera");
-			glUniformMatrix4fv(cameraLoc, 1, GL_FALSE, cam.cameraMatrix.data());
+			mat->bind();
+			
+			glUniformMatrix4fv(mat->shader->uniform("uPersp"), 1, GL_FALSE, cam.perspectiveMatrix.data());
+			glUniformMatrix4fv(mat->shader->uniform("uCamera"), 1, GL_FALSE, cam.cameraMatrix.data());
 
 			auto& position = view.get<PositionComponent>(entity);
 			auto& rotation = view.get<RotationComponent>(entity);
@@ -69,8 +63,8 @@ void render(entt::registry& registry) {
 			rotation.matrix[14] = static_cast<float>(position.z);
 			rotation.matrix[15] = 1.0f;
 
-			GLint transformLoc = glGetUniformLocation(shaderProgram, "uTransform");
-			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, rotation.matrix);
+
+			glUniformMatrix4fv(mat->shader->uniform("uTransform"), 1, GL_FALSE, rotation.matrix);
 
 			glDrawElements(GL_TRIANGLES, m->indexCount, GL_UNSIGNED_SHORT, 0);
 
@@ -82,50 +76,18 @@ void render(entt::registry& registry) {
 
 void init() {
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
+	//glFrontFace(GL_CCW);
+	glCullFace(GL_BACK);
+
+
 	std::string vsPath = "resources/shaders/test" + std::string(vertexShader_ext);
 	std::string fsPath = "resources/shaders/test" + std::string(fragmentShader_ext);
 
-	const char* vertexShaderSource = read_file<char*>(vsPath);
-	const char* fragmentShaderSource = read_file<char*>(fsPath);
-	
-
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	// Create and compile the fragment shader
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	// Link shaders into a program
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-
-	glUseProgram(shaderProgram);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
+	auto* shader = new Shader(Shader::fromFiles(vsPath, fsPath));
+	auto* testMaterial = new Material::Material(shader);
 
 	auto resourceManager = Singleton<ResourceManager>::GetInstance();
 
@@ -147,7 +109,10 @@ void init() {
 	dataTable->print_data();
 
 	PlayerEntity = myWorld->create_entity("test");
-	myWorld->add_component<StaticMeshComponent>(PlayerEntity,3);
+	auto& mesh = myWorld->add_component<StaticMeshComponent>(PlayerEntity, 3);
+	mesh.material = testMaterial;
+	mesh.meshID = 3;
+
 	myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
 	myWorld->add_component<RotationComponent>(PlayerEntity);
 

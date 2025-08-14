@@ -11,7 +11,7 @@ T read_file(const std::string& filePath);
 
 // Specialization for std::string
 template <>
-std::string read_file<std::string>(const std::string& filePath) {
+inline std::string read_file<std::string>(const std::string& filePath) {
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);  // open at end to get size
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << filePath << std::endl;
@@ -32,7 +32,7 @@ std::string read_file<std::string>(const std::string& filePath) {
 
 // Specialization for char*
 template <>
-char* read_file<char*>(const std::string& filePath) {
+inline char* read_file<char*>(const std::string& filePath) {
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << filePath << std::endl;

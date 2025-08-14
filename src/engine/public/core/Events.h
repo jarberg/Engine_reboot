@@ -6,15 +6,10 @@
 #include <vector>
 #include <memory>
 
-
-
 class Event {
 public:
     virtual ~Event() = default;
 };
-
-
-
 
 using EventCallback = std::function<void(std::shared_ptr<Event>)>;
 
