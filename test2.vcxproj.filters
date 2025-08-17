@@ -187,6 +187,9 @@
     <ClCompile Include="src\engine\private\core\shader.cpp">
       <Filter>Source Files\private\engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\platform\win\components.cpp">
+      <Filter>Source Files\private\platform\win</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\test.png">

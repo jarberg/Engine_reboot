@@ -1,3 +1,4 @@
+
 #include "core/input.h"
 
 #include <emscripten/html5.h>
@@ -6,10 +7,7 @@
 #include <algorithm>  
 #include <iostream>
 
-
-
 bool canvasFocused = false;
-
 
 EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userData) {
     if (!canvasFocused) {
@@ -52,6 +50,17 @@ EM_BOOL on_document_keydown(int eventType, const EmscriptenKeyboardEvent* e, voi
     return EM_TRUE;  // Let the event propagate to the canvas if it gains focus
 }
 
+EM_BOOL on_cursorMove(int eventType, const EmscriptenMouseEvent* e, void* userData) {
+    // Handle cursor movement if needed
+    
+	std::cout << "[cursorMove] Cursor moved to (" << e->canvasX << ", " << e->canvasY << ")\n";
+	std::cout << "[cursorMove] Movement: (" << e->movementX << ", " << e->movementY << ")\n";
+
+	InputHandler::MouseMoved(e->canvasX, e->canvasY);
+    return EM_TRUE;
+}
+
+
 
 void initInputHandlers(WindowHandle /*unused*/) {
     std::cout << "[initInputHandlers] Setting up input...\n";
@@ -66,9 +75,18 @@ void initInputHandlers(WindowHandle /*unused*/) {
     emscripten_set_focus_callback("#canvas", nullptr, EM_TRUE, on_focus);
     emscripten_set_blur_callback("#canvas", nullptr, EM_TRUE, on_blur);
 
+    emscripten_set_mousemove_callback("#canvas", nullptr, EM_TRUE, on_cursorMove);
+
     emscripten_set_mousedown_callback("#canvas", nullptr, EM_TRUE, on_mouse_down);
 
     emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, nullptr, EM_TRUE, on_document_keydown);
 
 }
 
+namespace Input {
+    void getWindowSize(int *width, int *height) {
+        if (width && height) {
+            emscripten_get_canvas_element_size("#canvas", width, height);
+        }
+    }
+}

@@ -43,7 +43,7 @@ CameraComponent::CameraComponent()
 {
 }
     
-void CharacterComponent::inputEvent(Entity owner, std::shared_ptr<KeyEvent> e)
+void CharacterComponent::inputEvent(Entity owner, std::shared_ptr <KeyEvent> e)
 {   
     switch (e->action) {
     case KeyAction::Press: 
@@ -129,4 +129,8 @@ void CharacterComponent::inputReleaseEvent(Entity owner, std::shared_ptr<KeyEven
 void CharacterComponent::inputPressedEvent(Entity owner, std::shared_ptr<KeyEvent> e)
 {
     std::cout << "key pressed " << int(e->key) << std::endl;
+	int x = 0, y = 0;
+
+	Input::getMousePosition(&x,&y);
+	std::cout << "Mouse position: " << x << "," << y << std::endl;
 }

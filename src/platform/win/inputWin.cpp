@@ -1,4 +1,4 @@
-// input_windows_glfw.cpp  (Windows + GLFW backend)
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -7,11 +7,15 @@
 #endif
 #include <windows.h>
 
-#include "engine/core/GL.h"   // brings in <GLFW/glfw3.h> in your project
+#include "engine/core/GL.h" 
 #include "core/input.h"
 #include <atomic>
 
-// ---- Mapping: GLFW key -> JS keyCode (extend as needed) ----
+// ---- Bridge state ----
+static std::atomic<KeyCallback> g_cb{ nullptr };
+static std::atomic<MouseCallback> m_cb{ nullptr };
+static std::atomic<MouseMoveCallback> mm_cb{ nullptr };
+
 static int GLFWToJS(int key) {
     switch (key) {
     case GLFW_KEY_LEFT:             return 37;
@@ -37,13 +41,6 @@ static inline KeyAction GLFWActionToKA(int a) {
     return KeyAction::Release;
 }
 
-
-// ---- Bridge state ----
-static std::atomic<KeyCallback> g_cb{ nullptr };
-static std::atomic<MouseCallback> m_cb{ nullptr };
-
-
-// GLFW -> engine-agnostic callback
 static void GLFW_KeyTrampoline(GLFWwindow* w, int key, int scancode, int action, int mods) {
     auto cb = g_cb.load();
     if (!cb) return;
@@ -63,6 +60,14 @@ static void GLFW_MouseTrampoline(GLFWwindow* w, int button, int action, int mods
         static_cast<std::uint16_t>(mods));
 }
 
+static void GLFW_MouseMoveTrampoline(GLFWwindow* w, double xpos, double ypos) {
+    auto cb = mm_cb.load();
+    if (!cb) return;
+    cb(static_cast<WindowHandle>(w),
+        xpos,
+        ypos);
+}
+
 void initInputHandlers(WindowHandle window) {
     auto* gw = reinterpret_cast<GLFWwindow*>(window);
 
@@ -72,15 +77,37 @@ void initInputHandlers(WindowHandle window) {
     Input::SetMouseCallback([](WindowHandle, int jsKey, KeyAction act, std::uint16_t /*mods*/) {
         InputHandler::setKeyState(jsKey, act);
         });
+    Input::SetCursorCallback([](WindowHandle, double xPos, double yPos) {
+        InputHandler::MouseMoved(xPos, yPos);
+        });
     Input::InstallBackendKeyHook(window);
 }
 
 namespace Input {
     void SetKeyCallback(KeyCallback cb) { g_cb.store(cb); }
     void SetMouseCallback(MouseCallback cb) { m_cb.store(cb); }
+    void SetCursorCallback(MouseMoveCallback cb) { mm_cb.store(cb); }
+
     void InstallBackendKeyHook(WindowHandle window) {
         auto* gw = reinterpret_cast<GLFWwindow*>(window);
         glfwSetKeyCallback(gw, GLFW_KeyTrampoline);
         glfwSetMouseButtonCallback(gw, GLFW_MouseTrampoline);
+		glfwSetCursorPosCallback(gw, GLFW_MouseMoveTrampoline);
+    }
+
+    void getWindowSize(int* width, int* height) {
+
+        auto* window = glfwGetCurrentContext();
+        if (!window || !width || !height) return;
+        glfwGetWindowSize(window, width, height);
+    }
+
+    void getMousePosition( int *xPos, int *yPos){
+        auto* window = glfwGetCurrentContext();
+        if (!window) return;
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+		*xPos = static_cast<int>(xpos);
+		*yPos = static_cast<int>(ypos);
     }
 }

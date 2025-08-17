@@ -1,19 +1,24 @@
-// InputHandler_windows.cpp
 
 #include "core/input.h"
 
-#include <iostream>
+#include <core/input/input_types.h>
+#include <core/input/input_Events.h>
 
 #include "core/entity.h" 
 #include <core/components.h>
 #include <core/world.h>
 
-#include <core/input/input_types.h>
-#include <core/input/input_Events.h>
+#include <iostream>
 
 EventDispatcher* InputHandler::inputDispatcher = nullptr;
 unsigned int InputHandler::keyStates[256] = { 0 };
+int InputHandler::lastX = 0;
+int InputHandler::lastY = 0;
+int InputHandler::currentX = 0;
+int InputHandler::currentY = 0;
 
+double InputHandler::cursorDeltaX = 0.0f;
+double InputHandler::cursorDeltaY = 0.0f;
 
 void InputHandler::setKeyState(int jsKeyCode, KeyAction action) {
     if (jsKeyCode < 0 || jsKeyCode >= 256) return;
@@ -21,7 +26,6 @@ void InputHandler::setKeyState(int jsKeyCode, KeyAction action) {
     const bool down = (action == KeyAction::Press || action == KeyAction::Repeat);
     keyStates[jsKeyCode] = down ? 1u : 0u;
 
-    // Cast int -> KeyCode to match your Events.h
     const KeyCode kc = static_cast<KeyCode>(jsKeyCode);
 
     unsigned int mod = (keyStates[17] ? 1u : 0u) + (keyStates[18] ? 2u : 0u);
@@ -40,10 +44,29 @@ void InputHandler::fireHeldPressed() {
     }
 }
 
+void InputHandler::MouseMoved(int xPos, int yPos) {
+    InputHandler::lastX = InputHandler::currentX;
+    InputHandler::lastY = InputHandler::currentY;
+
+    int width = 0, height = 0;
+    Input::getWindowSize(&width, &height);
+    InputHandler::currentX = xPos;
+    InputHandler::currentY = yPos;
+    InputHandler::cursorDeltaX = double(InputHandler::currentX - InputHandler::lastX)/width;
+    InputHandler::cursorDeltaY = double(InputHandler::currentY - InputHandler::lastY)/height;
+
+
+    std::cout << width << " " << height << std::endl;
+    std::cout << "Mouse Position: (" 
+        << InputHandler::currentX << ", "
+        << InputHandler::currentY << ") "
+        << InputHandler::cursorDeltaX <<", " << InputHandler::cursorDeltaY
+        << std::endl;
+}
+
 void InputHandler::clearKeyStates() {
     std::fill(std::begin(InputHandler::keyStates), std::end(InputHandler::keyStates), 0); 
 }
 
 void shutdownInputHandlers() {
-
 }

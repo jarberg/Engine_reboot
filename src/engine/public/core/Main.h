@@ -48,6 +48,7 @@ void render(entt::registry& registry) {
 		auto& buffer = view.get<StaticMeshComponent>(entity);
 		auto& mat = buffer.material;
 		glmodel* m = RMan->get_model(buffer.meshID);
+
 		if (m) {
 			m->bind();
 			mat->bind();
@@ -63,7 +64,6 @@ void render(entt::registry& registry) {
 			rotation.matrix[14] = static_cast<float>(position.z);
 			rotation.matrix[15] = 1.0f;
 
-
 			glUniformMatrix4fv(mat->shader->uniform("uTransform"), 1, GL_FALSE, rotation.matrix);
 
 			glDrawElements(GL_TRIANGLES, m->indexCount, GL_UNSIGNED_SHORT, 0);
@@ -73,15 +73,11 @@ void render(entt::registry& registry) {
 	}
 }
 
-
 void init() {
-
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
-	//glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
-
 
 	std::string vsPath = "resources/shaders/test" + std::string(vertexShader_ext);
 	std::string fsPath = "resources/shaders/test" + std::string(fragmentShader_ext);
@@ -90,22 +86,21 @@ void init() {
 	auto* testMaterial = new Material::Material(shader);
 
 	auto resourceManager = Singleton<ResourceManager>::GetInstance();
-
 	auto* dataTable = model_datatable::GetInstance();
-
 	RMan = ResourceManager::GetInstance();
 
 	dataTable->load_dataTable();
-
 	for (auto& [key, value] : dataTable->get_model_map()) {
 		RMan->create_model(key, value);
 	}
+
 	/*
 	Model mod;
 	load_files("resources/models/Untitled.gltf", mod);
 	RMan->create_model(3, mod);
 	dataTable->add_model(mod);
 	*/
+
 	dataTable->print_data();
 
 	PlayerEntity = myWorld->create_entity("test");

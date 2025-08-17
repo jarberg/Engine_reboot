@@ -182,6 +182,7 @@
     <ClCompile Include="src\platform\emscripten\Main.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="src\platform\win\components.cpp" />
     <ClCompile Include="src\platform\win\inputWin.cpp" />
     <ClCompile Include="src\platform\win\Main.cpp" />
   </ItemGroup>
