@@ -78,7 +78,7 @@ void initInputHandlers(WindowHandle window) {
         InputHandler::setKeyState(jsKey, act);
         });
     Input::SetCursorCallback([](WindowHandle, double xPos, double yPos) {
-        InputHandler::MouseMoved(xPos, yPos);
+        InputHandler::cursormoveEvent(xPos, yPos);
         });
     Input::InstallBackendKeyHook(window);
 }

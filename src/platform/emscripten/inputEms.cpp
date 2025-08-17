@@ -56,7 +56,7 @@ EM_BOOL on_cursorMove(int eventType, const EmscriptenMouseEvent* e, void* userDa
 	std::cout << "[cursorMove] Cursor moved to (" << e->canvasX << ", " << e->canvasY << ")\n";
 	std::cout << "[cursorMove] Movement: (" << e->movementX << ", " << e->movementY << ")\n";
 
-	InputHandler::MouseMoved(e->canvasX, e->canvasY);
+	InputHandler::cursormoveEvent(e->canvasX, e->canvasY);
     return EM_TRUE;
 }
 

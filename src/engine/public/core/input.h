@@ -33,7 +33,7 @@ public:
     static void setKeyState(int jsKeyCode, KeyAction action);
     static void clearKeyStates();
     static void fireHeldPressed();
-    static void MouseMoved(int x, int y);
+    static void cursormoveEvent(int x, int y);
 };
 
 void initInputHandlers(WindowHandle window);

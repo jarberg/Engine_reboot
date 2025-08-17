@@ -44,7 +44,7 @@ void InputHandler::fireHeldPressed() {
     }
 }
 
-void InputHandler::MouseMoved(int xPos, int yPos) {
+void InputHandler::cursormoveEvent(int xPos, int yPos) {
     InputHandler::lastX = InputHandler::currentX;
     InputHandler::lastY = InputHandler::currentY;
 
@@ -55,13 +55,7 @@ void InputHandler::MouseMoved(int xPos, int yPos) {
     InputHandler::cursorDeltaX = double(InputHandler::currentX - InputHandler::lastX)/width;
     InputHandler::cursorDeltaY = double(InputHandler::currentY - InputHandler::lastY)/height;
 
-
-    std::cout << width << " " << height << std::endl;
-    std::cout << "Mouse Position: (" 
-        << InputHandler::currentX << ", "
-        << InputHandler::currentY << ") "
-        << InputHandler::cursorDeltaX <<", " << InputHandler::cursorDeltaY
-        << std::endl;
+    inputDispatcher->Dispatch(std::make_shared<CursorMoveEvent>(InputHandler::cursorDeltaX, InputHandler::cursorDeltaY, InputHandler::currentX, InputHandler::currentY));
 }
 
 void InputHandler::clearKeyStates() {

@@ -122,10 +122,15 @@ public :
 				this->inputEvent(owner, e);
 			}
 		);
+		input->inputDispatcher->Subscribe<CursorMoveEvent>(
+			[this](std::shared_ptr<CursorMoveEvent> e) {
+				this->cursorDeltaEvent(owner, e);
+			}
+		);
 	}
 
 	void inputEvent(Entity owner, std::shared_ptr<KeyEvent> e);
-
+	void cursorDeltaEvent(Entity owner, std::shared_ptr<CursorMoveEvent> e);
 	void inputHeldEvent(Entity owner, std::shared_ptr<KeyEvent> e );
 	void inputPressedEvent(Entity owner, std::shared_ptr<KeyEvent> e);
 	void inputReleaseEvent(Entity owner, std::shared_ptr<KeyEvent> e);

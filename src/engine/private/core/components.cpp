@@ -55,6 +55,14 @@ void CharacterComponent::inputEvent(Entity owner, std::shared_ptr <KeyEvent> e)
     }
 }
 
+void CharacterComponent::cursorDeltaEvent(Entity owner, std::shared_ptr<CursorMoveEvent> e)
+{
+
+    std::cout << "Mouse position: " << e->posX << "," << e->posY  << std:: endl
+        << "delta :" << e->deltaX << ", " << e->deltaY
+        << std::endl;
+}
+
 void CharacterComponent::inputHeldEvent(Entity owner, std::shared_ptr<KeyEvent> e)
 {
     const bool ctrlPressed = (e->mod & 1u) != 0;
@@ -129,8 +137,5 @@ void CharacterComponent::inputReleaseEvent(Entity owner, std::shared_ptr<KeyEven
 void CharacterComponent::inputPressedEvent(Entity owner, std::shared_ptr<KeyEvent> e)
 {
     std::cout << "key pressed " << int(e->key) << std::endl;
-	int x = 0, y = 0;
 
-	Input::getMousePosition(&x,&y);
-	std::cout << "Mouse position: " << x << "," << y << std::endl;
 }
