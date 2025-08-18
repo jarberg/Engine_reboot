@@ -12,12 +12,13 @@ struct Model {
     std::vector<unsigned short> indices;
     std::vector<float> vertex_pos;
     std::vector<float> uvs;
+    std::vector<float> normals;
     size_t vertexCount = 0;
 
 
     Model() = default;
-    Model(const std::string& name, const std::vector<float>& vertex_pos, std::vector<unsigned short> indices, const std::vector<float>& _uvs)
-        : name(name), vertex_pos(vertex_pos), indices(indices), uvs(_uvs) {
+    Model(const std::string& name, const std::vector<float>& vertex_pos, std::vector<unsigned short> indices, const std::vector<float>& _uvs, const std::vector<float>& _normals)
+        : name(name), vertex_pos(vertex_pos), indices(indices), uvs(_uvs), normals(_normals) {
         vertexCount = vertex_pos.size();
     }
 

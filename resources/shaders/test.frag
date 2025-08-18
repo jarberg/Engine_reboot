@@ -29,5 +29,5 @@ void main()
     float intensity = diffuse;
     vec4 col = texture(uTex, vUV);
 
-    FragColor = col*diffuse;
+    FragColor = col*abs(vec4(vNormal, 1.0));
 }

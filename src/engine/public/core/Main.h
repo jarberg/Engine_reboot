@@ -106,7 +106,7 @@ void init() {
 	PlayerEntity = myWorld->create_entity("test");
 	auto& mesh = myWorld->add_component<StaticMeshComponent>(PlayerEntity, 2);
 	mesh.material = testMaterial;
-	mesh.meshID = 2;
+	mesh.meshID = 1;
 
 	myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
 	myWorld->add_component<RotationComponent>(PlayerEntity);

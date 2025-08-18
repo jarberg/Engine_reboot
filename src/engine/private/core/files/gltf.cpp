@@ -96,6 +96,13 @@ void gltfImp::load_files(const std::string& path, Model& modelOut)
         positions.push_back(v[1]);
         positions.push_back(v[2]);
     }
+	std::vector<float> normals;
+    for (size_t i = 0; i < posAccessor.count; ++i) {
+        const float* v = reinterpret_cast<const float*>(posBase + i * posStride);
+        normals.push_back(v[3]);
+        normals.push_back(v[4]);
+        normals.push_back(v[5]);
+	}
 
     // ===== UVS (VEC2, FLOAT / USHORT / UBYTE, possibly normalized) =====
     std::vector<float> uvs;
@@ -198,5 +205,5 @@ void gltfImp::load_files(const std::string& path, Model& modelOut)
     }
 
     // Build your engine-side model (positions, indices, uvs)
-    modelOut = Model(model.meshes[0].name, positions, indices, uvs);
+    modelOut = Model(model.meshes[0].name, positions, indices, uvs, normals);
 }
