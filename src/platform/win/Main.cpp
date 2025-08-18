@@ -4,7 +4,6 @@
 
 #include <vector>
 
-
 std::vector<int> myVector = { 0, 0, 0};
 World* myWorld = new World();
 

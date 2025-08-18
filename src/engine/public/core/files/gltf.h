@@ -6,7 +6,7 @@ namespace gltfImp
 {
 	GLuint loadTexture2DFromPath(const char* path, bool flipY = true);
 	void check(bool cond, const char* msg);
-	void load_files(const std::string& path, Model& modelOut);
+	void load_files(const std::string& path, std::shared_ptr<Model> &modelOut);
 }
 
 

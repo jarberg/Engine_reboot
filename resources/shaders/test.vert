@@ -15,8 +15,6 @@ uniform mat4 uTransform; // model matrix
 
 void main()
 {
-
-
     // Final clip-space position (MVP * position)
     mat4 MVP = uPersp * uCamera * uTransform;
 
@@ -24,11 +22,9 @@ void main()
     vec4 worldPos4 = MVP * vec4(aPos, 1.0);
     vWorldPos = worldPos4.xyz;
 
-    // Normal to world (robust for non-uniform scale)
-    mat3 normalMat = mat3(transpose(inverse(MVP)));
+    mat3 normalMat = mat3(transpose(inverse(uTransform)));
     vNormal = normalize(normalMat * aNormal);
 
-    // UVs through
     vUV = aUV;
 
     gl_Position = worldPos4;

@@ -102,3 +102,16 @@ void glmodel::bind() { glBindVertexArray(VAO);
 
 }
 void glmodel::unbind() { glBindVertexArray(0); }
+
+
+void ResourceManager::remove_model(unsigned id) {
+    auto it = buffers.find(id);
+    if (it == buffers.end()) return;
+    auto& mdl = it->second;
+    if (mdl.VBO)   glDeleteBuffers(1, &mdl.VBO);
+    if (mdl.VBOuv) glDeleteBuffers(1, &mdl.VBOuv);
+    if (mdl.NBO) glDeleteBuffers(1, &mdl.NBO); // if you added normals
+    if (mdl.EBO)   glDeleteBuffers(1, &mdl.EBO);
+    if (mdl.VAO)   glDeleteVertexArrays(1, &mdl.VAO);
+    buffers.erase(it);
+}

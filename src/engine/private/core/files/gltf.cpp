@@ -23,8 +23,8 @@ GLuint gltfImp::loadTexture2DFromPath(const char* path, bool flipY)
     GLuint tex = 0;
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_R);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_TEXTURE_WRAP_R);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -42,7 +42,89 @@ void gltfImp::check(bool cond, const char* msg)
     if (!cond) throw std::runtime_error(msg);
 }
 
-void gltfImp::load_files(const std::string& path, Model& modelOut)
+
+void test(tinygltf::Model model,std::string _attributename, std::vector<float> &out) {
+
+    const auto& primitive = model.meshes[0].primitives[0];
+    if (model.meshes.empty() || model.meshes[0].primitives.empty()) {
+        std::cerr << "No meshes/primitives in glTF.\n";
+        return;
+    }
+
+
+
+    // ===== POSITIONS (VEC3, FLOAT) =====
+    auto posIt = primitive.attributes.find(_attributename);
+    if (posIt == primitive.attributes.end()) {
+        std::cerr << "Missing POSITION attribute.\n";
+        return;
+    }
+    const auto& Accessor = model.accessors[posIt->second];
+    const auto& BufferView = model.bufferViews[Accessor.bufferView];
+    const auto& Buffer = model.buffers[BufferView.buffer];
+
+    size_t posStride = Accessor.ByteStride(BufferView);
+    const size_t posCompSize = sizeof(float);
+    if (posStride == 0) posStride = 3 * posCompSize;
+
+    const unsigned char* posBase =
+        Buffer.data.data() + BufferView.byteOffset + Accessor.byteOffset;
+
+    size_t compSize = 0;
+    switch (Accessor.componentType) {
+    case TINYGLTF_COMPONENT_TYPE_FLOAT: compSize = 4; break;
+    case TINYGLTF_COMPONENT_TYPE_SHORT: compSize = 2; break; // signed
+    case TINYGLTF_COMPONENT_TYPE_BYTE:  compSize = 1; break; // signed
+    default:
+        std::cerr << "Unsupported componentType: "
+            << Accessor.componentType << "\n";
+        compSize = 0;
+    }
+    const unsigned char* nBase =
+        Buffer.data.data() + BufferView.byteOffset + Accessor.byteOffset;
+
+    if (compSize) {
+        size_t stride = Accessor.ByteStride(BufferView);
+        if (stride == 0) stride = 3 * compSize; // VEC3
+
+        const bool norm = Accessor.normalized; // glTF sets this for packed normals
+        out.reserve(Accessor.count * 3);
+
+        for (size_t i = 0; i < Accessor.count; ++i) {
+            const unsigned char* p = nBase + i * stride;
+            float x = 0.f, y = 0.f, z = 0.f;
+
+            switch (Accessor.componentType) {
+            case TINYGLTF_COMPONENT_TYPE_FLOAT: {
+                const float* f = reinterpret_cast<const float*>(p);
+                x = f[0]; y = f[1]; z = f[2];
+            } break;
+            case TINYGLTF_COMPONENT_TYPE_SHORT: {
+                const int16_t* s = reinterpret_cast<const int16_t*>(p);
+                if (norm) { x = s[0] / 32767.0f; y = s[1] / 32767.0f; z = s[2] / 32767.0f; }
+                else { x = float(s[0]);     y = float(s[1]);     z = float(s[2]); }
+            } break;
+            case TINYGLTF_COMPONENT_TYPE_BYTE: {
+                const int8_t* b = reinterpret_cast<const int8_t*>(p);
+                if (norm) { x = b[0] / 127.0f; y = b[1] / 127.0f; z = b[2] / 127.0f; }
+                else { x = float(b[0]);  y = float(b[1]);  z = float(b[2]); }
+            } break;
+            }
+
+            // Safety renormalize
+            float L = sqrtf(x * x + y * y + z * z);
+            if (L > 0.0f) { x /= L; y /= L; z /= L; }
+
+            out.push_back(x); out.push_back(y); out.push_back(z);
+        }
+    }
+}
+
+
+
+
+
+void gltfImp::load_files(const std::string& path, std::shared_ptr<Model> &modelOut) 
 {
     tinygltf::TinyGLTF loader;
     tinygltf::Model model;
@@ -71,38 +153,14 @@ void gltfImp::load_files(const std::string& path, Model& modelOut)
 
     const auto& primitive = model.meshes[0].primitives[0];
 
-    // ===== POSITIONS (VEC3, FLOAT) =====
-    auto posIt = primitive.attributes.find("POSITION");
-    if (posIt == primitive.attributes.end()) {
-        std::cerr << "Missing POSITION attribute.\n";
-        return;
-    }
-    const auto& posAccessor   = model.accessors[posIt->second];
-    const auto& posBufferView = model.bufferViews[posAccessor.bufferView];
-    const auto& posBuffer     = model.buffers[posBufferView.buffer];
-
-    size_t posStride = posAccessor.ByteStride(posBufferView);
-    const size_t posCompSize = sizeof(float);
-    if (posStride == 0) posStride = 3 * posCompSize;
-
-    const unsigned char* posBase =
-        posBuffer.data.data() + posBufferView.byteOffset + posAccessor.byteOffset;
-
     std::vector<float> positions;
-    positions.reserve(posAccessor.count * 3);
-    for (size_t i = 0; i < posAccessor.count; ++i) {
-        const float* v = reinterpret_cast<const float*>(posBase + i * posStride);
-        positions.push_back(v[0]);
-        positions.push_back(v[1]);
-        positions.push_back(v[2]);
-    }
-	std::vector<float> normals;
-    for (size_t i = 0; i < posAccessor.count; ++i) {
-        const float* v = reinterpret_cast<const float*>(posBase + i * posStride);
-        normals.push_back(v[3]);
-        normals.push_back(v[4]);
-        normals.push_back(v[5]);
-	}
+    test(model, "POSITION", positions);
+
+    std::vector<float> normals; // 3 floats per vertex
+    test(model, "NORMAL", normals);
+
+    std::vector<uint16_t> indices;
+
 
     // ===== UVS (VEC2, FLOAT / USHORT / UBYTE, possibly normalized) =====
     std::vector<float> uvs;
@@ -162,7 +220,7 @@ void gltfImp::load_files(const std::string& path, Model& modelOut)
     }
 
     // ===== INDICES (U16 / U8 / U32) =====
-    std::vector<uint16_t> indices;
+    
     if (primitive.indices >= 0) {
         const auto& idxAccessor   = model.accessors[primitive.indices];
         const auto& idxBufferView = model.bufferViews[idxAccessor.bufferView];
@@ -203,7 +261,7 @@ void gltfImp::load_files(const std::string& path, Model& modelOut)
             }
         }
     }
-
-    // Build your engine-side model (positions, indices, uvs)
-    modelOut = Model(model.meshes[0].name, positions, indices, uvs, normals);
+    
+    modelOut = std::make_shared<Model>(model.meshes[0].name, positions, indices, uvs, normals);
+    modelOut->path = path;
 }

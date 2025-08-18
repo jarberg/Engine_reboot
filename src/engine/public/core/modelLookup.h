@@ -21,7 +21,7 @@ private:
         load_dataTable();
     };
 	void save_dataTable();
-
+	std::unordered_map<std::string, int> modelPath_datatable_map;
 	std::unordered_map<int, std::shared_ptr<Model>> model_datatable_map;
 	int generate_new_id();
 

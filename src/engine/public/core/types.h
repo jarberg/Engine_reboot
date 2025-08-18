@@ -9,6 +9,7 @@
 
 struct Model {
     std::string name;
+    std::string path;
     std::vector<unsigned short> indices;
     std::vector<float> vertex_pos;
     std::vector<float> uvs;

@@ -13,7 +13,7 @@ uniform sampler2D uTex;
 void main()
 {
     // Camera position
-    vec3 camPos = uCamera[3].xyz;
+    vec3 camPos = uCamera[3].xyz+vec3(0.0, 1.0, 0.0);
 
     // Direction to light (camera)
     vec3 lightDir = normalize(camPos - vWorldPos);
@@ -29,5 +29,5 @@ void main()
     float intensity = diffuse;
     vec4 col = texture(uTex, vUV);
 
-    FragColor = col*abs(vec4(vNormal, 1.0));
+    FragColor = col*diffuse;
 }

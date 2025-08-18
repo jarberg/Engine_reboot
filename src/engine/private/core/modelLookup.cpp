@@ -7,7 +7,7 @@ using json = nlohmann::json;
 
 // JSON serialization
 void to_json(json& j, const Model& m) {
-    j = json{ {"name", m.name}, {"vertex", m.vertex_pos}, {"indices" , m.indices}, {"uvs", m.uvs }, {"normals", m.normals}};
+    j = json{ {"name", m.name}, {"vertex", m.vertex_pos}, {"indices" , m.indices}, {"uvs", m.uvs }, {"normals", m.normals}, {"path", m.path} };
 }
 
 void from_json(const json& j, Model& m) {
@@ -16,6 +16,7 @@ void from_json(const json& j, Model& m) {
     j.at("indices").get_to(m.indices);
     if (j.contains("uvs"))  j.at("uvs").get_to(m.uvs);
     if (j.contains("normals"))  j.at("normals").get_to(m.normals);
+    if (j.contains("path")) j.at("path").get_to(m.path);
 }
 
 
@@ -24,11 +25,19 @@ std::shared_ptr<Model> model_datatable::get_model(int id) {
     if (it != model_datatable_map.end()) {
         return it->second;
     }
-    return error_model();
+    return nullptr;
 }
 
 void model_datatable::add_model(std::shared_ptr<Model> new_model) {
     int new_id = generate_new_id();
+
+	auto it = modelPath_datatable_map.find(new_model->path);
+    if (it != modelPath_datatable_map.end()) {
+        std::cerr << "Model with path '" << new_model->path << "' already exists with ID: " << it->second << "\n";
+		new_id = it->second;
+
+
+    }
     model_datatable_map.emplace(new_id, std::move(new_model));
     save_dataTable();
 }
@@ -76,6 +85,7 @@ void model_datatable::load_dataTable() {
     for (auto& [key, value] : j["models"].items()) {
         int id = std::stoi(key);
         auto m = std::make_shared<Model>(value.get<Model>()); // build from JSON
+        modelPath_datatable_map.emplace(m->path, id);
         model_datatable_map.emplace(id, std::move(m));
     }
 }
