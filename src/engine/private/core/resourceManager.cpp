@@ -85,13 +85,5 @@ void glmodel::upload() {
 
 void glmodel::bind() { glBindVertexArray(VAO);
 
-GLint enabled = 0, size = 0, type = 0, boundBuf = 0;
-glGetVertexAttribiv(1, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
-glGetVertexAttribiv(1, GL_VERTEX_ATTRIB_ARRAY_SIZE, &size);
-glGetVertexAttribiv(1, GL_VERTEX_ATTRIB_ARRAY_TYPE, &type);
-glGetVertexAttribiv(1, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &boundBuf);
-std::cout << "UV attrib: enabled=" << enabled
-<< " size=" << size << " type=0x" << std::hex << type
-<< " VBO=" << std::dec << boundBuf << "\n";
 }
 void glmodel::unbind() { glBindVertexArray(0); }

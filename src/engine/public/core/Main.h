@@ -95,14 +95,14 @@ void init() {
 		RMan->create_model(key, value);
 	}
 
-
+	/*
 	Model mod;
 	gltfImp::load_files("resources/models/Cube.gltf", mod);
 	RMan->create_model(4, mod);
 	dataTable->add_model(mod);
 
 	dataTable->print_data();
-
+	*/
 	PlayerEntity = myWorld->create_entity("test");
 	auto& mesh = myWorld->add_component<StaticMeshComponent>(PlayerEntity, 2);
 	mesh.material = testMaterial;

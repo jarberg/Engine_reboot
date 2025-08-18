@@ -57,10 +57,6 @@ void CharacterComponent::inputEvent(Entity owner, std::shared_ptr <KeyEvent> e)
 
 void CharacterComponent::cursorDeltaEvent(Entity owner, std::shared_ptr<CursorMoveEvent> e)
 {
-
-    std::cout << "Mouse position: " << e->posX << "," << e->posY  << std:: endl
-        << "delta :" << e->deltaX << ", " << e->deltaY
-        << std::endl;
 }
 
 void CharacterComponent::inputHeldEvent(Entity owner, std::shared_ptr<KeyEvent> e)

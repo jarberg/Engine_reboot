@@ -20,7 +20,13 @@ EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userDa
 }
 
 EM_BOOL key_down(int, const EmscriptenKeyboardEvent* e, void*) {
-	InputHandler::setKeyState(e->keyCode, KeyAction::Press);
+    if (InputHandler::keyStates[e->keyCode]) {
+        InputHandler::setKeyState(e->keyCode, KeyAction::Repeat);
+    }
+    else{
+        InputHandler::setKeyState(e->keyCode, KeyAction::Press);
+    }
+
     return EM_TRUE;
 }
 
@@ -52,10 +58,6 @@ EM_BOOL on_document_keydown(int eventType, const EmscriptenKeyboardEvent* e, voi
 
 EM_BOOL on_cursorMove(int eventType, const EmscriptenMouseEvent* e, void* userData) {
     // Handle cursor movement if needed
-    
-	std::cout << "[cursorMove] Cursor moved to (" << e->canvasX << ", " << e->canvasY << ")\n";
-	std::cout << "[cursorMove] Movement: (" << e->movementX << ", " << e->movementY << ")\n";
-
 	InputHandler::cursormoveEvent(e->canvasX, e->canvasY);
     return EM_TRUE;
 }
