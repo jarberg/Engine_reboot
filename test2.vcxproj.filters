@@ -190,6 +190,9 @@
     <ClCompile Include="src\platform\win\components.cpp">
       <Filter>Source Files\private\platform\win</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\private\core\files\gltf.cpp">
+      <Filter>Source Files\private\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\test.png">

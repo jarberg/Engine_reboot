@@ -34,6 +34,10 @@ public:
 			for (float v : model.vertex_pos) {
 				std::cout << v << " ";
 			}
+			std::cout << std::endl << "UVs: ";
+			for (float v : model.uvs) {
+				std::cout << v << " ";
+			}
 			std::cout << std::endl;
 		}
 	}
@@ -43,7 +47,7 @@ public:
 	}
 
 	void add_model(Model new_model);
-	void add_model(std::string _name, std::vector<float> _points, std::vector<unsigned short> _indices);
+	void add_model(std::string _name, std::vector<float> _points, std::vector<unsigned short> _indices, std::vector<float> _uvs);
 	
 	// Constructor that loads the data on initialization
 	void load_dataTable();

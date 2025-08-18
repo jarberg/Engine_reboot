@@ -3,9 +3,12 @@ precision highp float;
 
 in vec3 vNormal;    
 in vec3 vWorldPos;
+in vec2 vUV;
+
 out vec4 FragColor;
 
 uniform mat4 uCamera; // camera world transform (inverse view)
+uniform sampler2D uTex;
 
 void main()
 {
@@ -23,7 +26,8 @@ void main()
     float attenuation = 1.0 / (1.0 + 0.09 * dist + 0.032 * dist * dist);
 
     // Combine
-    float intensity = diffuse * attenuation;
+    float intensity = diffuse;
+    vec4 col = texture(uTex, vUV);
 
-    FragColor = vec4(vec3(intensity), 1.0);
+    FragColor = col*diffuse;
 }

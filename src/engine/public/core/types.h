@@ -11,12 +11,13 @@ struct Model {
     std::string name;
     std::vector<unsigned short> indices;
     std::vector<float> vertex_pos;
+    std::vector<float> uvs;
     size_t vertexCount = 0;
 
 
     Model() = default;
-    Model(const std::string& name, const std::vector<float>& vertex_pos, std::vector<unsigned short> indices)
-        : name(name), vertex_pos(vertex_pos), indices(indices) {
+    Model(const std::string& name, const std::vector<float>& vertex_pos, std::vector<unsigned short> indices, const std::vector<float>& _uvs)
+        : name(name), vertex_pos(vertex_pos), indices(indices), uvs(_uvs) {
         vertexCount = vertex_pos.size();
     }
 
@@ -27,6 +28,10 @@ struct Model {
     Model& operator=(Model&& other) noexcept = default;
 
     ~Model() = default;
+
+    void addUvs(std::vector<float> _uvs) {
+        uvs = _uvs;
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const Model& m) {
         os << "{ \"name\": \"" << m.name << "\", \"vertex\": [";

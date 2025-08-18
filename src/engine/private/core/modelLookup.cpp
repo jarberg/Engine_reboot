@@ -7,14 +7,14 @@ using json = nlohmann::json;
 
 // JSON serialization
 void to_json(json& j, const Model& m) {
-    j = json{ {"name", m.name}, {"vertex", m.vertex_pos}, {"indices" , m.indices}};
+    j = json{ {"name", m.name}, {"vertex", m.vertex_pos}, {"indices" , m.indices}, {"uvs", m.uvs } };
 }
 
 void from_json(const json& j, Model& m) {
     j.at("name").get_to(m.name);
     j.at("vertex").get_to(m.vertex_pos);
     j.at("indices").get_to(m.indices);
-
+    if (j.contains("uvs"))  j.at("uvs").get_to(m.uvs);
 }
 
 
@@ -32,8 +32,8 @@ void model_datatable::add_model(Model new_model) {
     save_dataTable();
 }
 
-void model_datatable::add_model(std::string _name, std::vector<float> _points, std::vector<unsigned short> _indices) {
-    Model new_model(std::move(_name), std::move(_points), std::move(_indices));
+void model_datatable::add_model(std::string _name, std::vector<float> _points, std::vector<unsigned short> _indices, std::vector<float> _uvs ) {
+    Model new_model(std::move(_name), std::move(_points), std::move(_indices), std::move(_uvs));
     add_model(new_model);
 }
 
@@ -85,6 +85,6 @@ void model_datatable::load_dataTable() {
 }
 
 Model model_datatable::error_model() {
-    return Model("error", { 1.0f, 0.0f, -1.0f }, {0,1,2});
+    return Model("error", { 1.0f, 0.0f, -1.0f }, { 0,1,2 }, {1,0});
 }
 

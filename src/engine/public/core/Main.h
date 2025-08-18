@@ -20,6 +20,7 @@
 #include <chrono>
 
 #include "engine/core/GL.h"
+#include "files/gltf.h"
 
 
 extern World* myWorld;
@@ -84,7 +85,7 @@ void init() {
 
 	auto* shader = new Shader(Shader::fromFiles(vsPath, fsPath));
 	auto* testMaterial = new Material::Material(shader);
-
+	testMaterial->setTexture("resources/textures/test.png",0);
 	auto resourceManager = Singleton<ResourceManager>::GetInstance();
 	auto* dataTable = model_datatable::GetInstance();
 	RMan = ResourceManager::GetInstance();
@@ -94,19 +95,18 @@ void init() {
 		RMan->create_model(key, value);
 	}
 
-	/*
+
 	Model mod;
-	load_files("resources/models/Untitled.gltf", mod);
-	RMan->create_model(3, mod);
+	gltfImp::load_files("resources/models/Cube.gltf", mod);
+	RMan->create_model(4, mod);
 	dataTable->add_model(mod);
-	*/
 
 	dataTable->print_data();
 
 	PlayerEntity = myWorld->create_entity("test");
-	auto& mesh = myWorld->add_component<StaticMeshComponent>(PlayerEntity, 3);
+	auto& mesh = myWorld->add_component<StaticMeshComponent>(PlayerEntity, 2);
 	mesh.material = testMaterial;
-	mesh.meshID = 3;
+	mesh.meshID = 2;
 
 	myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
 	myWorld->add_component<RotationComponent>(PlayerEntity);

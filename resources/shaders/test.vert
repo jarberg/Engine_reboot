@@ -2,7 +2,9 @@
 precision highp float;
 
 layout (location = 0) in vec3 aPos; // vertex position
+layout (location = 1) in vec2 aUV; // vertex position
 
+out vec2 vUV; // pass UVs to fragment shader
 out vec3 vNormal;
 out vec3 vWorldPos;
 
@@ -18,6 +20,8 @@ void main()
 
     // Use position as the normal (quick hack for testing)
     vNormal = normalize(vWorldPos);
+
+    vUV = aUV; // pass UVs to fragment shader
 
     // Final clip-space position
     gl_Position = uPersp * uCamera * worldPos;

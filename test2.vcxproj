@@ -170,6 +170,7 @@
     <ClCompile Include="lib\glad\src\glad.c" />
     <ClCompile Include="src\engine\private\core\components.cpp" />
     <ClCompile Include="src\engine\private\core\entity.cpp" />
+    <ClCompile Include="src\engine\private\core\files\gltf.cpp" />
     <ClCompile Include="src\engine\private\core\input.cpp" />
     <ClCompile Include="src\engine\private\core\material.cpp" />
     <ClCompile Include="src\engine\private\core\modelLookup.cpp" />
