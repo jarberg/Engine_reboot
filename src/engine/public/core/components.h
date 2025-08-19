@@ -68,6 +68,9 @@ struct CameraComponent{
 		  0, 0, 1, 0,
 		  0, 0, -5, 1 };
 
+	Mat4 inverseVP;
+	Mat4 VP;
+
 	CameraComponent();
 	CameraComponent(float FOV,float _aspect, float _nearPlane, float _farPlane) 
 		: FOV(FOV), aspect(_aspect), nearPlane(_nearPlane), farPlane(_farPlane) {
@@ -75,6 +78,8 @@ struct CameraComponent{
 		createPerspectiveMatrix(fovYRadians, aspect, nearPlane, farPlane, perspectiveMatrix);
 		cameraMatrix = lookAt(eye, target, up);
 		forward = HMM_NormV3(target - eye);
+		VP = makeVP(perspectiveMatrix.data(), cameraMatrix.data());
+		makeInvVP( perspectiveMatrix.data(), cameraMatrix.data(), inverseVP);
 	}
 
 	void createPerspectiveMatrix(float fovYRadians, float aspect, float nearPlane, float farPlane, std::array<float, 16>& out) {

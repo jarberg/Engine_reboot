@@ -60,14 +60,9 @@ void CharacterComponent::cursorDeltaEvent(Entity owner, std::shared_ptr<CursorMo
     auto& reg = owner.get_world()->get_registry();
     if (auto ds = reg.try_get<DragStateComponent>(owner.get_handle()); ds && ds->active) {
         for (auto [ee, camera] : reg.view<CameraComponent>().each()) {
-            Mat4 invVP{};
-            if (!makeInvVP(camera.perspectiveMatrix.data(),
-                camera.cameraMatrix.data(),
-                invVP)) return;
 
-            int y = (camera.viewport.Y + camera.viewport.W - 1) - (int)e->posY; // if top-left
-            Vec3 under = unprojectAtNDC(e->posX, y, ds->zNDC, camera.viewport, invVP);
-            //Vec3 under = unprojectAtNDC(e->posX, e->posY, ds->zNDC, camera.viewport, invVP);
+            int y = (camera.viewport.Y + camera.viewport.W - 1) - (int)e->posY; 
+            Vec3 under = unprojectAtNDC(e->posX, y, ds->zNDC, camera.viewport, camera.inverseVP);
 
             auto& p = reg.get<PositionComponent>(owner.get_handle());
             p = { under.X + ds->offset.X,
@@ -85,27 +80,18 @@ void CharacterComponent::cursorPressedEvent(Entity owner, std::shared_ptr<Cursor
     const auto pos = reg.get<PositionComponent>(owner.get_handle());
 
     for (auto [ee, camera] : reg.view<CameraComponent>().each()) {
-        // Build VP and invVP with HMM
-        Mat4 invVP{};
-        if (!makeInvVP(camera.perspectiveMatrix.data(),
-            camera.cameraMatrix.data(),
-            invVP)) return;
 
-        // Compute zNDC with VP (NOT just P)
-        Mat4 VP = makeVP(camera.perspectiveMatrix.data(), camera.cameraMatrix.data());
-        ds.zNDC = objectZndc(HMM_V3((float)pos.x, (float)pos.y, (float)pos.z), VP);
+        ds.zNDC = objectZndc(HMM_V3((float)pos.x, (float)pos.y, (float)pos.z), camera.VP);
 
-        // If your input Y is top-left, flip it:
         int y = camera.viewport.Y + camera.viewport.W - 1 - (int)e->posY;
-        Vec3 grabWS = unprojectAtNDC(e->posX, y, ds.zNDC, camera.viewport, invVP);
-        //Vec3 grabWS = unprojectAtNDC(e->posX, e->posY, ds.zNDC, camera.viewport, invVP);
+        Vec3 grabWS = unprojectAtNDC(e->posX, y, ds.zNDC, camera.viewport, camera.inverseVP);
 
         ds.offset = HMM_V3( (float)pos.x - grabWS.X,
                             (float)pos.y - grabWS.Y,
                             (float)pos.z - grabWS.Z);
         ds.active = true;
 
-        break; // first/main camera
+        break;
     }
 }
 
