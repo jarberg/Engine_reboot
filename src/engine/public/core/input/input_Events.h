@@ -14,6 +14,15 @@ public:
     explicit KeyEvent(KeyCode key, KeyAction action, unsigned int mod) : key(key), action(action), mod(mod) {};
 };
 
+class CursorKeyEvent : public KeyEvent {
+
+public:
+    unsigned int posX;
+    unsigned int posY;
+
+    explicit CursorKeyEvent(KeyCode key, KeyAction action, unsigned int mod, unsigned int posX, unsigned int posY): KeyEvent(key, action, mod), posX(posX), posY(posY) {};
+};
+
 class CursorMoveEvent : public Event {
 
 public:

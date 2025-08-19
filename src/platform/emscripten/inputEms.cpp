@@ -14,11 +14,28 @@ EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userDa
         canvasFocused = true;
         std::cout << "[focus] Focusing canvas after user click\n";
         emscripten_run_script("document.getElementById('canvas').focus();");
+
+    }
+    if (InputHandler::keyStates[e->button]) {
+        InputHandler::setKeyState(e->button, KeyAction::Repeat);
+    }
+    else {
         InputHandler::setKeyState(e->button, KeyAction::Press);
     }
+
     return EM_TRUE;
 }
+EM_BOOL on_mouse_up(int eventType, const EmscriptenMouseEvent* e, void* userData) {
+    if (!canvasFocused) {
+        canvasFocused = true;
+        std::cout << "[focus] Focusing canvas after user click\n";
+        emscripten_run_script("document.getElementById('canvas').focus();");
 
+    }
+    InputHandler::setKeyState(e->button, KeyAction::Release);
+
+    return EM_TRUE;
+}
 EM_BOOL key_down(int, const EmscriptenKeyboardEvent* e, void*) {
     if (InputHandler::keyStates[e->keyCode]) {
         InputHandler::setKeyState(e->keyCode, KeyAction::Repeat);
@@ -58,7 +75,8 @@ EM_BOOL on_document_keydown(int eventType, const EmscriptenKeyboardEvent* e, voi
 
 EM_BOOL on_cursorMove(int eventType, const EmscriptenMouseEvent* e, void* userData) {
     // Handle cursor movement if needed
-	InputHandler::cursormoveEvent(e->canvasX, e->canvasY);
+	//std::cout << "[cursorMove] Cursor moved to: " << e->targetX << ", " << e->targetY << std::endl;
+	InputHandler::cursormoveEvent(e->targetX, e->targetY);
     return EM_TRUE;
 }
 
@@ -80,15 +98,22 @@ void initInputHandlers(WindowHandle /*unused*/) {
     emscripten_set_mousemove_callback("#canvas", nullptr, EM_TRUE, on_cursorMove);
 
     emscripten_set_mousedown_callback("#canvas", nullptr, EM_TRUE, on_mouse_down);
+    emscripten_set_mouseup_callback("#canvas", nullptr, EM_TRUE, on_mouse_up);
 
     emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, nullptr, EM_TRUE, on_document_keydown);
 
 }
 
 namespace Input {
-    void getWindowSize(int *width, int *height) {
+    void getWindowSize(int* width, int* height) {
         if (width && height) {
             emscripten_get_canvas_element_size("#canvas", width, height);
         }
+    }
+    void getMousePosition(int* xPos, int* yPos) {
+        
+        if (!xPos || !yPos) return;
+        *xPos = InputHandler::currentX;
+        *yPos = InputHandler::currentY;
     }
 }

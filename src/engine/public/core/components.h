@@ -4,10 +4,13 @@
 #include <core/entity.h>
 #include <core/world.h>
 #include <core/input.h>
-#include "core/vectors.h"
+
+#include <HandmadeMath.h>
+
 #include <core/input/input_Events.h>
 
 #include <core/material.h>
+#include "vectors.h"
 
 
 class Entity;
@@ -29,16 +32,27 @@ struct PositionComponent{
 
 };
 
+struct DragStateComponent {
+	bool active = false;
+	float zNDC = 0.0f;
+	Vec3 offset; // object.position - initialHit
+};
+
+
 struct CameraComponent{
 	float FOV = 45.0f; 
 	float fovYRadians = FOV * 3.141592;
+	int width = 1280;
+	int height = 720;
 	float aspect = 1280/720;
 	float nearPlane = 0.1;
 	float farPlane = 100;
-
+	Vec4 viewport{ 0,0, float(width), float(height)};
 	Vec3 eye = { 0,0,-3 };
 	Vec3 target = { 0,0,0 };
 	Vec3 up = { 0,1,0 };
+	Vec3 forward = HMM_NormV3(target - eye);
+	Vec3 right = HMM_NormV3(HMM_Cross(forward, up));
 
 	CameraOrbit orbit = CameraOrbit(up,target);
 
@@ -60,6 +74,7 @@ struct CameraComponent{
 		fovYRadians = FOV * 3.141592 / 180.0f;
 		createPerspectiveMatrix(fovYRadians, aspect, nearPlane, farPlane, perspectiveMatrix);
 		cameraMatrix = lookAt(eye, target, up);
+		forward = HMM_NormV3(target - eye);
 	}
 
 	void createPerspectiveMatrix(float fovYRadians, float aspect, float nearPlane, float farPlane, std::array<float, 16>& out) {
@@ -108,9 +123,7 @@ struct AccelerationComponent
 	double x, y, z;
 };
 
-struct CharacterComponent
-{
-	
+struct CharacterComponent{
 	int callbackID=0;
 	Entity owner;
 
@@ -127,10 +140,20 @@ public :
 				this->cursorDeltaEvent(owner, e);
 			}
 		);
+		input->inputDispatcher->Subscribe<CursorKeyEvent>(
+			[this](std::shared_ptr<CursorKeyEvent> e) {
+				this->cursorKeyEvent(owner, e);
+			}
+		);
 	}
 
-	void inputEvent(Entity owner, std::shared_ptr<KeyEvent> e);
+
 	void cursorDeltaEvent(Entity owner, std::shared_ptr<CursorMoveEvent> e);
+	void cursorKeyEvent(Entity owner, std::shared_ptr<CursorKeyEvent> e);
+	void cursorPressedEvent(Entity owner, std::shared_ptr<CursorKeyEvent> e);
+	void cursorReleasedEvent(Entity owner, std::shared_ptr<CursorKeyEvent> e);
+
+	void inputEvent(Entity owner, std::shared_ptr<KeyEvent> e);
 	void inputHeldEvent(Entity owner, std::shared_ptr<KeyEvent> e );
 	void inputPressedEvent(Entity owner, std::shared_ptr<KeyEvent> e);
 	void inputReleaseEvent(Entity owner, std::shared_ptr<KeyEvent> e);
@@ -145,3 +168,4 @@ struct StaticMeshComponent {
 	};
 	StaticMeshComponent(int _ID, Material::Material* material) :meshID(_ID), material(material){};
 };
+

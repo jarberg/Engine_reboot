@@ -51,9 +51,6 @@ void test(tinygltf::Model model,std::string _attributename, std::vector<float> &
         return;
     }
 
-
-
-    // ===== POSITIONS (VEC3, FLOAT) =====
     auto posIt = primitive.attributes.find(_attributename);
     if (posIt == primitive.attributes.end()) {
         std::cerr << "Missing POSITION attribute.\n";
@@ -121,9 +118,6 @@ void test(tinygltf::Model model,std::string _attributename, std::vector<float> &
 }
 
 
-
-
-
 void gltfImp::load_files(const std::string& path, std::shared_ptr<Model> &modelOut) 
 {
     tinygltf::TinyGLTF loader;
@@ -161,8 +155,6 @@ void gltfImp::load_files(const std::string& path, std::shared_ptr<Model> &modelO
 
     std::vector<uint16_t> indices;
 
-
-    // ===== UVS (VEC2, FLOAT / USHORT / UBYTE, possibly normalized) =====
     std::vector<float> uvs;
     if (auto itUV = primitive.attributes.find("TEXCOORD_0"); itUV != primitive.attributes.end()) {
         const auto& uvAccessor   = model.accessors[itUV->second];
@@ -218,8 +210,6 @@ void gltfImp::load_files(const std::string& path, std::shared_ptr<Model> &modelO
             }
         }
     }
-
-    // ===== INDICES (U16 / U8 / U32) =====
     
     if (primitive.indices >= 0) {
         const auto& idxAccessor   = model.accessors[primitive.indices];

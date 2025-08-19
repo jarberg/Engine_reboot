@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)lib\glad\include;$(SolutionDir)include;$(SolutionDir)lib;$(SolutionDir)src\engine\public;$(SolutionDir)src\platform\win;$(SolutionDir)lib\tiny_gltf;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)lib\glad\include;$(SolutionDir)include;$(SolutionDir)lib;$(SolutionDir)src\engine\public;$(SolutionDir)src\platform\win;$(SolutionDir)lib\tiny_gltf;$(SolutionDir)lib\HMM;$(IncludePath)</IncludePath>
     <ExternalIncludePath>C:\Users\mjarb\Projects\emsdk\upstream\emscripten\cache\sysroot\include;C:\Users\mjarb\Projects\glad\include;C:\Users\mjarb\Projects\test2\lib\entt;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -171,6 +171,7 @@
     <ClCompile Include="src\engine\private\core\components.cpp" />
     <ClCompile Include="src\engine\private\core\entity.cpp" />
     <ClCompile Include="src\engine\private\core\files\gltf.cpp" />
+    <ClCompile Include="src\engine\private\core\files\vectors.cpp" />
     <ClCompile Include="src\engine\private\core\input.cpp" />
     <ClCompile Include="src\engine\private\core\material.cpp" />
     <ClCompile Include="src\engine\private\core\modelLookup.cpp" />

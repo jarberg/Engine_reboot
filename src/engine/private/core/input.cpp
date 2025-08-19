@@ -29,9 +29,21 @@ void InputHandler::setKeyState(int jsKeyCode, KeyAction action) {
     const KeyCode kc = static_cast<KeyCode>(jsKeyCode);
 
     unsigned int mod = (keyStates[17] ? 1u : 0u) + (keyStates[18] ? 2u : 0u);
+    int x = 0, y = 0;
+    switch (kc)
+    {
+    case KeyCode::Mouse01:      
 
-    InputHandler::GetInstance()->inputDispatcher
-        ->Dispatch(std::make_shared<KeyEvent>(kc, action, mod));
+        Input::getMousePosition(&x, &y);
+        InputHandler::GetInstance()->inputDispatcher
+        ->Dispatch(std::make_shared<CursorKeyEvent>(kc, action, mod, x, y));
+        break;
+    default:
+        InputHandler::GetInstance()->inputDispatcher
+            ->Dispatch(std::make_shared<KeyEvent>(kc, action, mod));
+        break;
+    }
+ 
 }
 
 void InputHandler::fireHeldPressed() {
