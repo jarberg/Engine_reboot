@@ -37,6 +37,11 @@ struct DragStateComponent {
 	float zNDC = 0.0f;
 	Vec3 offset; // object.position - initialHit
 };
+struct CursorDragStateComponent {
+	bool active = false;
+	float zNDC = 0.0f;
+	Vec3 offset; // object.position - initialHit
+};
 
 
 struct CameraComponent{
@@ -110,7 +115,10 @@ struct CameraComponent{
 
 struct RotationComponent
 {
-	double x, y, z;
+	Vec3 Euler = { 0,0,0 };
+	Vec3 Right = { 1,0,0 };
+	Vec3 forward = { 0,0,1 };
+	Quat quaternion = { 0,0,0,1 };
 	float matrix[16] = 
 	          { 1, 0, 0, 0,
 				0, 1, 0, 0,

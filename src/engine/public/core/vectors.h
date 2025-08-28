@@ -9,6 +9,10 @@ using Vec2 = HMM_Vec2;
 using Vec3 = HMM_Vec3;
 using Vec4 = HMM_Vec4;
 using Mat4 = HMM_Mat4;
+using Quat = HMM_Quat;
+
+
+
 
 inline std::array<float, 16> lookAt(const Vec3& eye, const Vec3& target, const Vec3& up) {
 

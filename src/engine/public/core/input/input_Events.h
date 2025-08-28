@@ -31,5 +31,5 @@ public:
     double deltaX;
     double deltaY;
 
-    explicit CursorMoveEvent(double deltaX, double deltaY, unsigned int posX, unsigned int posY) : deltaX(deltaX), deltaY(deltaY), posX(posX), posY(posY){};
+    explicit CursorMoveEvent(double deltaX, double deltaY, unsigned int posX, unsigned int posY) :deltaX(deltaX), deltaY(deltaY), posX(posX), posY(posY){};
 };

@@ -10,6 +10,8 @@
 bool canvasFocused = false;
 
 EM_BOOL on_mouse_down(int eventType, const EmscriptenMouseEvent* e, void* userData) {
+
+	std::cout << "emscripten key inopyt :" << e->button << "\n";
     if (!canvasFocused) {
         canvasFocused = true;
         std::cout << "[focus] Focusing canvas after user click\n";

@@ -11,16 +11,19 @@
 #include <iostream>
 
 EventDispatcher* InputHandler::inputDispatcher = nullptr;
+
 unsigned int InputHandler::keyStates[256] = { 0 };
 int InputHandler::lastX = 0;
 int InputHandler::lastY = 0;
 int InputHandler::currentX = 0;
 int InputHandler::currentY = 0;
-
+int InputHandler::cursorKeyHeldCode = -1;
 double InputHandler::cursorDeltaX = 0.0f;
 double InputHandler::cursorDeltaY = 0.0f;
 
 void InputHandler::setKeyState(int jsKeyCode, KeyAction action) {
+    std::cout << "Key event: " << jsKeyCode << std::endl;
+
     if (jsKeyCode < 0 || jsKeyCode >= 256) return;
 
     const bool down = (action == KeyAction::Press || action == KeyAction::Repeat);
@@ -33,10 +36,17 @@ void InputHandler::setKeyState(int jsKeyCode, KeyAction action) {
     switch (kc)
     {
     case KeyCode::Mouse01:      
-
+        if ((InputHandler::GetInstance()->cursorKeyHeldCode < 0)) InputHandler::GetInstance()->cursorKeyHeldCode = int(KeyCode::Mouse01);
         Input::getMousePosition(&x, &y);
         InputHandler::GetInstance()->inputDispatcher
         ->Dispatch(std::make_shared<CursorKeyEvent>(kc, action, mod, x, y));
+        break;
+    case KeyCode::Mouse02:
+        if ((InputHandler::GetInstance()->cursorKeyHeldCode < 0)) InputHandler::GetInstance()->cursorKeyHeldCode = int(KeyCode::Mouse02);
+
+        Input::getMousePosition(&x, &y);
+        InputHandler::GetInstance()->inputDispatcher
+            ->Dispatch(std::make_shared<CursorKeyEvent>(kc, action, mod, x, y));
         break;
     default:
         InputHandler::GetInstance()->inputDispatcher
@@ -64,8 +74,8 @@ void InputHandler::cursormoveEvent(int xPos, int yPos) {
     Input::getWindowSize(&width, &height);
     InputHandler::currentX = xPos;
     InputHandler::currentY = yPos;
-    InputHandler::cursorDeltaX = double(InputHandler::currentX - InputHandler::lastX)/width;
-    InputHandler::cursorDeltaY = double(InputHandler::currentY - InputHandler::lastY)/height;
+    InputHandler::cursorDeltaX = 100 * double(InputHandler::currentX - InputHandler::lastX)/width;
+    InputHandler::cursorDeltaY = 100 * double(InputHandler::currentY - InputHandler::lastY)/height;
 
     inputDispatcher->Dispatch(std::make_shared<CursorMoveEvent>(InputHandler::cursorDeltaX, InputHandler::cursorDeltaY, InputHandler::currentX, InputHandler::currentY));
 }

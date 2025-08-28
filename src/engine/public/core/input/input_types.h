@@ -10,8 +10,8 @@ enum class KeyCode {
     Ctrl = 17,
     Alt = 18,
     Mouse01 = 0, // Left mouse button
-    Mouse02 = 1, // Right mouse button
-    Mouse03 = 2, // Middle mouse button
+    Mouse02 = 2, // Right mouse button
+    Mouse03 = 1, // Middle mouse button
     Mouse04 = 3, // Mouse wheel up
     Mouse05 = 4, // Mouse wheel down
     Mouse06 = 6, // Mouse button 4

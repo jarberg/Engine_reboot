@@ -30,6 +30,9 @@ static int GLFWToJS(int key) {
     case GLFW_KEY_SPACE:            return 32;
 	case GLFW_KEY_LEFT_CONTROL:     return 17;  // Ctrl
 	case GLFW_KEY_LEFT_ALT:         return 18;  // Alt
+    case GLFW_MOUSE_BUTTON_1:       return 0;
+    case GLFW_MOUSE_BUTTON_2:       return 2;
+    case GLFW_MOUSE_BUTTON_3:       return 1;
     default:                        return key; // letters/numbers align with JS keyCode
     }
 }

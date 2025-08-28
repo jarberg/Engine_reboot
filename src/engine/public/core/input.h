@@ -21,8 +21,11 @@ public:
     static double cursorDeltaX;
     static double cursorDeltaY;
 
+	static int cursorKeyHeldCode;
+
     InputHandler() {
         if (!inputDispatcher) inputDispatcher = new EventDispatcher();
+        cursorKeyHeldCode = -1;
     }
     ~InputHandler() {
         delete inputDispatcher;
