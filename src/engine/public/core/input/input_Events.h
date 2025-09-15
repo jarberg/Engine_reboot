@@ -1,7 +1,8 @@
 #pragma once
 
-#include <core/Events.h>
+#include <core/events.h>
 #include <core/input/input_types.h>
+
 
 
 class KeyEvent : public Event {
@@ -13,6 +14,9 @@ public:
 
     explicit KeyEvent(KeyCode key, KeyAction action, unsigned int mod) : key(key), action(action), mod(mod) {};
 };
+
+
+
 
 class CursorKeyEvent : public KeyEvent {
 

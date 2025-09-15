@@ -54,6 +54,18 @@
     <Filter Include="Source Files\public\engine\core\Files">
       <UniqueIdentifier>{ea499f6f-f25b-4238-8908-2c01ea927f1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\private\platform\win\network">
+      <UniqueIdentifier>{2121605b-b2d9-4cd5-9399-62ed3f61041a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\private\platform\emscripten\network">
+      <UniqueIdentifier>{7bbee227-aaec-4552-abb1-b908765bb193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\public\network">
+      <UniqueIdentifier>{e811b3e0-7fa3-4ed2-8a61-2f60299860c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\public\engine\core\render">
+      <UniqueIdentifier>{02cc739b-bb34-4d27-8c44-9880af0c450c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -101,7 +113,7 @@
     <ClInclude Include="src\engine\public\core\Main.h">
       <Filter>Source Files\public\engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\public\core\Events.h">
+    <ClInclude Include="src\engine\public\core\events.h">
       <Filter>Source Files\public\engine\core</Filter>
     </ClInclude>
     <ClInclude Include="lib\tiny_gltf\tiny_gltf.h">
@@ -125,7 +137,7 @@
     <ClInclude Include="src\engine\public\core\input\input_types.h">
       <Filter>Source Files\public\engine\core\input</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\public\core\input\input_Events.h">
+    <ClInclude Include="src\engine\public\core\input\input_events.h">
       <Filter>Source Files\public\engine\core\input</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\public\core\extensions.h">
@@ -140,11 +152,20 @@
     <ClInclude Include="src\engine\public\core\files\gltf.h">
       <Filter>Source Files\public\engine\core\Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\public\core\material.h">
-      <Filter>Source Files\public\engine\core</Filter>
+    <ClInclude Include="src\network\messages.h">
+      <Filter>Source Files\public\network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\network\serialize.h">
+      <Filter>Source Files\public\network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\network\net_client.h">
+      <Filter>Source Files\public\network</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\public\core\shader.h">
-      <Filter>Source Files\public\engine\core</Filter>
+      <Filter>Source Files\public\engine\core\render</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\public\core\material.h">
+      <Filter>Source Files\public\engine\core\render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +216,12 @@
     </ClCompile>
     <ClCompile Include="src\engine\private\core\files\vectors.cpp">
       <Filter>Source Files\private\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\win\network\net_client.cpp">
+      <Filter>Source Files\private\platform\win\network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\emscripten\network\net_client.cpp">
+      <Filter>Source Files\private\platform\emscripten\network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

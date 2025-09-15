@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)lib\glad\include;$(SolutionDir)include;$(SolutionDir)lib;$(SolutionDir)src\engine\public;$(SolutionDir)src\platform\win;$(SolutionDir)lib\tiny_gltf;$(SolutionDir)lib\HMM;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)lib\glad\include;$(SolutionDir)include;$(SolutionDir)lib;$(SolutionDir)src\engine\public;$(SolutionDir)src\platform\win;$(SolutionDir)lib\tiny_gltf;$(SolutionDir)lib\HMM;$(SolutionDir)src\platform\win\network;$(SolutionDir)src\network;$(IncludePath)</IncludePath>
     <ExternalIncludePath>C:\Users\mjarb\Projects\emsdk\upstream\emscripten\cache\sysroot\include;C:\Users\mjarb\Projects\glad\include;C:\Users\mjarb\Projects\test2\lib\entt;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -149,12 +149,12 @@
     <ClInclude Include="lib\tiny_gltf\tiny_gltf.h" />
     <ClInclude Include="src\engine\public\core\components.h" />
     <ClInclude Include="src\engine\public\core\entity.h" />
-    <ClInclude Include="src\engine\public\core\Events.h" />
+    <ClInclude Include="src\engine\public\core\events.h" />
     <ClInclude Include="src\engine\public\core\extensions.h" />
     <ClInclude Include="src\engine\public\core\fileLoader.h" />
     <ClInclude Include="src\engine\public\core\files\gltf.h" />
     <ClInclude Include="src\engine\public\core\input.h" />
-    <ClInclude Include="src\engine\public\core\input\input_Events.h" />
+    <ClInclude Include="src\engine\public\core\input\input_events.h" />
     <ClInclude Include="src\engine\public\core\input\input_types.h" />
     <ClInclude Include="src\engine\public\core\Main.h" />
     <ClInclude Include="src\engine\public\core\material.h" />
@@ -165,6 +165,9 @@
     <ClInclude Include="src\engine\public\core\types.h" />
     <ClInclude Include="src\engine\public\core\vectors.h" />
     <ClInclude Include="src\engine\public\core\world.h" />
+    <ClInclude Include="src\network\net_client.h" />
+    <ClInclude Include="src\network\messages.h" />
+    <ClInclude Include="src\network\serialize.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib\glad\src\glad.c" />
@@ -184,9 +187,13 @@
     <ClCompile Include="src\platform\emscripten\Main.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="src\platform\emscripten\network\net_client.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\platform\win\components.cpp" />
     <ClCompile Include="src\platform\win\inputWin.cpp" />
     <ClCompile Include="src\platform\win\Main.cpp" />
+    <ClCompile Include="src\platform\win\network\net_client.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\test.png" />

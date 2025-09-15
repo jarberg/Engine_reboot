@@ -7,7 +7,7 @@
 
 #include <HandmadeMath.h>
 
-#include <core/input/input_Events.h>
+#include <core/input/input_events.h>
 
 #include <core/material.h>
 #include "vectors.h"
@@ -136,11 +136,30 @@ struct AccelerationComponent
 	double x, y, z;
 };
 
+struct NetworkComponent {
+	int callbackID = 0;
+	int clientId = 0;
+	Entity owner;
+	EventDispatcher* msgDispatcher;
+
+public:
+	NetworkComponent(Entity owner, int id): clientId(id), owner(owner){
+		msgDispatcher = new EventDispatcher();
+
+
+	}
+
+	void networkEvent(Entity owner, std::string msg) {
+		std::cout << " received network event: " << msg << std::endl;
+	}
+};
+
 struct CharacterComponent{
 	int callbackID=0;
 	Entity owner;
-
+	
 public :
+	EventDispatcher* msgDispatcher = new EventDispatcher();
 	CharacterComponent(Entity _owner):owner(_owner) {
 		InputHandler* input = InputHandler::GetInstance();
 		input->inputDispatcher->Subscribe<KeyEvent>(
@@ -173,6 +192,26 @@ public :
 
 };
 
+struct netCharacterComponent: CharacterComponent {
+	netCharacterComponent(Entity _owner) :CharacterComponent(_owner) {
+	};
+};
+
+struct netListenComponent {
+
+	int callbackID = 0;
+	int clientId = 0;
+	Entity owner;
+	EventDispatcher* msgDispatcher;
+
+public:
+	netListenComponent(int id): clientId(id) {
+
+		msgDispatcher = new EventDispatcher();
+
+	}
+};
+
 struct StaticMeshComponent {
 	int meshID;
 	Material::Material* material;
@@ -180,5 +219,9 @@ struct StaticMeshComponent {
 		material = new Material::Material(nullptr);
 	};
 	StaticMeshComponent(int _ID, Material::Material* material) :meshID(_ID), material(material){};
+};
+
+struct BoxColliderComponent {
+	Vec3 halfExtents = { 0.5f,0.5f,0.5f };
 };
 

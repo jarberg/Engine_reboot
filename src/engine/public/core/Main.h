@@ -3,9 +3,9 @@
 #include "entt.hpp"
 
 #include <core/input.h>
-
+#include <net_client.h>
 #include "core/entity.h"
-#include "core/Events.h"
+#include "core/events.h"
 #include "core/world.h"
 #include "core/fileLoader.h"
 #include <core/extensions.h>
@@ -23,6 +23,7 @@
 #include "files/gltf.h"
 
 
+
 extern World* myWorld;
 std::array<float, 16> projection;
 
@@ -32,9 +33,18 @@ float height = 720;
 ResourceManager* RMan;
 unsigned int shaderProgram;
 Entity PlayerEntity;
+Material::Material* defaultMat;
 
 int main();
 
+std::string make_input_msg(std::string type, uint32_t clientId, float x, float y) {
+	json j = {
+		{"type", type},
+		{"clientId", clientId},
+		{"pos", {x, y}} // array is compact for vectors
+	};
+	return j.dump();      // -> std::string
+}
 void render(entt::registry& registry) {
 	auto view = registry.view<StaticMeshComponent, PositionComponent, RotationComponent>();
 
@@ -84,8 +94,8 @@ void init() {
 	std::string fsPath = "resources/shaders/test" + std::string(fragmentShader_ext);
 
 	auto* shader = new Shader(Shader::fromFiles(vsPath, fsPath));
-	auto* testMaterial = new Material::Material(shader);
-	testMaterial->setTexture("resources/textures/test.png",0);
+	Material::defaultMat = new Material::Material(shader);
+	Material::defaultMat->setTexture("resources/textures/test.png",0);
 	auto resourceManager = Singleton<ResourceManager>::GetInstance();
 	auto* dataTable = model_datatable::GetInstance();
 	RMan = ResourceManager::GetInstance();
@@ -108,11 +118,27 @@ void init() {
 
 	PlayerEntity = myWorld->create_entity("test");
 	auto& mesh = myWorld->add_component<StaticMeshComponent>(PlayerEntity, 2);
-	mesh.material = testMaterial;
+	mesh.material = Material::defaultMat;
 	mesh.meshID = 2;
 
-	myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
+	auto& character = myWorld->add_component<CharacterComponent>(PlayerEntity, PlayerEntity);
 	myWorld->add_component<RotationComponent>(PlayerEntity);
+	myWorld->add_component<VelocityComponent>(PlayerEntity);
+
+
+	auto& netcomp = myWorld->add_component<NetworkComponent>(PlayerEntity, PlayerEntity, 0);
+	WsClient::GetInstance()->msgDispatcher->Subscribe<clientMSGEvent>(
+		[&netcomp](std::shared_ptr<clientMSGEvent> e) {
+			netcomp.networkEvent(PlayerEntity, e->msg);
+		}
+	);
+	character.msgDispatcher->Subscribe<msgEvent>(
+		[](std::shared_ptr<msgEvent> e) {
+			json j = json::parse(e->msg);
+			j["clientId"] = WsClient::GetInstance()->id;
+			WsClient::GetInstance()->send(j.dump());
+		});
+
 
 	Entity cameraEntity = myWorld->create_entity("camera");
 	myWorld->add_component<CameraComponent>(cameraEntity, 90.0f, width/height, 0.1f, 100.0f);

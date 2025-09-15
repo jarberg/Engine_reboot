@@ -2,7 +2,7 @@
 #pragma once
 #include <cstdint>
 #include "core/singleton.h"
-#include <core/Events.h>
+#include <core/events.h>
 
 #include <core/input/input_types.h>
 

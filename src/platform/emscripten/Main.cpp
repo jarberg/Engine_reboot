@@ -1,5 +1,6 @@
 #include <core/Main.h>
 #include <core/input.h>
+#include <sstream> // Include this header for std::ostringstream
 
 #include "core/entity.h"
 #include "core/world.h"
@@ -9,22 +10,30 @@
 #include "core/modelLookup.h"
 #include <core/types.h>
 #include <core/extensions.h>
-
-#ifdef __EMSCRIPTEN__
+#include <net_client.h>
+#include <core/components.h>
 
 
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
 
-World* myWorld = nullptr;
+World* myWorld = new World();
 
+
+extern Entity PlayerEntity;
 void mainLoop() {
 
 
 	InputHandler::fireHeldPressed();
-
+		/*	myWorld->get_registry().view<NetworkComponent>().each([](auto& netComp) {
+		netComp.netClient->poll();
+		});
+	*/
+	
 	myWorld->update();
 	render(myWorld->get_registry());
 }
+
+
 
 int main(){
 	EmscriptenWebGLContextAttributes attrs;
@@ -53,7 +62,6 @@ int main(){
 	emscripten_webgl_make_context_current(context);
 	std::cout << "before init" << std::endl;
 
-	myWorld = new World();
 
 	init();
 	std::cout << "before run script" << std::endl;
@@ -67,8 +75,10 @@ int main(){
 
 	initInputHandlers(nullptr);
 
+
 	emscripten_set_main_loop(mainLoop, 0, 1);
 
 	return 0;
 }
-#endif
+
+

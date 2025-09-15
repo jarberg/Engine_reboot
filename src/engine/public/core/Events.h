@@ -11,6 +11,36 @@ public:
     virtual ~Event() = default;
 };
 
+
+
+class msgEvent : public Event {
+
+public:
+    std::string msg;
+
+    explicit msgEvent(std::string msg) : msg(msg) {
+
+
+    }
+};
+
+class clientMSGEvent : public Event {
+public:
+    std::string msg;
+
+    explicit clientMSGEvent(std::string msg) : msg(msg) {
+
+
+    }
+};
+class RClientMSGEvent : public Event {
+public:
+    std::string msg;
+    int id;
+    explicit RClientMSGEvent(std::string msg, int id) : msg(msg), id(id) {
+    }
+};
+
 using EventCallback = std::function<void(std::shared_ptr<Event>)>;
 
 class EventDispatcher {

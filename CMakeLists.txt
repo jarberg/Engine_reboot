@@ -11,6 +11,7 @@ set(ENTT_DIR "${CMAKE_SOURCE_DIR}/lib/entt")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/engine/private/*.cpp")
 file(GLOB_RECURSE HEADER_FILES
     "${CMAKE_SOURCE_DIR}/include/*.h"
+    "${CMAKE_SOURCE_DIR}/src/network/*.h"
     "${CMAKE_SOURCE_DIR}/include/*.hpp"
     "${ENTT_DIR}/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/engine/public/*.h"
@@ -35,6 +36,7 @@ target_include_directories(Main PUBLIC
     ${CMAKE_SOURCE_DIR}/include
     ${GLAD_DIR}/include
     ${CMAKE_SOURCE_DIR}/src/engine/public
+    ${CMAKE_SOURCE_DIR}/src/network
     ${CMAKE_SOURCE_DIR}/lib/tiny_gltf/
     ${CMAKE_SOURCE_DIR}/lib/HMM/
     ${ENTT_DIR}
@@ -55,9 +57,12 @@ if(EMSCRIPTEN)
     set(EM_FLAGS
         "-s USE_WEBGL2=1"
         "-s FULL_ES3=1"
+	"-lwebsocket.js"         # <-- this is the portable way
+	"-s ALLOW_MEMORY_GROWTH=1"
         "--emrun"
         "--relative-paths"
     )
+
 
     if(EXISTS "${CMAKE_SOURCE_DIR}/resources")
         message(STATUS "Preloading Resources/ into root")

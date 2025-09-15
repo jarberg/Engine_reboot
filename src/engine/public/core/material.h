@@ -17,4 +17,5 @@ namespace Material {
         void bind();// and set material uniforms here
     };
 
+    static Material* defaultMat;
 }

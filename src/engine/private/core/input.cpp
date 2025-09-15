@@ -2,7 +2,7 @@
 #include "core/input.h"
 
 #include <core/input/input_types.h>
-#include <core/input/input_Events.h>
+#include <core/input/input_events.h>
 
 #include "core/entity.h" 
 #include <core/components.h>
@@ -22,7 +22,7 @@ double InputHandler::cursorDeltaX = 0.0f;
 double InputHandler::cursorDeltaY = 0.0f;
 
 void InputHandler::setKeyState(int jsKeyCode, KeyAction action) {
-    std::cout << "Key event: " << jsKeyCode << std::endl;
+    //std::cout << "Key event: " << jsKeyCode << std::endl;
 
     if (jsKeyCode < 0 || jsKeyCode >= 256) return;
 

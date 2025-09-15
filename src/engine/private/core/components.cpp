@@ -1,8 +1,16 @@
 #include "core/components.h"
 
 #include <cmath>
+#include <json.hpp>
 
 
+
+
+using json = nlohmann::json;
+
+CameraComponent::CameraComponent()
+{
+}
 
 void createRotationMatrixXYZ(Vec3 rot, float out[16]) {
     // Rotation around X-axis (pitch)
@@ -42,10 +50,6 @@ void createRotationMatrixXYZ(Vec3 rot, float out[16]) {
     out[15] = 1.0f;
 }
 
-CameraComponent::CameraComponent()
-{
-}
-    
 void CharacterComponent::inputEvent(Entity owner, std::shared_ptr <KeyEvent> e)
 {   
     switch (e->action) {
@@ -57,7 +61,6 @@ void CharacterComponent::inputEvent(Entity owner, std::shared_ptr <KeyEvent> e)
 		inputReleaseEvent(owner, e); break;
     }
 }
-
 
 static inline HMM_Vec3 RotateV3ByQ(HMM_Vec3 v, HMM_Quat q)
 {
@@ -82,24 +85,32 @@ static inline HMM_Mat4 ConvertArrayToHMM_Mat4(const std::array<float, 16>& arr) 
 void CharacterComponent::cursorDeltaEvent(Entity owner, std::shared_ptr<CursorMoveEvent> e)
 {
     auto& reg = owner.get_world()->get_registry();
-	std::cout << InputHandler::GetInstance()->cursorKeyHeldCode << std::endl;
+	//std::cout << InputHandler::GetInstance()->cursorKeyHeldCode << std::endl;
 
     switch (KeyCode(InputHandler::GetInstance()->cursorKeyHeldCode)) {
 
     case KeyCode::Mouse01:
         if (auto ds = reg.try_get<DragStateComponent>(owner.get_handle()); ds && ds->active) {
+            auto& p = reg.get<PositionComponent>(owner.get_handle());
             for (auto [ee, camera] : reg.view<CameraComponent>().each()) {
 
                 int y = (camera.viewport.Y + camera.viewport.W - 1) - (int)e->posY;
                 Vec3 under = unprojectAtNDC(e->posX, y, ds->zNDC, camera.viewport, camera.inverseVP);
 
-                auto& p = reg.get<PositionComponent>(owner.get_handle());
+                
                 p = { under.X + ds->offset.X,
                       under.Y + ds->offset.Y,
                       under.Z + ds->offset.Z };
                 break;
             }
+            json j = {
+                {"type", "C2S_Input"},
+                {"pos", {p.x, p.y , p.z}} // array is compact for vectors
+            };
+ 
+            this->msgDispatcher->Dispatch(std::make_shared<msgEvent>(j.dump()));
         }
+
         break;
 
     case KeyCode::Mouse02:
@@ -150,7 +161,6 @@ void CharacterComponent::cursorDeltaEvent(Entity owner, std::shared_ptr<CursorMo
         break;
     }
 }
-
 
 void yawPitchToDir(float yaw, float pitch, Vec3& dir) 
 {

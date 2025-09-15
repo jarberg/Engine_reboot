@@ -86,10 +86,18 @@ int main() {
 	
 	glfwGetWindowSize(window, &widthInt, &heightInt); // Get window size (not framebuffer)
 
-	init();
-	
-	initInputHandlers(static_cast<WindowHandle>(window));
+	myWorld->makeCurrent();
 
+	WsClient::GetInstance();
+
+
+
+
+	init();
+
+	
+
+	initInputHandlers(static_cast<WindowHandle>(window));
 
 	mainLoop(window);
 

@@ -16,12 +16,16 @@ private:
     std::chrono::steady_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
 
 	void print_system() {};
-	void move_system(float dt) {};
+    void move_system(float dt);
 
 public:
+    static World* tlsCurrent;
     static std::chrono::duration<float> deltaTime;
 	World();
 	~World();
+
+    static World* current() { return tlsCurrent; }
+    void makeCurrent() { tlsCurrent = this; }
 
 	Entity create_entity(std::string tag);
 
@@ -35,7 +39,7 @@ public:
 
     template<typename T, typename... Args>
     T& add_component(Entity entity, Args&&... args) {
-        return registry_.emplace<T>(entity.get_handle(), std::forward<Args>(args)...);
+        return registry_.get_or_emplace<T>(entity.get_handle(), std::forward<Args>(args)...);
     }
 
     template<typename T>
