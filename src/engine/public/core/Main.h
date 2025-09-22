@@ -33,7 +33,7 @@ float height = 720;
 ResourceManager* RMan;
 unsigned int shaderProgram;
 Entity PlayerEntity;
-Material::Material* defaultMat;
+
 
 int main();
 

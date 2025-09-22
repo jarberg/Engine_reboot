@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(GLAD_DIR "${CMAKE_SOURCE_DIR}/lib/glad")
 set(ENTT_DIR "${CMAKE_SOURCE_DIR}/lib/entt")
 
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/engine/private/*.cpp")
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/engine/private/*.cpp",  "${CMAKE_SOURCE_DIR}/src/network/private/*.cpp")
 file(GLOB_RECURSE HEADER_FILES
     "${CMAKE_SOURCE_DIR}/include/*.h"
     "${CMAKE_SOURCE_DIR}/src/network/*.h"

@@ -13,6 +13,7 @@
 #pragma comment(lib, "winhttp.lib")
 
 namespace {
+   
     struct Impl {
         HINTERNET hSession = nullptr;
         HINTERNET hConnect = nullptr;
@@ -20,7 +21,7 @@ namespace {
         HINTERNET hWebSock = nullptr;   // WebSocket handle after upgrade
         std::thread rxThread;
         std::atomic<bool> running{ false };
-        std::mutex sendMtx;              // WinHTTP WS is thread-safe, but we’ll serialize sends anyway
+        std::mutex sendMtx;             // WinHTTP WS is thread-safe, but we’ll serialize sends anyway
     } g;
 
     struct UrlParts {

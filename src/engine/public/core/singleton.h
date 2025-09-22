@@ -31,7 +31,6 @@ std::unique_ptr<T> Singleton<T>::pinstance_ = nullptr;
 template <typename T>
 std::once_flag Singleton<T>::initFlag;
 
-// GetInstance method implementation
 template <typename T>
 T* Singleton<T>::GetInstance() {
     std::call_once(initFlag, []() {

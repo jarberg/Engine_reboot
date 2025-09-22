@@ -65,7 +65,6 @@ int mainLoop(GLFWwindow* window) {
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 		InputHandler::fireHeldPressed();
 
 		render(myWorld->get_registry());
@@ -84,18 +83,13 @@ int main() {
 	GLFWwindow* window = initWindow(width, height, "GLFW Window Example");
 	if (!window) return -1;
 	
-	glfwGetWindowSize(window, &widthInt, &heightInt); // Get window size (not framebuffer)
+	glfwGetWindowSize(window, &widthInt, &heightInt); 
 
 	myWorld->makeCurrent();
 
 	WsClient::GetInstance();
 
-
-
-
 	init();
-
-	
 
 	initInputHandlers(static_cast<WindowHandle>(window));
 

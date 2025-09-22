@@ -167,6 +167,8 @@
     <ClInclude Include="src\engine\public\core\world.h" />
     <ClInclude Include="src\network\net_client.h" />
     <ClInclude Include="src\network\messages.h" />
+    <ClInclude Include="src\network\parser.h" />
+    <ClInclude Include="src\network\remote_client.h" />
     <ClInclude Include="src\network\serialize.h" />
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +183,7 @@
     <ClCompile Include="src\engine\private\core\resourceManager.cpp" />
     <ClCompile Include="src\engine\private\core\shader.cpp" />
     <ClCompile Include="src\engine\private\core\world.cpp" />
+    <ClCompile Include="src\network\private\remote_client.cpp" />
     <ClCompile Include="src\platform\emscripten\inputEms.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>

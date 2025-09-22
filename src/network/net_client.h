@@ -4,6 +4,8 @@
 #include <string>
 #include <json.hpp>
 #include <core/events.h>
+#include <map>
+#include <remote_client.h>
 #include <core/world.h>
 #include <core/material.h>
 
@@ -14,31 +16,30 @@ class WsClient : public Singleton<WsClient> {
 public:
     EventDispatcher* msgDispatcher;
     int id;
+    inline static std::map<int, RemoteClient*> rEvents{};
 
     WsClient() {
+        rEvents = std::map<int, RemoteClient*>();
 
 		msgDispatcher = new EventDispatcher();
-        onOpen = [this]() { std::puts("WS open"); send(R"({"type":"hello","from":"wasm"})"); };
+        onOpen  = [this]() { std::puts("WS open"); send(R"({"type":"hello","from":"wasm"})"); };
         onClose = []() { std::puts("WS closed"); };
         onError = [](const std::string& e) { std::printf("WS error: %s\n", e.c_str()); };
-        // Dev: plain ws over http. In prod, use wss over https.
+
         connect("ws://localhost:8080");
 
         onMessage = [this](const std::string& s) { pooler(s); };
-     
     }
 
     bool connect(const std::string& url);
     void send(const std::string& text);
     void close();
-    void poll(); // no-op on web
+    void poll(); 
 
     std::function<void()> onOpen;
     std::function<void()> onClose;
     std::function<void(const std::string&)> onMessage;
     std::function<void(const std::string&)> onError;
-
-
 
     void pooler(const std::string& m) {
         if (!msgDispatcher) return;
@@ -69,24 +70,19 @@ public:
             }
             else if (type == "S2C_StateSnapshot") {
                 int tick = j.value("tick", 0);
-
                 if (j.contains("entities") && !j["entities"].is_null()) {
-  
                     json &entities = j["entities"];
                     int id = -1;
                     for (const auto& e : entities) {
-                        
                         for (auto& [key, val] : entities.items()){
                             id = std::stoi(key);
-
-                            // route message based on whose entity it is
+                            auto rDispatcher = rEvents.find(id);
                             if (id == this->id) {
                                 msgDispatcher->Dispatch<clientMSGEvent>(std::make_shared<clientMSGEvent>(e.dump()));
                             }
                             else {
-                                msgDispatcher->Dispatch<RClientMSGEvent>(std::make_shared<RClientMSGEvent>(e.dump(), id));
+                                msgDispatcher->Dispatch(std::make_shared<RClientMSGEvent>(e.dump(), id));
                             }
-
                         }
                     }
                 }
@@ -118,27 +114,22 @@ public:
 		Entity remote = world->create_entity("test2");
         world->add_component<PositionComponent>(remote);
         world->add_component<RotationComponent>(remote);
-        auto& netcomp = world->add_component<NetworkComponent>(remote, remote, otherId);
-        StaticMeshComponent& meshComp = world->add_component<StaticMeshComponent>(remote, 2);
+
+        StaticMeshComponent& meshComp = world->add_component<StaticMeshComponent>(remote, 3);
         meshComp.material = Material::defaultMat;
 
+        auto rDispatcher = rEvents.find(otherId);
 
-
-        msgDispatcher->Subscribe<RClientMSGEvent>([netcomp, remote](std::shared_ptr<RClientMSGEvent> ev) {
-            World* test = World::current();
-            PositionComponent& comp = test->get_component<PositionComponent>(remote);
-
-            std::string const& s = ev->msg;
-            json data = json::parse(s);
-
-            if (data.contains("pos") && data["pos"].is_array()) {
-                const auto& arr = data["pos"];
-                comp.x = arr.at(0).get<float>();
-                comp.y = arr.at(1).get<float>();
-                comp.z = arr.at(2).get<float>();
-                std::cout << "key: pos, value: " << arr << '\n';
-            }
-        });
+        if (rDispatcher == rEvents.end()) {
+			rEvents[otherId] = new RemoteClient(otherId, remote);
+			rDispatcher = rEvents.find(otherId);
+            
+            msgDispatcher->Subscribe<RClientMSGEvent>(
+                [](std::shared_ptr<RClientMSGEvent> ev) {
+                    rEvents[ev->id]->events.Dispatch(std::make_shared<RClientMSGEvent>(ev->msg, ev->id));
+                }
+			);
+        }
     }
 
     void welcome(json j, std::string m) {
@@ -154,62 +145,45 @@ public:
         World* test = World::current();
 
         if (auto view = test->get_registry().view<CharacterComponent>()) {
-
             for (auto [e, c] : view.each()) {
                 Entity Ee(e, test);
                 auto netcomp = NetworkComponent{ Ee,  clientId };
                 test->add_component<NetworkComponent>(Ee, std::move(netcomp));
 
                 msgDispatcher->Subscribe<clientMSGEvent>([ netcomp](std::shared_ptr<clientMSGEvent> ev) {
-                        std::cout << ev->msg << std::endl;
+                    std::cout << ev->msg << std::endl;
                 });
             }
         }
+
         if (!j.contains("entities")){
             fprintf(stderr, "Bad 'entities' in: %s\n", m.c_str());
             return;
         }
+
         auto entities = j["entities"]; 
 
         for (const auto& [key, val] : entities.items()) {
             int targetId = std::stoi(key);
-            if (targetId == this->id) continue; // don't spawn a remote for myself
+            if (targetId == this->id) continue; 
 
             Entity ent = test->create_entity("remote_" + std::to_string(targetId));
+
             test->add_component<PositionComponent>(ent);
             test->add_component<RotationComponent>(ent);
-            test->add_component<NetworkComponent>(ent, ent, targetId);
-            auto& mesh = test->add_component<StaticMeshComponent>(ent, 2);
+
+            auto& mesh = test->add_component<StaticMeshComponent>(ent, 1);
             mesh.material = Material::defaultMat;
 
-            // Capture the *plain int* and the Entity handle by value
-            msgDispatcher->Subscribe<RClientMSGEvent>(
-                [ent](std::shared_ptr<RClientMSGEvent> ev) {
-                    // Process ONLY messages from this remote client
-                    World* w = World::current();
-                    auto& netcomp = w->get_component<NetworkComponent>(ent);
-                    if (ev->id != netcomp.clientId) return;
+            if (rEvents.find(targetId) == rEvents.end()) {
+                rEvents[targetId] = new RemoteClient(targetId, ent);
 
-
-                    auto& pos = w->get_component<PositionComponent>(ent);
-                    
-
-                    try {
-                        const std::string& s = ev->msg;
-                        json data = json::parse(s);
-
-                        if (data.contains("pos") && data["pos"].is_array() && data["pos"].size() >= 3) {
-                            const auto& a = data["pos"];
-                            pos.x = a.at(0).get<float>();
-                            pos.y = a.at(1).get<float>();
-                            pos.z = a.at(2).get<float>();
-                        }
+                msgDispatcher->Subscribe<RClientMSGEvent>(
+                    [](std::shared_ptr<RClientMSGEvent> ev) {
+                        WsClient::rEvents[ev->id]->events.Dispatch(std::make_shared<RClientMSGEvent>(ev->msg, ev->id));
                     }
-                    catch (const std::exception& ex) {
-                        std::cerr << "RClientMSGEvent parse error: " << ex.what() << '\n';
-                    }
-                }
-            );
+                );
+            }
         }
     }
 };

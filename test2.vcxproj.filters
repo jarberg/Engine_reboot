@@ -167,6 +167,12 @@
     <ClInclude Include="src\engine\public\core\material.h">
       <Filter>Source Files\public\engine\core\render</Filter>
     </ClInclude>
+    <ClInclude Include="src\network\remote_client.h">
+      <Filter>Source Files\public\network</Filter>
+    </ClInclude>
+    <ClInclude Include="src\network\parser.h">
+      <Filter>Source Files\public\network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib\glad\src\glad.c">
@@ -222,6 +228,9 @@
     </ClCompile>
     <ClCompile Include="src\platform\emscripten\network\net_client.cpp">
       <Filter>Source Files\private\platform\emscripten\network</Filter>
+    </ClCompile>
+    <ClCompile Include="src\network\private\remote_client.cpp">
+      <Filter>Source Files\public\network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
